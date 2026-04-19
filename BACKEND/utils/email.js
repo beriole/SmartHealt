@@ -49,6 +49,51 @@ const sendVerificationEmail = async (email, token, nom_utilisateur) => {
   }
 };
 
+const sendOrdonnanceNotification = async (email, nomPatient, signatureOrdonnance, dateExpiration, idOrdonnance) => {
+  try {
+    const transporter = getTransporter();
+    
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Nouvelle Ordonnance Médicale - SmartHealth',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #007bff;">Nouvelle Ordonnance Médicale</h2>
+          <p>Bonjour <strong>${nomPatient}</strong>,</p>
+          <p>Votre médecin vient de vous délivrer une nouvelle ordonnance électronique via SmartHealth.</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>Référence de l'ordonnance :</strong> ${idOrdonnance}</p>
+            <p style="margin: 10px 0 0 0;"><strong>Valide jusqu'au :</strong> ${new Date(dateExpiration).toLocaleDateString('fr-FR')}</p>
+          </div>
+
+          <div style="background-color: #e8f4fd; padding: 15px; border-radius: 5px; margin: 20px 0; border: 1px solid #b8daff;">
+            <p style="margin: 0; font-size: 12px; color: #004085; word-break: break-all;">
+              <strong>Signature Numérique Anti-Fraude :</strong><br/>
+              ${signatureOrdonnance}
+            </p>
+          </div>
+
+          <p>Vous pouvez consulter le détail de cette prescription et commander vos médicaments directement depuis votre espace patient SmartHealth.</p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">Ce message est généré automatiquement par le système SmartHealth.</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Notification d'ordonnance envoyée à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi de la notification d'ordonnance à ${email}:`, error);
+    // On ne jette pas l'erreur pour ne pas bloquer la transaction principale, 
+    // mais on retourne false pour le savoir
+    return false;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
+  sendOrdonnanceNotification,
 };

@@ -1,4 +1,4 @@
-const { NotFoundError } = require('../errors/AppError');
+const { NotFoundError, ForbiddenError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 
 exports.getAll = async (req, res, next) => {
@@ -51,7 +51,29 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const consultation = await prisma.consultation.create({ data: req.body });
+    // Identification automatique du médecin via son token
+    const professionnel = await prisma.professionnelSante.findUnique({
+      where: { id_utilisateur: req.user.id }
+    });
+
+    if (!professionnel) {
+      throw new ForbiddenError('Profil Professionnel de Santé introuvable ou non autorisé.');
+    }
+
+    const { id_patient, id_carnet } = req.body;
+
+    // Vérification de sécurité: Le carnet fourni appartient-il bien au patient mentionné ?
+    const carnet = await prisma.carnetSante.findUnique({ where: { id_patient } });
+    if (!carnet || carnet.id_carnet !== id_carnet) {
+      throw new NotFoundError('Incohérence : Ce carnet n\'appartient pas à ce patient.');
+    }
+
+    const consultationData = {
+      ...req.body,
+      id_professionnel: professionnel.id_professionnel,
+    };
+
+    const consultation = await prisma.consultation.create({ data: consultationData });
     res.status(201).json({ success: true, data: consultation });
   } catch (error) {
     next(error);

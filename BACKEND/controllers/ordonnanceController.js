@@ -1,5 +1,7 @@
-const { NotFoundError } = require('../errors/AppError');
+const { NotFoundError, ForbiddenError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
+const crypto = require('crypto');
+const { sendOrdonnanceNotification } = require('../utils/email');
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -51,10 +53,39 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const { lignes, ...ordonnanceData } = req.body;
+    const professionnel = await prisma.professionnelSante.findUnique({
+      where: { id_utilisateur: req.user.id }
+    });
+
+    if (!professionnel) {
+      throw new ForbiddenError('Seul un Professionnel de Santé peut émettre une ordonnance.');
+    }
+
+    const { lignes, id_patient, ...ordonnanceData } = req.body;
+
+    // Récupérer le patient pour récupérer son e-mail
+    const patient = await prisma.patient.findUnique({
+      where: { id_patient },
+      include: { utilisateur: true }
+    });
+
+    if (!patient) throw new NotFoundError('Patient introuvable.');
+
+    // Générer un hash pour la signature numérique anti-fraude
+    const dateEmission = new Date();
+    const payloadToHash = `${professionnel.id_professionnel}-${id_patient}-${dateEmission.toISOString()}-${JSON.stringify(lignes)}`;
+    const signature_numerique = crypto.createHash('sha256').update(payloadToHash).digest('hex');
+
+    const dataToCreate = {
+      ...ordonnanceData,
+      id_patient,
+      id_professionnel: professionnel.id_professionnel,
+      date_emission: dateEmission,
+      signature_numerique
+    };
 
     const result = await prisma.$transaction(async (tx) => {
-      const ordonnance = await tx.ordonnance.create({ data: ordonnanceData });
+      const ordonnance = await tx.ordonnance.create({ data: dataToCreate });
 
       if (lignes && lignes.length > 0) {
         await tx.ligneOrdonnance.createMany({
@@ -67,6 +98,15 @@ exports.create = async (req, res, next) => {
 
       return ordonnance;
     });
+
+    // Envoi de la notification asynchrone par email
+    sendOrdonnanceNotification(
+      patient.utilisateur.email,
+      `${patient.utilisateur.prenom} ${patient.utilisateur.nom}`,
+      signature_numerique,
+      result.date_expiration,
+      result.id_ordonnance
+    );
 
     res.status(201).json({ success: true, data: result });
   } catch (error) {

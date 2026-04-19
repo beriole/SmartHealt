@@ -24,7 +24,7 @@ function authorize(...types) {
       throw new ForbiddenError('Accès non autorisé pour ce type d\'utilisateur');
     }
     next();
-  };w
+  };
 }
 
 async function checkPatientOwnership(req, res, next) {
