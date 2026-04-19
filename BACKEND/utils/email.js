@@ -93,7 +93,55 @@ const sendOrdonnanceNotification = async (email, nomPatient, signatureOrdonnance
   }
 };
 
+const sendCommandeNotification = async (email, commande) => {
+  try {
+    const transporter = getTransporter();
+    
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Confirmation de Commande - SmartHealth',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #28a745;">Commande Confirmée !</h2>
+          <p>Votre commande <strong>#${commande.id_commande}</strong> a bien été enregistrée par la pharmacie <strong>${commande.pharmacie.nom_pharmacie}</strong>.</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>Montant Total :</strong> ${commande.montant_total_fcfa} FCFA</p>
+            <p style="margin: 10px 0 0 0;"><strong>Mode de livraison :</strong> ${commande.type_livraison === 'livraison_domicile' ? 'Livraison à domicile' : 'Retrait en pharmacie'}</p>
+          </div>
+
+          <h3>Détail de vos médicaments :</h3>
+          <ul>
+            ${commande.lignes.map(l => `
+              <li>${l.stock.medicament.nom_commercial} (x${l.quantite_commandee}) - ${l.sous_total_fcfa} FCFA</li>
+            `).join('')}
+          </ul>
+
+          ${commande.photo_ordonnance_url ? `
+            <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 20px;">
+              <p style="margin: 0; color: #856404;"><strong>Note :</strong> Votre commande contient des médicaments sur ordonnance. Un pharmacien va vérifier la photo de votre ordonnance avant l'expédition.</p>
+            </div>
+          ` : ''}
+
+          <p>Vous recevrez une nouvelle notification dès que votre commande sera prête.</p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">SmartHealth - Votre santé, notre priorité.</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Notification de commande envoyée à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi de la notification de commande à ${email}:`, error);
+    return false;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   sendOrdonnanceNotification,
+  sendCommandeNotification,
 };

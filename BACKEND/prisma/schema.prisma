@@ -371,6 +371,7 @@ model Commande {
   id_patient                String
   id_pharmacie              String
   id_ordonnance             String?
+  photo_ordonnance_url      String?            @db.VarChar(500)
   type_livraison            TypeLivraison
   adresse_livraison         String?            @db.Text
   latitude_livraison         Float?

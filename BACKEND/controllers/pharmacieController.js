@@ -62,3 +62,64 @@ exports.update = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.evaluateOrdonnance = async (req, res, next) => {
+  try {
+    const { id: id_pharmacie, id_ordonnance } = req.params;
+
+    const ordonnance = await prisma.ordonnance.findUnique({
+      where: { id_ordonnance },
+      include: { lignes: { include: { medicament: true } } }
+    });
+
+    if (!ordonnance) throw new NotFoundError('Ordonnance introuvable');
+
+    const evaluation = {
+      lignes: [],
+      prix_total_produits: 0,
+      disponibilite_complete: true,
+      medicaments_manquants: []
+    };
+
+    for (const ligne of ordonnance.lignes) {
+      const stock = await prisma.stockPharmacie.findFirst({
+        where: {
+          id_pharmacie,
+          id_medicament: ligne.id_medicament,
+          quantite_disponible: { gte: ligne.quantite }
+        }
+      });
+
+      if (stock) {
+        const sousTotal = Number(stock.prix_vente_fcfa) * ligne.quantite;
+        evaluation.lignes.push({
+          id_medicament: ligne.id_medicament,
+          nom: ligne.medicament.nom_commercial,
+          quantite: ligne.quantite,
+          disponible: true,
+          prix_unitaire: stock.prix_vente_fcfa,
+          sous_total: sousTotal,
+          id_stock: stock.id_stock
+        });
+        evaluation.prix_total_produits += sousTotal;
+      } else {
+        evaluation.disponibilite_complete = false;
+        evaluation.medicaments_manquants.push(ligne.medicament.nom_commercial);
+        evaluation.lignes.push({
+          id_medicament: ligne.id_medicament,
+          nom: ligne.medicament.nom_commercial,
+          quantite: ligne.quantite,
+          disponible: false
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      data: evaluation
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

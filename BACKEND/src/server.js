@@ -19,6 +19,7 @@ const ordonnanceRoutes = require('../routes/ordonnanceRoutes');
 const commandeRoutes = require('../routes/commandeRoutes');
 const carnetRoutes = require('../routes/carnetRoutes');
 const triageRoutes = require('../routes/triageRoutes');
+const stockRoutes = require('../routes/stockRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,7 @@ app.use('/api/ordonnances', ordonnanceRoutes);
 app.use('/api/commandes', commandeRoutes);
 app.use('/api/carnets', carnetRoutes);
 app.use('/api/triage', triageRoutes);
+app.use('/api/stocks', stockRoutes);
 
 app.use(errorHandler);
 
