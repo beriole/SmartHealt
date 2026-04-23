@@ -1,0 +1,71 @@
+2026-04-23 13:27:17 [ERROR]: PrismaClientValidationError: 
+Invalid `tx.utilisateur.create()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:48
+
+  6 async create(userData, roleData = {}) {
+  7   return prisma.$transaction(async (tx) => {
+  8     // 1. Créer l'utilisateur
+→ 9     const utilisateur = await tx.utilisateur.create({
+          data: {
+            nom: "Pharma",
+            prenom: "Doc",
+            type_utilisateur: "PHARMACIEN",
+            sexe: "M",
+            nom_pharmacie: "Pharma Test",
+            ~~~~~~~~~~~~~
+            numero_autorisation: "AUTH001",
+            adresse: "Rue Test",
+            latitude: "4.0",
+            longitude: "9.7",
+            email: "pharma.cmd@test.com",
+            telephone: "pharma01",
+            mot_de_passe_hash: "$2a$12$j.3JxovFQlrj8WbWtBg5sOvUOM.Rh6e.TPAl0JLAws8S67d81kuTS",
+        ?   id_utilisateur?: String,
+        ?   date_naissance?: DateTime | Null,
+        ?   photo_profil?: String | Null,
+        ?   langue_preferee?: Langue,
+        ?   statut_compte?: StatutCompte,
+        ?   date_creation?: DateTime,
+        ?   derniere_connexion?: DateTime | Null,
+        ?   patient?: PatientCreateNestedOneWithoutUtilisateurInput,
+        ?   professionnel?: ProfessionnelSanteCreateNestedOneWithoutUtilisateurInput,
+        ?   pharmacies?: PharmacieCreateNestedManyWithoutResponsableInput,
+        ?   tuteurPatients?: PatientCreateNestedManyWithoutTuteurInput,
+        ?   accesCarnets?: AccesCarnetCreateNestedManyWithoutAccedantInput
+          }
+        })
+
+Unknown argument `nom_pharmacie`. Available options are marked with ?.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.throwValidationException [as handleRequestError] (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:27
+    at Proxy._transactionWithCallback (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:785:18)
+    at exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:26:25)
+2026-04-23 13:27:17 [INFO]: ::ffff:127.0.0.1 - - [23/Apr/2026:12:27:17 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-23 13:27:21 [ERROR]: Error: self-signed certificate in certificate chain
+    at TLSSocket.onConnectSecure (node:_tls_wrap:1695:34)
+    at TLSSocket.emit (node:events:524:28)
+    at TLSSocket._finishInit (node:_tls_wrap:1093:8)
+    at TLSWrap.ssl.onhandshakedone (node:_tls_wrap:879:12)
+    at TLSWrap.callbackTrampoline (node:internal/async_hooks:130:17)
+2026-04-23 13:27:21 [ERROR]: Error: Erreur de l'envoi du mail de vérification.
+    at sendVerificationEmail (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\utils\email.js:48:11)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:37:5)
+2026-04-23 13:27:21 [INFO]: ::ffff:127.0.0.1 - - [23/Apr/2026:12:27:21 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-23 13:27:22 [INFO]: ::ffff:127.0.0.1 - - [23/Apr/2026:12:27:22 +0000] "POST /api/auth/login HTTP/1.1" 401 107 "-" "-"
+2026-04-23 13:27:24 [ERROR]: Error: self-signed certificate in certificate chain
+    at TLSSocket.onConnectSecure (node:_tls_wrap:1695:34)
+    at TLSSocket.emit (node:events:524:28)
+    at TLSSocket._finishInit (node:_tls_wrap:1093:8)
+    at TLSWrap.ssl.onhandshakedone (node:_tls_wrap:879:12)
+    at TLSWrap.callbackTrampoline (node:internal/async_hooks:130:17)
+2026-04-23 13:27:24 [ERROR]: Error: Erreur de l'envoi du mail de vérification.
+    at sendVerificationEmail (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\utils\email.js:48:11)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:37:5)
+2026-04-23 13:27:24 [INFO]: ::ffff:127.0.0.1 - - [23/Apr/2026:12:27:24 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"

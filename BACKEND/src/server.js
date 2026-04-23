@@ -26,7 +26,11 @@ const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
@@ -74,9 +78,11 @@ async function startServer() {
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
-startServer().catch(error => {
-  logger.error('Failed to start server:', error);
-  process.exit(1);
-});
+if (require.main === module) {
+  startServer().catch(error => {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}
 
 module.exports = app;

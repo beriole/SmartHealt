@@ -14,4 +14,9 @@ router.post('/from-ordonnance', authenticate, commandeController.createFromOrdon
 
 router.put('/:id', authenticate, commandeController.update);
 
+// Intégration de paiement NotchPay
+router.post('/:id/payer', authenticate, commandeController.initiatePayment);
+router.get('/callback/verify', commandeController.verifyPaymentCallback);
+router.post('/webhook/notchpay', commandeController.webhookNotchPay); // sans auth requise, vérification hmac
+
 module.exports = router;

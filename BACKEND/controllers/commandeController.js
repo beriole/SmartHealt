@@ -1,7 +1,8 @@
 const { NotFoundError, ForbiddenError, ValidationError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 const { sendCommandeNotification } = require('../utils/email');
-
+const crypto = require('crypto');
+const notchpayClient = require('../utils/notchpay');
 exports.getAll = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, id_patient, id_pharmacie, statut_commande } = req.query;
@@ -223,3 +224,119 @@ exports.update = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.initiatePayment = async (req, res, next) => {
+  try {
+    const commande = await prisma.commande.findUnique({
+      where: { id_commande: req.params.id },
+      include: { patient: { include: { utilisateur: true } } }
+    });
+
+    if (!commande) throw new NotFoundError('Commande');
+    
+    // Vérifier si cette commande est déjà payée
+    if (commande.statut_paiement === 'paye') {
+      return res.status(400).json({ success: false, message: 'Cette commande est déjà payée.' });
+    }
+
+    const payload = {
+      amount: Number(commande.montant_total_fcfa),
+      currency: "XAF",
+      email: commande.patient.utilisateur.email || 'client@exemple.com',
+      phone: commande.patient.utilisateur.telephone || undefined,
+      description: `Paiement commande smarthealth #${commande.id_commande.substring(0,8)}`,
+      reference: commande.id_commande,
+      // URL temporaire, en attente du frontend
+      callback: "http://localhost:3000/api/commandes/callback/verify", 
+    };
+
+    const response = await notchpayClient.post('/payments/initialize', payload);
+    const { transaction, authorization_url } = response.data;
+
+    res.json({
+      success: true,
+      message: 'Paiement initialisé avec succès',
+      data: {
+        authorization_url,
+        reference: transaction.reference
+      }
+    });
+
+  } catch (error) {
+    if (error.response?.data) {
+      console.error('Erreur API NotchPay:', error.response.data);
+    }
+    next(error);
+  }
+};
+
+exports.verifyPaymentCallback = async (req, res, next) => {
+  try {
+    const { reference } = req.query;
+    if (!reference) return res.status(400).json({ success: false, message: 'Référence manquante' });
+
+    const response = await notchpayClient.get(`/payments/${reference}`);
+    const { transaction } = response.data;
+
+    // Mise à jour de la base de données
+    const statut_paiement = transaction.status === 'complete' ? 'paye' : 
+                            (transaction.status === 'failed' || transaction.status === 'canceled' ? 'echoue' : 'en_attente');
+
+    await prisma.commande.update({
+      where: { id_commande: reference },
+      data: { statut_paiement }
+    });
+
+    if (transaction.status === 'complete') {
+      // Redirection après succès (FRONTEND)
+      res.redirect(`http://localhost:3000/paiement-succes?ref=${reference}`);
+    } else {
+      res.redirect(`http://localhost:3000/paiement-echec?ref=${reference}&status=${transaction.status}`);
+    }
+  } catch (error) {
+    if (error.response?.data) {
+      console.error('Erreur vérification NotchPay:', error.response.data);
+    }
+    next(error);
+  }
+};
+
+exports.webhookNotchPay = async (req, res) => {
+  try {
+    const signature = req.headers['x-notch-signature'];
+    const payload = req.rawBody;
+
+    if (process.env.NOTCHPAY_HASH_KEY && payload && signature) {
+      const expectedSig = crypto
+        .createHmac('sha256', process.env.NOTCHPAY_HASH_KEY)
+        .update(payload).digest('hex');
+
+      if (signature !== expectedSig) {
+        return res.status(401).send('Signature invalide');
+      }
+    }
+
+    const event = req.body;
+    
+    if (event && event.type && event.data && event.data.reference) {
+      const { reference } = event.data;
+      if (event.type === 'payment.complete') {
+        await prisma.commande.update({
+          where: { id_commande: reference },
+          data: { statut_paiement: 'paye' }
+        });
+      } else if (event.type === 'payment.failed' || event.type === 'payment.canceled') {
+        await prisma.commande.update({
+          where: { id_commande: reference },
+          data: { statut_paiement: 'echoue' }
+        });
+      }
+    }
+    
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Erreur webhook NotchPay:', error);
+    res.status(500).send('Erreur interne webhooks');
+  }
+};
+
