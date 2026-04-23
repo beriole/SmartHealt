@@ -13,8 +13,8 @@ afterAll(async () => {
   await disconnectDatabase();
 });
 
-// Facultatif: Vider la base avant chaque fichier de test
-beforeEach(async () => {
+// Vider la base avant chaque fichier de test (et non avant chaque IT)
+beforeAll(async () => {
   // Purger toutes les tables principales dans l'ordre pour respecter les Foreign Keys
   const tableNames = [
     'LigneCommande', 'Commande', 'StockPharmacie', 'LigneOrdonnance',
@@ -26,7 +26,6 @@ beforeEach(async () => {
 
   for (const table of tableNames) {
     try {
-      // Les méthodes delegate de Prisma ex: prisma.utilisateur
       const modelName = table.charAt(0).toLowerCase() + table.slice(1);
       if (prisma[modelName]) {
         await prisma[modelName].deleteMany({});

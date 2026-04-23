@@ -10,13 +10,13 @@ describe('Consultation Controller Integration Tests', () => {
   beforeAll(async () => {
     // 1. Créer Patient
     const pLogin = await request(app).post('/api/auth/register').send({
-      nom: 'P', prenom: 'A', email: 'pat.consult@test.com',
+      nom: 'P', prenom: 'A', email: 'berioletsague@gmail.com',
       mot_de_passe: 'Pswd123!', telephone: '0001', type_utilisateur: 'PATIENT', sexe: 'M'
     });
     patientToken = pLogin.body?.data?.token;
     
     if(!patientToken) {
-        const lp = await request(app).post('/api/auth/login').send({ email: 'pat.consult@test.com', mot_de_passe: 'Pswd123!' });
+        const lp = await request(app).post('/api/auth/login').send({ email: 'berioletsague@gmail.com', mot_de_passe: 'Pswd123!' });
         patientToken = lp.body.data.token;
     }
     const patRow = await prisma.patient.findUnique({ where: { id_utilisateur: pLogin.body.data.id_utilisateur }});
@@ -24,13 +24,13 @@ describe('Consultation Controller Integration Tests', () => {
 
     // 2. Créer Professionnel
     const pfLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Doc', prenom: 'T', email: 'doc.consult@test.com',
+      nom: 'Doc', prenom: 'T', email: 'berioletsague+doc@gmail.com',
       mot_de_passe: 'Pswd123!', telephone: '0002', type_utilisateur: 'MEDECIN', sexe: 'F',
       specialite: 'Généraliste', structure_exercice: 'Clinique Test'
     });
     profToken = pfLogin.body?.data?.token;
     if(!profToken) {
-       const lpf = await request(app).post('/api/auth/login').send({ email: 'doc.consult@test.com', mot_de_passe: 'Pswd123!' });
+       const lpf = await request(app).post('/api/auth/login').send({ email: 'berioletsague+doc@gmail.com', mot_de_passe: 'Pswd123!' });
        profToken = lpf.body.data.token;
     }
     const pfRow = await prisma.professionnelSante.findUnique({ where: { id_utilisateur: pfLogin.body.data.id_utilisateur }});

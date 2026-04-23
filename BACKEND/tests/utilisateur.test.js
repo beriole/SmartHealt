@@ -9,7 +9,7 @@ describe('Utilisateur Controller Integration Tests', () => {
   beforeAll(async () => {
     // S'inscrire d'abord pour avoir un compte
     const adminUser = {
-        nom: 'Admin', prenom: 'Global', email: 'admin.global@test.com',
+        nom: 'Admin', prenom: 'Global', email: 'berioletsague@gmail.com',
         mot_de_passe: 'Pswd123!', telephone: 'admin001', type_utilisateur: 'ADMIN', sexe: 'M'
     };
 

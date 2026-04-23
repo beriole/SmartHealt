@@ -8,13 +8,17 @@ const getTransporter = () => {
       user: process.env.EMAIL,
       pass: process.env.PASS_EMAIL,
     },
+
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 };
 
 const sendVerificationEmail = async (email, token, nom_utilisateur) => {
   try {
     const transporter = getTransporter();
-    
+
     // URL de vérification : l'API elle-même ou un lien frontend qui tapera l'API
     // Vu que le frontend est pour l'instant vide, on peut pointer vers l'API directement pour simplifier
     const verificationUrl = `http://localhost:${process.env.PORT || 3000}/api/auth/verify-email/${token}`;
@@ -44,15 +48,16 @@ const sendVerificationEmail = async (email, token, nom_utilisateur) => {
     logger.info(`Email de vérification envoyé à ${email} : ${info.messageId}`);
     return true;
   } catch (error) {
-    logger.error(`Erreur lors de l'envoi de l'email de vérification à ${email}:`, error);
-    throw new Error("Erreur de l'envoi du mail de vérification.");
+    console.error("Erreur détaillée email :", error);
+    logger.error(`Erreur lors de l'envoi de l'email de vérification à ${email}: ${error.message}`);
+    throw new Error(`Erreur email: ${error.message}`);
   }
 };
 
 const sendOrdonnanceNotification = async (email, nomPatient, signatureOrdonnance, dateExpiration, idOrdonnance) => {
   try {
     const transporter = getTransporter();
-    
+
     const mailOptions = {
       from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
       to: email,
@@ -96,7 +101,7 @@ const sendOrdonnanceNotification = async (email, nomPatient, signatureOrdonnance
 const sendCommandeNotification = async (email, commande) => {
   try {
     const transporter = getTransporter();
-    
+
     const mailOptions = {
       from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
       to: email,

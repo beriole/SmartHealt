@@ -357,6 +357,7 @@ model Pharmacie {
   livraison_disponible      Boolean            @default(false)
   rayon_livraison_km        Decimal?           @db.Decimal(5, 2)
   note_moyenne              Decimal            @default(0) @db.Decimal(3, 2)
+  image_url                 String?            @db.VarChar(500)
   statut                    StatutPharmacie    @default(active)
 
   responsable               Utilisateur        @relation("PharmacienResponsable", fields: [id_responsable], references: [id_utilisateur])

@@ -1,4 +1,4 @@
-const { NotFoundError } = require('../errors/AppError');
+const { NotFoundError, ForbiddenError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 
 exports.getAll = async (req, res, next) => {
@@ -44,7 +44,18 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const pharmacie = await prisma.pharmacie.create({ data: req.body });
+    const data = { ...req.body };
+    if (data.latitude) data.latitude = Number(data.latitude);
+    if (data.longitude) data.longitude = Number(data.longitude);
+    if (data.livraison_disponible === 'true') data.livraison_disponible = true;
+    if (data.livraison_disponible === 'false') data.livraison_disponible = false;
+    if (data.rayon_livraison_km) data.rayon_livraison_km = Number(data.rayon_livraison_km);
+
+    if (req.file) {
+      data.image_url = `/uploads/${req.file.filename}`;
+    }
+
+    const pharmacie = await prisma.pharmacie.create({ data });
     res.status(201).json({ success: true, data: pharmacie });
   } catch (error) {
     next(error);
@@ -53,9 +64,33 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
+    const id = req.params.id;
+    const pharmacieExistante = await prisma.pharmacie.findUnique({
+      where: { id_pharmacie: id }
+    });
+
+    if (!pharmacieExistante) throw new NotFoundError('Pharmacie');
+
+    // Vérification : Un pharmacien ne peut modifier que sa propre pharmacie
+    if (req.user.type === 'PHARMACIEN' && pharmacieExistante.id_responsable !== req.user.id) {
+      throw new ForbiddenError('Vous ne pouvez modifier que votre propre pharmacie');
+    }
+
+    const data = { ...req.body };
+    // Conversion des types si envoyés via FormData
+    if (data.latitude) data.latitude = Number(data.latitude);
+    if (data.longitude) data.longitude = Number(data.longitude);
+    if (data.livraison_disponible === 'true') data.livraison_disponible = true;
+    if (data.livraison_disponible === 'false') data.livraison_disponible = false;
+    if (data.rayon_livraison_km) data.rayon_livraison_km = Number(data.rayon_livraison_km);
+
+    if (req.file) {
+      data.image_url = `/uploads/${req.file.filename}`;
+    }
+
     const pharmacie = await prisma.pharmacie.update({
-      where: { id_pharmacie: req.params.id },
-      data: req.body,
+      where: { id_pharmacie: id },
+      data,
     });
     res.json({ success: true, data: pharmacie });
   } catch (error) {

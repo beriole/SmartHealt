@@ -5,7 +5,7 @@ describe('Auth Controller Integration Tests', () => {
   const testUser = {
     nom: 'Test',
     prenom: 'User',
-    email: 'testauth@gmail.com',
+    email: 'berioletsague@gmail.com',
     mot_de_passe: 'Password123!',
     telephone: '000000010',
     type_utilisateur: 'PATIENT',
@@ -16,6 +16,8 @@ describe('Auth Controller Integration Tests', () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send(testUser);
+
+    console.log('REGISTER_RESPONSE:', res.body);
 
     expect(res.statusCode).toEqual(201);
     expect(res.body.success).toBeTruthy();

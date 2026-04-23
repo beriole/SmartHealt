@@ -10,7 +10,7 @@ describe('Patient Controller Integration Tests', () => {
   const testUser = {
     nom: 'Doe',
     prenom: 'John',
-    email: 'johndoe.patient@test.com',
+    email: 'berioletsague@gmail.com',
     mot_de_passe: 'Password123!',
     telephone: '000000020',
     type_utilisateur: 'PATIENT',

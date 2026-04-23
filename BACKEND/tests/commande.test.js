@@ -16,23 +16,23 @@ describe('Commande Controller Integration Tests', () => {
   beforeAll(async () => {
     // 1. Inscription Pharmacien
     const pLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Pharma', prenom: 'Doc', email: 'pharma.cmd@test.com',
+      nom: 'Pharma', prenom: 'Doc', email: 'berioletsague+pharma@gmail.com',
       mot_de_passe: 'Pswd123!', telephone: 'pharma01', type_utilisateur: 'PHARMACIEN', sexe: 'M',
       nom_pharmacie: 'Pharma Test', numero_autorisation: 'AUTH001', adresse: 'Rue Test',
       latitude: '4.0', longitude: '9.7'
     });
 
     const pharmaRow = await prisma.pharmacie.findFirst({
-        where: { responsable: { email: 'pharma.cmd@test.com' } }
+        where: { responsable: { email: 'berioletsague+pharma@gmail.com' } }
     });
     pharmacieId = pharmaRow.id_pharmacie;
 
     // 2. Inscription Patient
     const patLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Pat', prenom: 'Cmd', email: 'pat.cmd@test.com',
+      nom: 'Pat', prenom: 'Cmd', email: 'berioletsague@gmail.com',
       mot_de_passe: 'Pswd123!', telephone: 'pat01', type_utilisateur: 'PATIENT', sexe: 'F'
     });
-    let login = await request(app).post('/api/auth/login').send({ email: 'pat.cmd@test.com', mot_de_passe: 'Pswd123!' });
+    let login = await request(app).post('/api/auth/login').send({ email: 'berioletsague@gmail.com', mot_de_passe: 'Pswd123!' });
     patientToken = login.body.data.token;
     patientId = patLogin.body.data.id_utilisateur; // it's actually id_utilisateur
     

@@ -29,3 +29,17 @@ exports.update = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.updateAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Aucune image fournie' });
+    }
+    const imageUrl = `/uploads/${req.file.filename}`;
+    const utilisateur = await utilisateurService.update(req.params.id, { photo_profil: imageUrl });
+    res.json({ success: true, data: utilisateur });
+  } catch (error) {
+    next(error);
+  }
+};
+

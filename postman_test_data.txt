@@ -1,0 +1,205 @@
+Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour tester chaque route de l'API SmartHealth sur Postman.
+
+============================================================
+                        ⚠️ IMPORTANT ⚠️
+- Pour toutes les routes protégées, ajoutez le header :
+  `Authorization: Bearer <VOTRE_TOKEN_JWT>`
+- Pour les requêtes d'upload (Avatar, Médicament, Pharmacie), utilisez le mode **form-data** dans le Body de Postman, et passez le type de la clé de "Text" à "File" pour uploader l'image.
+============================================================
+
+### 1. AUTHENTIFICATION (`/api/auth`)
+
+**POST /api/auth/register (Patient)**
+{
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "email": "jean.patient@example.com",
+  "telephone": "+237600000001",
+  "mot_de_passe": "MotDePasse123!",
+  "type_utilisateur": "PATIENT",
+  "sexe": "M",
+  "date_naissance": "1990-01-01"
+}
+
+**POST /api/auth/register (Pharmacien)**
+{
+  "nom": "Martin",
+  "prenom": "Claire",
+  "email": "claire.pharma@example.com",
+  "telephone": "+237600000002",
+  "mot_de_passe": "MotDePasse123!",
+  "type_utilisateur": "PHARMACIEN",
+  "sexe": "F"
+}
+
+**POST /api/auth/register (Médecin)**
+{
+  "nom": "Onana",
+  "prenom": "Paul",
+  "email": "paul.medecin@example.com",
+  "telephone": "+237600000003",
+  "mot_de_passe": "MotDePasse123!",
+  "type_utilisateur": "MEDECIN",
+  "sexe": "M",
+  "numero_ordre": "MED-2024-456",
+  "specialite": "Généraliste",
+  "structure_exercice": "Clinique des Anges"
+}
+
+**POST /api/auth/login**
+{
+  "email": "jean.patient@example.com",
+  "mot_de_passe": "MotDePasse123!"
+}
+
+**GET /api/auth/verify-email/:token**
+- Param URL `:token` : Jeton reçu par email (visible dans la console en environnement de dev)
+
+---
+### 2. UTILISATEURS & PROFILS (`/api/utilisateurs`)
+
+**GET /api/utilisateurs**
+- Params Optionnels : `?page=1&limit=10&type_utilisateur=PATIENT`
+
+**PUT /api/utilisateurs/:id**
+{
+  "nom": "Dupont Modifié",
+  "telephone": "+237611111111"
+}
+
+**PUT /api/utilisateurs/:id/avatar**
+- Body type : **form-data**
+- Clé : `image` (Type: File) -> Sélectionnez une image.
+
+---
+### 3. PATIENTS (`/api/patients`)
+
+**GET /api/patients/:id**
+- Param URL `:id` : `UUID` du patient
+
+**PUT /api/patients/:id**
+{
+  "groupe_sanguin": "A_PLUS",
+  "poids_kg": 76.5,
+  "taille_cm": 180,
+  "allergies_connues": "Pénicilline, Arachide",
+  "antecedents_medicaux": "Asthme léger"
+}
+
+---
+### 4. MEDICAMENTS (`/api/medicaments`) - (Réservé PHARMACIEN)
+
+**GET /api/medicaments**
+- Parcourir le catalogue global. Params : `?recherche=Doli&categorie=antalgique`
+
+**POST /api/medicaments**
+- Rôle Requis : `PHARMACIEN`
+- Body type : **form-data**
+- Clé texte : `nom_commercial` = Doliprane
+- Clé texte : `dci` = Paracétamol
+- Clé texte : `forme_galenique` = comprime
+- Clé texte : `dosage` = 1000mg
+- Clé texte : `categorie` = antalgique
+- Clé texte : `est_generique` = false
+- Clé texte : `necessite_ordonnance` = false
+- Clé texte : `prix_indicatif_fcfa` = 1500
+- Clé fichier : `image` = (Sélectionnez le fichier image de la boîte)
+
+**PUT /api/medicaments/:id**
+- Même principe en `form-data` pour la mise à jour par les pharmaciens.
+
+---
+### 5. PHARMACIES (`/api/pharmacies`)
+
+**POST /api/pharmacies** (Réservé ADMIN)
+- Body type : **form-data**
+- Clé texte : `id_responsable` = UUID_DU_PHARMACIEN
+- Clé texte : `nom_pharmacie` = Pharmacie du Grand Marché
+- Clé texte : `numero_autorisation` = PHARMA-001
+- Clé texte : `adresse` = Yaoundé, Centre-ville
+- Clé texte : `latitude` = 3.8480
+- Clé texte : `longitude` = 11.5021
+- Clé texte : `telephone` = +237222000000
+- Clé texte : `livraison_disponible` = true
+- Clé texte : `rayon_livraison_km` = 15
+- Clé fichier : `image` = (Photo de la façade de l'officine)
+
+**PUT /api/pharmacies/:id** (Réservé ADMIN ou au PHARMACIEN responsable)
+- Body type : **form-data** (Pour changer les horaires ou la vitrine)
+
+**GET /api/pharmacies/:id_pharmacie/evaluate-ordonnance/:id_ordonnance**
+- Permet de simuler le coût pour servir une ordonnance dans cette pharmacie.
+
+---
+### 6. GESTION DES STOCKS E-COMMERCE (`/api/stocks`) - (Réservé PHARMACIEN)
+
+**GET /api/stocks/search**
+- Accessible à tous. Cherche le produit dans les officines.
+- Query : `?medicament=Doliprane&sort=price` ou `sort=rating`
+
+**GET /api/stocks/my-stocks**
+- Rôle requis : `PHARMACIEN` (Renvoie tout son propre inventaire).
+
+**POST /api/stocks**
+- Rôle requis : `PHARMACIEN` ou ADMIN
+- Body type : `raw JSON`
+{
+  "id_medicament": "UUID_DU_MEDICAMENT",
+  "quantite_disponible": 100,
+  "prix_vente_fcfa": 2500,
+  "seuil_alerte": 20,
+  "date_peremption": "2025-12-31T00:00:00.000Z"
+}
+
+**PUT /api/stocks/:id_stock**
+{
+  "quantite_disponible": 85,
+  "prix_vente_fcfa": 2400
+}
+
+**DELETE /api/stocks/:id_stock**
+- Retire définitivement le médicament de la vente dans cette pharmacie.
+
+---
+### 7. CONSULTATIONS (`/api/consultations`)
+
+**POST /api/consultations** (MEDECIN / INFIRMIER)
+{
+  "id_patient": "UUID_PATIENT",
+  "id_professionnel": "UUID_MEDECIN",
+  "id_carnet": "UUID_CARNET",
+  "date_consultation": "2024-05-01T10:00:00.000Z",
+  "motif": "Fièvre et toux",
+  "type_consultation": "presentiel"
+}
+
+**PUT /api/consultations/:id**
+{
+  "diagnostic": "Paludisme",
+  "observations": "Repos obligatoire 3 jours",
+  "statut": "effectuee"
+}
+
+---
+### 8. ORDONNANCES (`/api/ordonnances`)
+
+**POST /api/ordonnances** (Par le MEDECIN)
+{
+  "id_consultation": "UUID_CONSULTATION",
+  "id_professionnel": "UUID_MEDECIN",
+  "id_patient": "UUID_PATIENT",
+  "date_expiration": "2024-12-31T00:00:00.000Z",
+  "signature_numerique": "SIGNATURE_HASH"
+}
+
+---
+### 9. CARNETS (`/api/carnets`)
+
+**GET /api/carnets/my-carnet**
+- Rôle : `PATIENT` (Renvoie son carnet)
+
+**POST /api/carnets/my-carnet/regenerate-qr**
+- Regénère la clé du carnet.
+
+**GET /api/carnets/scan/:qrToken**
+- Rôle : `MEDECIN`, `INFIRMIER`, `PHARMACIEN`. Scanner le QR Code du patient en consultation/pharmacie.

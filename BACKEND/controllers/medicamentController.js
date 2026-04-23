@@ -45,7 +45,19 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const medicament = await prisma.medicament.create({ data: req.body });
+    const data = { ...req.body };
+    // Conversion des strings de FormData en boolean si nécessaire
+    if (data.est_generique === 'true') data.est_generique = true;
+    if (data.est_generique === 'false') data.est_generique = false;
+    if (data.necessite_ordonnance === 'true') data.necessite_ordonnance = true;
+    if (data.necessite_ordonnance === 'false') data.necessite_ordonnance = false;
+    if (data.prix_indicatif_fcfa) data.prix_indicatif_fcfa = Number(data.prix_indicatif_fcfa);
+
+    if (req.file) {
+      data.image_url = `/uploads/${req.file.filename}`;
+    }
+
+    const medicament = await prisma.medicament.create({ data });
     res.status(201).json({ success: true, data: medicament });
   } catch (error) {
     next(error);
@@ -54,9 +66,20 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
+    const data = { ...req.body };
+    if (data.est_generique === 'true') data.est_generique = true;
+    if (data.est_generique === 'false') data.est_generique = false;
+    if (data.necessite_ordonnance === 'true') data.necessite_ordonnance = true;
+    if (data.necessite_ordonnance === 'false') data.necessite_ordonnance = false;
+    if (data.prix_indicatif_fcfa) data.prix_indicatif_fcfa = Number(data.prix_indicatif_fcfa);
+
+    if (req.file) {
+      data.image_url = `/uploads/${req.file.filename}`;
+    }
+
     const medicament = await prisma.medicament.update({
       where: { id_medicament: req.params.id },
-      data: req.body,
+      data,
     });
     res.json({ success: true, data: medicament });
   } catch (error) {
