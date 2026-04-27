@@ -107,6 +107,11 @@ exports.scanQrCode = async (req, res, next) => {
       include: {
         patient: { 
           include: { utilisateur: { select: { nom: true, prenom: true, sexe: true, date_naissance: true, photo_profil: true } } }
+        },
+        consultations: {
+          include: { professionnel: { include: { utilisateur: { select: { nom: true, prenom: true } } } } },
+          orderBy: { date_consultation: 'desc' },
+          take: 5
         }
       }
     });

@@ -8,7 +8,6 @@ const getTransporter = () => {
       user: process.env.EMAIL,
       pass: process.env.PASS_EMAIL,
     },
-
     tls: {
       rejectUnauthorized: false
     }
@@ -145,8 +144,113 @@ const sendCommandeNotification = async (email, commande) => {
   }
 };
 
+const sendB2bValidationEmail = async (email, nomStructure, clientId, clientSecret) => {
+  try {
+    const transporter = getTransporter();
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth B2B'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Agrément SmartHealth B2B Validé - Vos Clés API',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #28a745;">Félicitations, ${nomStructure} !</h2>
+          <p>Votre demande de partenariat avec la plateforme SmartHealth a été <strong>validée</strong>.</p>
+          <p>Vous pouvez désormais interconnecter vos systèmes avec notre API B2B.</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #007bff;">
+            <p style="margin: 0; color: #dc3545;"><strong>ATTENTION : CONSERVEZ CES CLÉS EN SÉCURITÉ</strong></p>
+            <p style="margin: 10px 0;">Le Client Secret ci-dessous n'est affiché qu'une seule fois. Si vous le perdez, vous devrez demander une nouvelle clé.</p>
+            <p style="margin: 15px 0 5px 0;"><strong>Client ID :</strong> <code>${clientId}</code></p>
+            <p style="margin: 0;"><strong>Client Secret :</strong> <code>${clientSecret}</code></p>
+          </div>
+
+          <p>L'URL de notre Gateway OAuth2 M2M est : <code>/api/b2b/oauth/token</code></p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">SmartHealth B2B Security</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Email de validation B2B envoyé à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi de la validation B2B à ${email}:`, error);
+    return false;
+  }
+};
+
+const sendB2bRejectionEmail = async (email, nomStructure) => {
+  try {
+    const transporter = getTransporter();
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth B2B'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Mise à jour de votre demande d\'agrément SmartHealth',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #dc3545;">Mise à jour concernant votre dossier</h2>
+          <p>Bonjour ${nomStructure},</p>
+          <p>Après examen de vos documents légaux, nous avons le regret de vous informer que votre demande de partenariat B2B a été <strong>refusée</strong>.</p>
+          <p>Si vous pensez qu'il s'agit d'une erreur ou s'il manquait des pièces justificatives, veuillez contacter notre support.</p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">SmartHealth B2B Security</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Email de refus B2B envoyé à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi du refus B2B à ${email}:`, error);
+    return false;
+  }
+};
+
+const sendPinLivraisonEmail = async (email, nomPatient, codePin, commandeId) => {
+  try {
+    const transporter = getTransporter();
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth Express'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: '📦 Votre commande est en route - Code PIN requis',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #17a2b8;">Votre livreur est en route !</h2>
+          <p>Bonjour <strong>${nomPatient}</strong>,</p>
+          <p>Un coursier vient de récupérer votre commande (Réf: ${commandeId.substring(0,8)}) à la pharmacie.</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107; text-align: center;">
+            <p style="margin: 0; font-size: 14px; color: #555;">Votre Code de Sécurité (À remettre au livreur)</p>
+            <h1 style="margin: 10px 0; font-size: 36px; letter-spacing: 5px; color: #343a40;">${codePin}</h1>
+          </div>
+
+          <p style="color: #dc3545; font-weight: bold;">Attention : Ne communiquez ce code au livreur QUE lorsqu'il vous a physiquement remis le colis.</p>
+          <p>Ce code garantit que vos médicaments ne peuvent pas être volés.</p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">L'équipe Logistique SmartHealth</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Email Code PIN envoyé à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi du PIN à ${email}:`, error);
+    return false;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   sendOrdonnanceNotification,
   sendCommandeNotification,
+  sendB2bValidationEmail,
+  sendB2bRejectionEmail,
+  sendPinLivraisonEmail,
 };

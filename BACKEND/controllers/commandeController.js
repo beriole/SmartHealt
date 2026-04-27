@@ -1,6 +1,6 @@
-const { NotFoundError, ForbiddenError, ValidationError } = require('../errors/AppError');
+const { NotFoundError, ForbiddenError, ValidationError, ConflictError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
-const { sendCommandeNotification } = require('../utils/email');
+const { sendCommandeNotification, sendPinLivraisonEmail } = require('../utils/email');
 const crypto = require('crypto');
 const notchpayClient = require('../utils/notchpay');
 exports.getAll = async (req, res, next) => {
@@ -71,7 +71,9 @@ exports.create = async (req, res, next) => {
           id_pharmacie,
           type_livraison,
           photo_ordonnance_url,
-          montant_total_fcfa: 0 // Mis à jour après
+          montant_total_fcfa: 0, // Mis à jour après
+          statut_paiement: 'en_attente',
+          statut_commande: 'en_attente'
         }
       });
 
@@ -107,7 +109,7 @@ exports.create = async (req, res, next) => {
         // Décrémentation du stock
         await tx.stockPharmacie.update({
           where: { id_stock: ligne.id_stock },
-          data: { quantite_disponible: stock.quantite_disponible - ligne.quantite_commandee }
+          data: { quantite_disponible: { decrement: ligne.quantite_commandee } }
         });
       }
 
@@ -162,7 +164,9 @@ exports.createFromOrdonnance = async (req, res, next) => {
           id_ordonnance,
           type_livraison,
           adresse_livraison,
-          montant_total_fcfa: 0
+          montant_total_fcfa: 0,
+          statut_paiement: 'en_attente',
+          statut_commande: 'en_attente'
         }
       });
 
@@ -194,7 +198,7 @@ exports.createFromOrdonnance = async (req, res, next) => {
 
         await tx.stockPharmacie.update({
           where: { id_stock: stock.id_stock },
-          data: { quantite_disponible: stock.quantite_disponible - ligneOrd.quantite }
+          data: { quantite_disponible: { decrement: ligneOrd.quantite } }
         });
       }
 
@@ -213,13 +217,249 @@ exports.createFromOrdonnance = async (req, res, next) => {
   }
 };
 
-exports.update = async (req, res, next) => {
+exports.updateStatus = async (req, res, next) => {
   try {
-    const commande = await prisma.commande.update({
-      where: { id_commande: req.params.id },
-      data: req.body,
+    const { id } = req.params;
+    const { statut_commande, date_livraison_prevue, date_livraison_effective } = req.body;
+
+    const commande = await prisma.commande.findUnique({
+      where: { id_commande: id },
+      include: { pharmacie: true }
     });
-    res.json({ success: true, data: commande });
+
+    if (!commande) throw new NotFoundError('Commande');
+
+    // Sécurité: vérifier propriétaire pharmacie
+    if (req.user.type !== 'ADMIN' && commande.pharmacie.id_responsable !== req.user.id) {
+      throw new ForbiddenError('Seule la pharmacie en charge peut modifier le suivi de ce colis.');
+    }
+
+    const data = {};
+    if (statut_commande) {
+      if (statut_commande === 'preparee' && commande.statut_paiement !== 'paye') {
+        throw new ForbiddenError('Impossible de préparer cette commande : le paiement NotchPay n\'est pas finalisé.');
+      }
+      data.statut_commande = statut_commande;
+    }
+    if (date_livraison_prevue) data.date_livraison_prevue = new Date(date_livraison_prevue);
+    if (date_livraison_effective) data.date_livraison_effective = new Date(date_livraison_effective);
+    
+    // Auto-datation lors de la confirmation finale
+    if (statut_commande === 'livree' && !data.date_livraison_effective) {
+      data.date_livraison_effective = new Date();
+    }
+
+    const updated = await prisma.commande.update({
+      where: { id_commande: id },
+      data,
+    });
+    res.json({ success: true, message: 'Suivi de commande mis à jour', data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.annulerCommande = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const commande = await prisma.commande.findUnique({
+      where: { id_commande: id },
+      include: { pharmacie: true, lignes: true }
+    });
+
+    if (!commande) throw new NotFoundError('Commande');
+
+    if (req.user.type !== 'ADMIN' && commande.pharmacie.id_responsable !== req.user.id) {
+      throw new ForbiddenError('Seule la pharmacie en charge peut annuler cette commande.');
+    }
+
+    if (commande.statut_commande === 'livree' || commande.statut_commande === 'annulee') {
+      throw new ValidationError('Impossible d\'annuler une commande déjà livrée ou annulée.');
+    }
+
+    // Restitution des stocks atomique
+    await prisma.$transaction(async (tx) => {
+      for (const ligne of commande.lignes) {
+        await tx.stockPharmacie.update({
+          where: { id_stock: ligne.id_stock },
+          data: { quantite_disponible: { increment: ligne.quantite_commandee } }
+        });
+      }
+
+      await tx.commande.update({
+        where: { id_commande: id },
+        data: { statut_commande: 'annulee' }
+      });
+    });
+
+    res.json({ success: true, message: 'Commande annulée et stocks restitués avec succès.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDisponiblesLivraison = async (req, res, next) => {
+  try {
+    const commandes = await prisma.commande.findMany({
+      where: {
+        type_livraison: 'livraison_domicile',
+        statut_commande: 'preparee', // Prêtes à être récupérées
+        id_livreur: null // Non encore assignées
+      },
+      include: {
+        pharmacie: { select: { nom_pharmacie: true, adresse: true, latitude: true, longitude: true } }
+      }
+    });
+    res.json({ success: true, data: commandes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.assignLivreur = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const livreur = await prisma.livreur.findUnique({
+      where: { id_utilisateur: req.user.id }
+    });
+
+    if (!livreur || livreur.statut_verification !== 'verifie') {
+      throw new ForbiddenError('Votre profil livreur n\'est pas actif ou vérifié.');
+    }
+
+    const commande = await prisma.commande.findUnique({ 
+      where: { id_commande: id },
+      include: { patient: { include: { utilisateur: true } } }
+    });
+    
+    if (!commande) throw new NotFoundError('Commande introuvable');
+    if (commande.statut_commande !== 'preparee') throw new ValidationError('Cette commande n\'est pas encore prête');
+
+    // Génération du PIN à 4 chiffres auto (Ex: 8492)
+    const pinStr = Math.floor(1000 + Math.random() * 9000).toString();
+
+    // Verrou Atomique (Race Condition Lock)
+    const updateLock = await prisma.commande.updateMany({
+      where: { 
+        id_commande: id,
+        id_livreur: null,
+        statut_commande: 'preparee'
+      },
+      data: {
+        id_livreur: livreur.id_livreur,
+        statut_commande: 'en_livraison',
+        code_validation_livraison: pinStr
+      }
+    });
+
+    if (updateLock.count === 0) {
+      throw new ConflictError('Trop tard ! Cette commande a déjà été acceptée par un autre coursier ou n\'est plus disponible.');
+    }
+
+    const updated = await prisma.commande.findUnique({ where: { id_commande: id } });
+
+    // Envoi du mail au patient
+    if (commande.patient && commande.patient.utilisateur && commande.patient.utilisateur.email) {
+      await sendPinLivraisonEmail(
+        commande.patient.utilisateur.email, 
+        `${commande.patient.utilisateur.prenom} ${commande.patient.utilisateur.nom}`, 
+        pinStr, 
+        commande.id_commande
+      );
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Course acceptée. Un email avec le code PIN a été envoyé au client.', 
+      data: updated 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.validerLivraison = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { code_validation } = req.body;
+
+    const commande = await prisma.commande.findUnique({ 
+      where: { id_commande: id },
+      include: { livreur: true }
+    });
+
+    if (!commande) throw new NotFoundError('Commande introuvable');
+    if (commande.statut_commande === 'livree') throw new ValidationError('La commande est déjà livrée.');
+    if (commande.code_validation_livraison !== code_validation) {
+      throw new ValidationError('Code de validation incorrect.');
+    }
+
+    // Le livreur valide la course avec le code
+    const updatedCommande = await prisma.$transaction(async (tx) => {
+      const result = await tx.commande.update({
+        where: { id_commande: id },
+        data: {
+          statut_commande: 'livree',
+          date_livraison_effective: new Date()
+        }
+      });
+
+      // Mettre à jour les stats du livreur (Gagne 1500 FCFA de prime)
+      if (commande.id_livreur) {
+        await tx.livreur.update({
+          where: { id_livreur: commande.id_livreur },
+          data: {
+            total_livraisons: { increment: 1 },
+            commission_totale_fcfa: { increment: 1500 }
+          }
+        });
+      }
+      return result;
+    });
+
+    res.json({ success: true, message: 'Livraison validée avec succès.', data: updatedCommande });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.evaluerLivraison = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { note_livraison, commentaire_livraison, note_pharmacie, commentaire_pharmacie } = req.body;
+
+    const commande = await prisma.commande.findUnique({ where: { id_commande: id } });
+    
+    // Seul le patient de la commande peut évaluer
+    const patient = await prisma.patient.findUnique({ where: { id_utilisateur: req.user.id }});
+    if (!patient || commande.id_patient !== patient.id_patient) {
+      throw new ForbiddenError('Vous ne pouvez évaluer que vos propres commandes.');
+    }
+
+    if (commande.statut_commande !== 'livree') {
+      throw new ValidationError('Vous ne pouvez évaluer qu\'une commande déjà livrée.');
+    }
+
+    if (commande.note_livraison !== null || commande.note_pharmacie !== null) {
+      throw new ValidationError("Ceci a déjà été évalué");
+    }
+
+    const updated = await prisma.commande.update({
+      where: { id_commande: id },
+      data: {
+        note_livraison,
+        commentaire_livraison,
+        note_pharmacie,
+        commentaire_pharmacie
+      }
+    });
+
+    // Mettre à jour la moyenne de la pharmacie et du livreur (si fourni)
+    // ... Logique asynchrone non-bloquante ou triggers bd pour la moyenne réelle
+
+    res.json({ success: true, message: 'Évaluation enregistrée.', data: updated });
   } catch (error) {
     next(error);
   }

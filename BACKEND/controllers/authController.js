@@ -22,6 +22,10 @@ exports.register = async (req, res, next) => {
     // Extraction des données spécifiques au rôle
     const roleData = { numero_ordre, specialite, structure_exercice, groupe_sanguin };
 
+    if (userData.date_naissance) {
+      userData.date_naissance = new Date(userData.date_naissance);
+    }
+
     // Transaction Prisma
     const utilisateur = await utilisateurService.create({
       ...userData,

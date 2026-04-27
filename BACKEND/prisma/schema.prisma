@@ -13,8 +13,15 @@ enum TypeUtilisateur {
   MEDECIN
   PHARMACIEN
   INFIRMIER
+  LIVREUR
   TUTEUR
   ADMIN
+}
+
+enum RoleEmployePharmacie {
+  pharmacien_assistant
+  caissier
+  magasinier
 }
 
 enum Sexe {
@@ -32,6 +39,7 @@ enum StatutCompte {
   actif
   suspendu
   desactive
+  inactif_archive
 }
 
 enum GroupeSanguin {
@@ -49,6 +57,13 @@ enum StatutVerification {
   en_attente
   verifie
   rejete
+}
+
+enum StatutAgrementB2B {
+  en_attente
+  valide
+  rejete
+  revoque
 }
 
 enum FormeGalenique {
@@ -78,6 +93,7 @@ enum StatutPharmacie {
   active
   suspendue
   fermee
+  inactif_archive
 }
 
 enum TypeConsultation {
@@ -203,9 +219,11 @@ model Utilisateur {
 
   patient              Patient?
   professionnel        ProfessionnelSante?
-  pharmacies           Pharmacie[]      @relation("PharmacienResponsable")
-  tuteurPatients       Patient[]        @relation("TuteurPatient")
-  accesCarnets         AccesCarnet[]    @relation("Accedant")
+  livreur              Livreur?
+  pharmacies           Pharmacie[]        @relation("PharmacienResponsable")
+  emploisPharmacie     EmployePharmacie[] 
+  tuteurPatients       Patient[]          @relation("TuteurPatient")
+  accesCarnets         AccesCarnet[]      @relation("Accedant")
 
   @@map("utilisateur")
 }
@@ -233,6 +251,7 @@ model Patient {
   rappels                  RappelTraitement[]
   triages                  TriageIa[]
   interventions            InterventionDomicile[]
+  pinConsentements         PinConsentement[]
 
   @@map("patient")
 }
@@ -250,6 +269,8 @@ model ProfessionnelSante {
   tarif_consultation       Decimal?           @db.Decimal(10, 2)
   disponible_domicile      Boolean            @default(false)
   note_moyenne             Decimal            @default(0) @db.Decimal(3, 2)
+  document_verification_url String?           @db.VarChar(500)
+  notes_verification       String?            @db.Text
   statut_verification      StatutVerification @default(en_attente)
   date_inscription         DateTime           @default(now())
 
@@ -291,10 +312,15 @@ model Consultation {
   cout_fcfa                Decimal?            @db.Decimal(10, 2)
   statut                   StatutConsultation  @default(planifiee)
   pj_documents             Json?
+  
+  source_creation          String              @default("smarthealth_interne")
+  id_partenaire_source     String?
+  nom_medecin_externe      String?             @db.VarChar(150)
 
   patient                  Patient            @relation(fields: [id_patient], references: [id_patient])
-  professionnel            ProfessionnelSante  @relation(fields: [id_professionnel], references: [id_professionnel])
+  professionnel            ProfessionnelSante? @relation(fields: [id_professionnel], references: [id_professionnel])
   carnet                   CarnetSante        @relation(fields: [id_carnet], references: [id_carnet])
+  partenaireSource         PartenaireB2B?      @relation(fields: [id_partenaire_source], references: [id_partenaire])
   ordonnances              Ordonnance[]
 
   @@map("consultation")
@@ -311,9 +337,14 @@ model Ordonnance {
   statut                   StatutOrdonnance  @default(active)
   notes_pharmacien         String?           @db.Text
 
-  consultation             Consultation      @relation(fields: [id_consultation], references: [id_consultation])
-  professionnel            ProfessionnelSante @relation(fields: [id_professionnel], references: [id_professionnel])
+  source_creation          String            @default("smarthealth_interne")
+  id_partenaire_source     String?
+  nom_medecin_externe      String?           @db.VarChar(150)
+
+  consultation             Consultation?     @relation(fields: [id_consultation], references: [id_consultation])
+  professionnel            ProfessionnelSante? @relation(fields: [id_professionnel], references: [id_professionnel])
   patient                  Patient           @relation(fields: [id_patient], references: [id_patient])
+  partenaireSource         PartenaireB2B?    @relation(fields: [id_partenaire_source], references: [id_partenaire])
   lignes                   LigneOrdonnance[]
   commandes                Commande[]
   rappels                  RappelTraitement[]
@@ -358,13 +389,31 @@ model Pharmacie {
   rayon_livraison_km        Decimal?           @db.Decimal(5, 2)
   note_moyenne              Decimal            @default(0) @db.Decimal(3, 2)
   image_url                 String?            @db.VarChar(500)
+  document_verification_url String?            @db.VarChar(500)
+  notes_verification        String?            @db.Text
   statut                    StatutPharmacie    @default(active)
+  statut_verification       StatutVerification @default(en_attente)
 
   responsable               Utilisateur        @relation("PharmacienResponsable", fields: [id_responsable], references: [id_utilisateur])
+  employes                  EmployePharmacie[]
   stocks                    StockPharmacie[]
   commandes                 Commande[]
 
   @@map("pharmacie")
+}
+
+model EmployePharmacie {
+  id_employe     String               @id @default(uuid())
+  id_pharmacie   String
+  id_utilisateur String
+  role_employe   RoleEmployePharmacie @default(pharmacien_assistant)
+  date_embauche  DateTime             @default(now())
+
+  pharmacie      Pharmacie            @relation(fields: [id_pharmacie], references: [id_pharmacie])
+  utilisateur    Utilisateur          @relation(fields: [id_utilisateur], references: [id_utilisateur])
+
+  @@unique([id_pharmacie, id_utilisateur])
+  @@map("employe_pharmacie")
 }
 
 model Commande {
@@ -372,6 +421,7 @@ model Commande {
   id_patient                String
   id_pharmacie              String
   id_ordonnance             String?
+  id_livreur                String?
   photo_ordonnance_url      String?            @db.VarChar(500)
   type_livraison            TypeLivraison
   adresse_livraison         String?            @db.Text
@@ -384,10 +434,17 @@ model Commande {
   date_commande              DateTime           @default(now())
   date_livraison_prevue      DateTime?
   date_livraison_effective   DateTime?
+  
+  code_validation_livraison  String?            @db.VarChar(10)
+  note_livraison             Int?
+  commentaire_livraison      String?            @db.Text
+  note_pharmacie             Int?
+  commentaire_pharmacie      String?            @db.Text
 
   patient                    Patient           @relation(fields: [id_patient], references: [id_patient])
   pharmacie                  Pharmacie         @relation(fields: [id_pharmacie], references: [id_pharmacie])
   ordonnance                 Ordonnance?       @relation(fields: [id_ordonnance], references: [id_ordonnance])
+  livreur                    Livreur?          @relation("LivraisonCommande", fields: [id_livreur], references: [id_livreur])
   lignes                     LigneCommande[]
 
   @@map("commande")
@@ -506,6 +563,7 @@ model PriseMedicament {
   date_heure_reelle         DateTime?
   statut_prise              StatutPrise   @default(en_attente)
   commentaire                String?       @db.Text
+  notification_envoyee      Boolean       @default(false)
 
   rappel                    RappelTraitement @relation(fields: [id_rappel], references: [id_rappel])
 
@@ -525,4 +583,59 @@ model AccesCarnet {
   accedant                  Utilisateur @relation("Accedant", fields: [id_accedant], references: [id_utilisateur])
 
   @@map("acces_carnet")
+}
+
+model Livreur {
+  id_livreur             String       @id @default(uuid())
+  id_utilisateur         String       @unique
+  vehicule_type          String?      @db.VarChar(50)
+  plaque_immatriculation String?      @db.VarChar(20)
+  disponible             Boolean      @default(true)
+  latitude_actuelle      Float?
+  longitude_actuelle     Float?
+  
+  document_verification_url String?   @db.VarChar(500)
+  notes_verification        String?   @db.Text
+  statut_verification       StatutVerification @default(en_attente)
+  
+  note_moyenne              Decimal   @default(0) @db.Decimal(3, 2)
+  total_livraisons          Int       @default(0)
+  commission_totale_fcfa    Decimal   @default(0) @db.Decimal(12, 2)
+
+  utilisateur            Utilisateur  @relation(fields: [id_utilisateur], references: [id_utilisateur])
+  commandes_livrees      Commande[]   @relation("LivraisonCommande")
+
+  @@map("livreur")
+}
+
+model PartenaireB2B {
+  id_partenaire         String             @id @default(uuid())
+  nom_structure         String             @db.VarChar(200)
+  email_contact         String             @unique @db.VarChar(255)
+  telephone_contact     String             @db.VarChar(20)
+  documents_legaux_url  String             @db.VarChar(500)
+  statut_agrement       StatutAgrementB2B  @default(en_attente)
+  client_id             String?            @unique @db.VarChar(100)
+  client_secret_hash    String?            @db.VarChar(255)
+  scopes_autorises      String[]           @default([])
+  date_inscription      DateTime           @default(now())
+  date_validation       DateTime?
+
+  consultationsSourcees Consultation[]
+  ordonnancesSourcees   Ordonnance[]
+
+  @@map("partenaire_b2b")
+}
+
+model PinConsentement {
+  id_pin             String      @id @default(uuid())
+  id_patient         String
+  code_pin           String      @db.VarChar(10)
+  date_expiration    DateTime
+  est_actif          Boolean     @default(true)
+  date_creation      DateTime    @default(now())
+
+  patient            Patient     @relation(fields: [id_patient], references: [id_patient])
+
+  @@map("pin_consentement")
 }

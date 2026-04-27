@@ -15,11 +15,17 @@ const professionnelRoutes = require('../routes/professionnelRoutes');
 const medicamentRoutes = require('../routes/medicamentRoutes');
 const pharmacieRoutes = require('../routes/pharmacieRoutes');
 const consultationRoutes = require('../routes/consultationRoutes');
+const interventionRoutes = require('../routes/interventionRoutes');
 const ordonnanceRoutes = require('../routes/ordonnanceRoutes');
 const commandeRoutes = require('../routes/commandeRoutes');
 const carnetRoutes = require('../routes/carnetRoutes');
+const livreurRoutes = require('../routes/livreurRoutes');
 const triageRoutes = require('../routes/triageRoutes');
 const stockRoutes = require('../routes/stockRoutes');
+const rappelRoutes = require('../routes/rappelRoutes');
+const b2bRoutes = require('../routes/b2bRoutes');
+
+const { initRappelCron } = require('../services/rappelCron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,11 +53,15 @@ app.use('/api/professionnels', professionnelRoutes);
 app.use('/api/medicaments', medicamentRoutes);
 app.use('/api/pharmacies', pharmacieRoutes);
 app.use('/api/consultations', consultationRoutes);
+app.use('/api/interventions', interventionRoutes);
 app.use('/api/ordonnances', ordonnanceRoutes);
 app.use('/api/commandes', commandeRoutes);
 app.use('/api/carnets', carnetRoutes);
+app.use('/api/livreurs', livreurRoutes);
 app.use('/api/triage', triageRoutes);
 app.use('/api/stocks', stockRoutes);
+app.use('/api/rappels', rappelRoutes);
+app.use('/api/b2b', b2bRoutes);
 
 app.use(errorHandler);
 
@@ -61,6 +71,8 @@ app.use((req, res) => {
 
 async function startServer() {
   await connectDatabase();
+  
+  initRappelCron();
 
   const server = app.listen(PORT, () => {
     logger.info(`🚀 SmartHealth server running on port ${PORT}`);

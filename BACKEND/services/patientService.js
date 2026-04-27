@@ -11,7 +11,7 @@ class PatientService {
       include: {
         utilisateur: true,
         carnet: true,
-        tuteur: { include: { utilisateur: true } },
+        tuteur: true,
       },
     });
   }

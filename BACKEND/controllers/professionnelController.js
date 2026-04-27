@@ -1,4 +1,4 @@
-const { NotFoundError } = require('../errors/AppError');
+const { NotFoundError, ValidationError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 
 exports.getAll = async (req, res, next) => {
@@ -42,6 +42,55 @@ exports.getById = async (req, res, next) => {
 
     if (!professionnel) throw new NotFoundError('Professionnel');
     res.json({ success: true, data: professionnel });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.uploadDocument = async (req, res, next) => {
+  try {
+    if (!req.file) throw new ValidationError('Aucun fichier uploadé');
+    const document_verification_url = `/uploads/${req.file.filename}`;
+    
+    // Vérification droits (le pro lui-même ou admin)
+    const professionnel = await prisma.professionnelSante.findUnique({
+      where: { id_professionnel: req.params.id }
+    });
+
+    if (!professionnel) throw new NotFoundError('Professionnel');
+    if (req.user.type !== 'ADMIN' && professionnel.id_utilisateur !== req.user.id) {
+      const { ForbiddenError } = require('../errors/AppError');
+      throw new ForbiddenError('Vous ne pouvez modifier que votre propre profil');
+    }
+
+    const updated = await prisma.professionnelSante.update({
+      where: { id_professionnel: req.params.id },
+      data: { 
+        document_verification_url, 
+        statut_verification: 'en_attente' // Repasse en attente de validation
+      }
+    });
+
+    res.json({ success: true, message: 'Document uploadé', data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.verifyDocument = async (req, res, next) => {
+  try {
+    const { statut_verification, notes_verification } = req.body;
+    
+    if (!['verifie', 'rejete'].includes(statut_verification)) {
+      throw new ValidationError('Statut invalide');
+    }
+
+    const updated = await prisma.professionnelSante.update({
+      where: { id_professionnel: req.params.id },
+      data: { statut_verification, notes_verification }
+    });
+
+    res.json({ success: true, message: `Professionnel ${statut_verification}`, data: updated });
   } catch (error) {
     next(error);
   }

@@ -43,3 +43,15 @@ exports.updateAvatar = async (req, res, next) => {
   }
 };
 
+exports.deleteUtilisateur = async (req, res, next) => {
+  try {
+    const utilisateur = await utilisateurService.findById(req.params.id);
+    if (!utilisateur) throw new NotFoundError('Utilisateur');
+    
+    const updated = await utilisateurService.update(req.params.id, { statut_compte: 'inactif_archive' });
+    res.json({ success: true, message: 'Utilisateur archivé (Soft-Delete) avec succès', data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
