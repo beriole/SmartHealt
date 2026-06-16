@@ -58,7 +58,7 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 ---
 ### 2. UTILISATEURS & PROFILS (`/api/utilisateurs`)
 
-**GET /api/utilisateurs**
+**GET /api/utilisateurs** (Réservé ADMIN)
 - Params Optionnels : `?page=1&limit=10&type_utilisateur=PATIENT`
 
 **PUT /api/utilisateurs/:id**
@@ -111,9 +111,8 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 ---
 ### 5. PHARMACIES (`/api/pharmacies`)
 
-**POST /api/pharmacies** (Réservé ADMIN)
+**POST /api/pharmacies** (Par le PHARMACIEN ou ADMIN)
 - Body type : **form-data**
-- Clé texte : `id_responsable` = UUID_DU_PHARMACIEN
 - Clé texte : `nom_pharmacie` = Pharmacie du Grand Marché
 - Clé texte : `numero_autorisation` = PHARMA-001
 - Clé texte : `adresse` = Yaoundé, Centre-ville
@@ -122,7 +121,33 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 - Clé texte : `telephone` = +237222000000
 - Clé texte : `livraison_disponible` = true
 - Clé texte : `rayon_livraison_km` = 15
-- Clé fichier : `image` = (Photo de la façade de l'officine)
+- Clé fichier : `image` = (Photo de la façade)
+*(Note: Si vous êtes connecté en tant que PHARMACIEN, l'API vous identifiera automatiquement comme le responsable légal, pas besoin de spécifier id_responsable).*
+
+**PUT /api/pharmacies/:id/upload-document** (Réservé PHARMACIEN / ADMIN)
+- Body type : **form-data**
+- Clé fichier : `document` = (Le scan PDF/Image de l'autorisation ou de l'agrément)
+
+**POST /api/pharmacies/:id/verify** (Réservé ADMIN)
+- Body type : **JSON**
+```json
+{
+  "statut_verification": "verifie",
+  "notes_verification": "Dossier validé par l'Ordre National"
+}
+```
+
+**POST /api/pharmacies/:id_pharmacie/employes** (Réservé RESPONSABLE / ADMIN)
+- Body type : **JSON**
+```json
+{
+  "email": "assistant@gmail.com",
+  "role_employe": "pharmacien_assistant"
+}
+```
+
+**GET /api/pharmacies/:id_pharmacie/employes** (Réservé RESPONSABLE / ADMIN)
+- Lister le personnel
 
 **PUT /api/pharmacies/:id** (Réservé ADMIN ou au PHARMACIEN responsable)
 - Body type : **form-data** (Pour changer les horaires ou la vitrine)
@@ -131,7 +156,33 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 - Permet de simuler le coût pour servir une ordonnance dans cette pharmacie.
 
 ---
-### 6. GESTION DES STOCKS E-COMMERCE (`/api/stocks`) - (Réservé PHARMACIEN)
+### 6. INTERVENTIONS A DOMICILE (`/api/interventions`)
+
+**POST /api/interventions** (Réservé PATIENT)
+- Body type : **JSON**
+```json
+{
+  "id_infirmier": "UUID_INFIRMIER_OU_MEDECIN",
+  "type_acte": "injection",
+  "date_planifiee": "2026-05-10T14:00:00.000Z",
+  "adresse_intervention": "Quartier Bastos, Yaoundé",
+  "latitude_intervention": 3.84,
+  "longitude_intervention": 11.50,
+  "cout_fcfa": 5000
+}
+```
+
+**PUT /api/interventions/:id/status** (Réservé MEDECIN / INFIRMIER / ADMIN)
+- Body type : **JSON**
+```json
+{
+  "statut": "terminee",
+  "compte_rendu": "Injection réalisée avec succès, constantes stables."
+}
+```
+
+---
+### 7. GESTION DES STOCKS E-COMMERCE (`/api/stocks`) - (Réservé PHARMACIEN)
 
 **GET /api/stocks/search**
 - Accessible à tous. Cherche le produit dans les officines.
@@ -161,7 +212,86 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 - Retire définitivement le médicament de la vente dans cette pharmacie.
 
 ---
-### 7. CONSULTATIONS (`/api/consultations`)
+### 8. COMMANDES ET ACHATS (`/api/commandes`)
+
+**POST /api/commandes** (Achat Panier direct)
+- Réservé PATIENT
+```json
+{
+  "id_pharmacie": "UUID_PHARMACIE",
+  "type_livraison": "livraison_domicile",
+  "adresse_livraison": "Yaoundé, Quartier Mvan",
+  "lignes": [
+    {
+      "id_stock": "UUID_STOCK_MEDICAMENT",
+      "quantite_commandee": 2
+    }
+  ]
+}
+```
+
+**POST /api/commandes/from-ordonnance** (Panier digital - Patient)
+- Transforme une ordonnance digitalisée en achat direct.
+
+**GET /api/commandes/disponibles-livraison** (Livreur)
+- Trouve des commandes en cours, sans livreur.
+
+**POST /api/commandes/:id/assigner-livreur** (Livreur)
+- Le livreur s'attribue une commande prête en pharmacie. Génère un code PIN secret pour le patient.
+
+**PUT /api/commandes/:id/status** (Suivi de colis - Réservé PHARMACIEN / ADMIN)
+- Body type : **JSON**
+- Permet de faire progresser le statut d'une commande (en_attente -> preparee -> en_livraison -> livree). Mettez à jour ce statut pour informer le client.
+```json
+{
+  "statut_commande": "en_livraison"
+}
+```
+
+**POST /api/commandes/:id/valider-livraison** (LIVREUR/PATIENT/ADMIN)
+- Valide la réception du colis avec le code PIN remis par le patient. Paie la commission système au livreur.
+```json
+{
+  "code_validation": "8492"
+}
+```
+
+**POST /api/commandes/:id/evaluer** (PATIENT)
+- Permet d'évaluer la livraison et la pharmacie.
+```json
+{
+  "note_livraison": 5,
+  "commentaire_livraison": "Hyper rapide, merci.",
+  "note_pharmacie": 4,
+  "commentaire_pharmacie": "Très beaux packagings mais un peu cher."
+}
+```
+
+**POST /api/commandes/:id/payer** (Patient via NotchPay)
+- Initialise le paiement externe pour la facture.
+
+---
+### 9. LOGISTIQUE & LIVREUR (`/api/livreurs`)
+
+**POST /api/livreurs/register** (LIVREUR)
+```json
+{
+  "vehicule_type": "Moto",
+  "plaque_immatriculation": "LT-234-AX"
+}
+```
+
+**PUT /api/livreurs/upload-document** (LIVREUR)
+- `form-data` avec document (File)
+
+**POST /api/livreurs/:id_livreur/verify** (ADMIN)
+- Body JSON, similaire à la pharmacie (`statut_verification: "verifie"`).
+
+**GET /api/livreurs/dashboard** (LIVREUR)
+- Renvoie toutes ses commissions, notes, et commandes livrees.
+
+---
+### 10. CONSULTATIONS (`/api/consultations`)
 
 **POST /api/consultations** (MEDECIN / INFIRMIER)
 {
@@ -181,7 +311,7 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 }
 
 ---
-### 8. ORDONNANCES (`/api/ordonnances`)
+### 11. ORDONNANCES (`/api/ordonnances`)
 
 **POST /api/ordonnances** (Par le MEDECIN)
 {
@@ -193,7 +323,7 @@ Ce fichier contient les données exhaustives (JSON, Form-Data, paramètres) pour
 }
 
 ---
-### 9. CARNETS (`/api/carnets`)
+### 12. CARNETS (`/api/carnets`)
 
 **GET /api/carnets/my-carnet**
 - Rôle : `PATIENT` (Renvoie son carnet)

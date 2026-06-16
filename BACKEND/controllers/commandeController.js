@@ -1,8 +1,26 @@
 const { NotFoundError, ForbiddenError, ValidationError, ConflictError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 const { sendCommandeNotification, sendPinLivraisonEmail } = require('../utils/email');
-const crypto = require('crypto');
-const notchpayClient = require('../utils/notchpay');
+const { logAction } = require('../services/auditService');
+const fapshiService = require('../services/fapshiService');
+
+// Enregistre un mouvement de stock dans la transaction courante (traçabilité)
+async function tracerMouvement(tx, { id_stock, type_mouvement, quantite, quantite_avant, motif, id_utilisateur }) {
+  const direction = ['sortie', 'vente', 'peremption'].includes(type_mouvement) ? -1 : 1;
+  await tx.mouvementStock.create({
+    data: {
+      id_stock,
+      type_mouvement,
+      quantite,
+      quantite_avant,
+      quantite_apres: quantite_avant + direction * quantite,
+      motif,
+      id_utilisateur,
+    },
+  });
+}
+exports.tracerMouvement = tracerMouvement;
+
 exports.getAll = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, id_patient, id_pharmacie, statut_commande } = req.query;
@@ -12,6 +30,18 @@ exports.getAll = async (req, res, next) => {
     if (id_patient) where.id_patient = id_patient;
     if (id_pharmacie) where.id_pharmacie = id_pharmacie;
     if (statut_commande) where.statut_commande = statut_commande;
+
+    // Cloisonnement par rôle : chacun ne voit que ses commandes
+    if (req.user.type === 'PATIENT') {
+      const patient = await prisma.patient.findUnique({ where: { id_utilisateur: req.user.id } });
+      where.id_patient = patient ? patient.id_patient : '__aucun__';
+    } else if (req.user.type === 'PHARMACIEN') {
+      const pharmacies = await prisma.pharmacie.findMany({ where: { id_responsable: req.user.id }, select: { id_pharmacie: true } });
+      where.id_pharmacie = { in: pharmacies.map(p => p.id_pharmacie) };
+    } else if (req.user.type === 'LIVREUR') {
+      const livreur = await prisma.livreur.findUnique({ where: { id_utilisateur: req.user.id } });
+      where.id_livreur = livreur ? livreur.id_livreur : '__aucun__';
+    }
 
     const [data, total] = await Promise.all([
       prisma.commande.findMany({
@@ -49,7 +79,13 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const { lignes, type_livraison, id_pharmacie, photo_ordonnance_url, ...commandeData } = req.body;
+    // Whitelist explicite : seuls ces champs sont acceptés du client.
+    // Le montant, le statut et le paiement sont calculés côté serveur.
+    const {
+      lignes, type_livraison, id_pharmacie, photo_ordonnance_url,
+      adresse_livraison, latitude_livraison, longitude_livraison, mode_paiement,
+    } = req.body;
+    const commandeData = { adresse_livraison, latitude_livraison, longitude_livraison, mode_paiement };
 
     // Récupérer le patient
     const patient = await prisma.patient.findUnique({
@@ -106,10 +142,18 @@ exports.create = async (req, res, next) => {
           },
         });
 
-        // Décrémentation du stock
+        // Décrémentation du stock + traçabilité du mouvement
         await tx.stockPharmacie.update({
           where: { id_stock: ligne.id_stock },
           data: { quantite_disponible: { decrement: ligne.quantite_commandee } }
+        });
+        await tracerMouvement(tx, {
+          id_stock: ligne.id_stock,
+          type_mouvement: 'vente',
+          quantite: ligne.quantite_commandee,
+          quantite_avant: stock.quantite_disponible,
+          motif: `Commande ${commande.id_commande}`,
+          id_utilisateur: req.user.id,
         });
       }
 
@@ -200,7 +244,30 @@ exports.createFromOrdonnance = async (req, res, next) => {
           where: { id_stock: stock.id_stock },
           data: { quantite_disponible: { decrement: ligneOrd.quantite } }
         });
+        await tracerMouvement(tx, {
+          id_stock: stock.id_stock,
+          type_mouvement: 'vente',
+          quantite: ligneOrd.quantite,
+          quantite_avant: stock.quantite_disponible,
+          motif: `Commande ${commande.id_commande} (ordonnance ${id_ordonnance})`,
+          id_utilisateur: req.user.id,
+        });
+
+        // Traitement de l'ordonnance : la ligne est servie par cette pharmacie
+        await tx.ligneOrdonnance.update({
+          where: { id_ligne: ligneOrd.id_ligne },
+          data: { servi: true },
+        });
       }
+
+      // Mise à jour du statut de l'ordonnance (servie / partiellement servie)
+      const lignesRestantes = await tx.ligneOrdonnance.count({
+        where: { id_ordonnance, servi: false },
+      });
+      await tx.ordonnance.update({
+        where: { id_ordonnance },
+        data: { statut: lignesRestantes === 0 ? 'servie' : 'partiellement_servie' },
+      });
 
       return await tx.commande.update({
         where: { id_commande: commande.id_commande },
@@ -237,7 +304,7 @@ exports.updateStatus = async (req, res, next) => {
     const data = {};
     if (statut_commande) {
       if (statut_commande === 'preparee' && commande.statut_paiement !== 'paye') {
-        throw new ForbiddenError('Impossible de préparer cette commande : le paiement NotchPay n\'est pas finalisé.');
+        throw new ForbiddenError('Impossible de préparer cette commande : le paiement n\'est pas finalisé.');
       }
       data.statut_commande = statut_commande;
     }
@@ -278,12 +345,20 @@ exports.annulerCommande = async (req, res, next) => {
       throw new ValidationError('Impossible d\'annuler une commande déjà livrée ou annulée.');
     }
 
-    // Restitution des stocks atomique
+    // Restitution des stocks atomique + traçabilité
     await prisma.$transaction(async (tx) => {
       for (const ligne of commande.lignes) {
-        await tx.stockPharmacie.update({
+        const stock = await tx.stockPharmacie.update({
           where: { id_stock: ligne.id_stock },
           data: { quantite_disponible: { increment: ligne.quantite_commandee } }
+        });
+        await tracerMouvement(tx, {
+          id_stock: ligne.id_stock,
+          type_mouvement: 'retour',
+          quantite: ligne.quantite_commandee,
+          quantite_avant: stock.quantite_disponible - ligne.quantite_commandee,
+          motif: `Annulation commande ${id}`,
+          id_utilisateur: req.user.id,
         });
       }
 
@@ -292,6 +367,8 @@ exports.annulerCommande = async (req, res, next) => {
         data: { statut_commande: 'annulee' }
       });
     });
+
+    logAction({ id_utilisateur: req.user.id, action: 'ANNULATION_COMMANDE', ressource: 'commande', id_ressource: id, req });
 
     res.json({ success: true, message: 'Commande annulée et stocks restitués avec succès.' });
   } catch (error) {
@@ -392,6 +469,21 @@ exports.validerLivraison = async (req, res, next) => {
 
     if (!commande) throw new NotFoundError('Commande introuvable');
     if (commande.statut_commande === 'livree') throw new ValidationError('La commande est déjà livrée.');
+
+    // Seul le livreur assigné à CETTE commande (ou le patient destinataire, ou un admin)
+    // peut la valider — un autre livreur ne doit pas pouvoir clôturer la course.
+    if (req.user.type === 'LIVREUR') {
+      const livreurConnecte = await prisma.livreur.findUnique({ where: { id_utilisateur: req.user.id } });
+      if (!livreurConnecte || commande.id_livreur !== livreurConnecte.id_livreur) {
+        throw new ForbiddenError('Vous n\'êtes pas le livreur assigné à cette commande.');
+      }
+    } else if (req.user.type === 'PATIENT') {
+      const patientConnecte = await prisma.patient.findUnique({ where: { id_utilisateur: req.user.id } });
+      if (!patientConnecte || commande.id_patient !== patientConnecte.id_patient) {
+        throw new ForbiddenError('Cette commande ne vous appartient pas.');
+      }
+    }
+
     if (commande.code_validation_livraison !== code_validation) {
       throw new ValidationError('Code de validation incorrect.');
     }
@@ -420,6 +512,103 @@ exports.validerLivraison = async (req, res, next) => {
     });
 
     res.json({ success: true, message: 'Livraison validée avec succès.', data: updatedCommande });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Attribution automatique d'un livreur : choisit le livreur vérifié et disponible
+ * le plus proche de la pharmacie (distance de Haversine).
+ * Déclenchée par la pharmacie ou un admin quand la commande est "preparee".
+ */
+exports.attribuerLivreurAuto = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const commande = await prisma.commande.findUnique({
+      where: { id_commande: id },
+      include: {
+        pharmacie: true,
+        patient: { include: { utilisateur: true } },
+      },
+    });
+
+    if (!commande) throw new NotFoundError('Commande');
+    if (req.user.type !== 'ADMIN' && commande.pharmacie.id_responsable !== req.user.id) {
+      throw new ForbiddenError('Seule la pharmacie en charge peut attribuer un livreur.');
+    }
+    if (commande.statut_commande !== 'preparee') throw new ValidationError('La commande doit être préparée avant l\'attribution.');
+    if (commande.id_livreur) throw new ConflictError('Un livreur est déjà assigné à cette commande.');
+    if (commande.type_livraison !== 'livraison_domicile') throw new ValidationError('Cette commande est en retrait en pharmacie.');
+
+    const livreursDisponibles = await prisma.livreur.findMany({
+      where: {
+        disponible: true,
+        statut_verification: 'verifie',
+        utilisateur: { statut_compte: 'actif' },
+      },
+    });
+
+    if (livreursDisponibles.length === 0) {
+      return res.status(404).json({ success: false, message: 'Aucun livreur vérifié et disponible actuellement.' });
+    }
+
+    // Distance de Haversine (km) entre la pharmacie et la dernière position connue du livreur
+    const haversine = (lat1, lon1, lat2, lon2) => {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2
+        + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(a));
+    };
+
+    const classes = livreursDisponibles
+      .map(l => ({
+        livreur: l,
+        distance_km: (l.latitude_actuelle != null && l.longitude_actuelle != null)
+          ? haversine(commande.pharmacie.latitude, commande.pharmacie.longitude, l.latitude_actuelle, l.longitude_actuelle)
+          : Number.MAX_SAFE_INTEGER, // sans position connue → dernier recours
+      }))
+      .sort((a, b) => a.distance_km - b.distance_km);
+
+    const choisi = classes[0].livreur;
+    const pinStr = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const updateLock = await prisma.commande.updateMany({
+      where: { id_commande: id, id_livreur: null, statut_commande: 'preparee' },
+      data: {
+        id_livreur: choisi.id_livreur,
+        statut_commande: 'en_livraison',
+        code_validation_livraison: pinStr,
+      },
+    });
+
+    if (updateLock.count === 0) {
+      throw new ConflictError('La commande a changé d\'état pendant l\'attribution. Réessayez.');
+    }
+
+    if (commande.patient?.utilisateur?.email) {
+      sendPinLivraisonEmail(
+        commande.patient.utilisateur.email,
+        `${commande.patient.utilisateur.prenom} ${commande.patient.utilisateur.nom}`,
+        pinStr,
+        commande.id_commande
+      );
+    }
+
+    logAction({ id_utilisateur: req.user.id, action: 'ATTRIBUTION_AUTO_LIVREUR', ressource: 'commande', id_ressource: id, details: { id_livreur: choisi.id_livreur }, req });
+
+    res.json({
+      success: true,
+      message: 'Livreur attribué automatiquement (le plus proche de la pharmacie).',
+      data: {
+        id_commande: id,
+        id_livreur: choisi.id_livreur,
+        distance_km: classes[0].distance_km === Number.MAX_SAFE_INTEGER ? null : Number(classes[0].distance_km.toFixed(2)),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -456,8 +645,27 @@ exports.evaluerLivraison = async (req, res, next) => {
       }
     });
 
-    // Mettre à jour la moyenne de la pharmacie et du livreur (si fourni)
-    // ... Logique asynchrone non-bloquante ou triggers bd pour la moyenne réelle
+    // Recalcul des notes moyennes (pharmacie et livreur)
+    if (note_pharmacie != null) {
+      const aggPharma = await prisma.commande.aggregate({
+        where: { id_pharmacie: commande.id_pharmacie, note_pharmacie: { not: null } },
+        _avg: { note_pharmacie: true },
+      });
+      await prisma.pharmacie.update({
+        where: { id_pharmacie: commande.id_pharmacie },
+        data: { note_moyenne: aggPharma._avg.note_pharmacie || 0 },
+      });
+    }
+    if (note_livraison != null && commande.id_livreur) {
+      const aggLivreur = await prisma.commande.aggregate({
+        where: { id_livreur: commande.id_livreur, note_livraison: { not: null } },
+        _avg: { note_livraison: true },
+      });
+      await prisma.livreur.update({
+        where: { id_livreur: commande.id_livreur },
+        data: { note_moyenne: aggLivreur._avg.note_livraison || 0 },
+      });
+    }
 
     res.json({ success: true, message: 'Évaluation enregistrée.', data: updated });
   } catch (error) {
@@ -465,118 +673,134 @@ exports.evaluerLivraison = async (req, res, next) => {
   }
 };
 
+/**
+ * Initie un paiement Mobile Money via Fapshi (Direct Pay) : une demande de
+ * paiement est poussée directement sur le téléphone du client. Le statut final
+ * est ensuite obtenu par polling (/payment-status) ou par webhook.
+ */
 exports.initiatePayment = async (req, res, next) => {
   try {
+    if (!fapshiService.isConfigured()) {
+      return res.status(503).json({ success: false, message: 'Le module de paiement Fapshi n\'est pas configuré.' });
+    }
+
+    const { phone, medium } = req.body;
+    if (!phone) throw new ValidationError('Le numéro de téléphone Mobile Money est requis.');
+
     const commande = await prisma.commande.findUnique({
       where: { id_commande: req.params.id },
       include: { patient: { include: { utilisateur: true } } }
     });
 
     if (!commande) throw new NotFoundError('Commande');
-    
-    // Vérifier si cette commande est déjà payée
+
+    // Seul le patient propriétaire peut payer sa commande
+    if (req.user.type === 'PATIENT' && commande.patient.id_utilisateur !== req.user.id) {
+      throw new ForbiddenError('Cette commande ne vous appartient pas.');
+    }
+
     if (commande.statut_paiement === 'paye') {
       return res.status(400).json({ success: false, message: 'Cette commande est déjà payée.' });
     }
 
-    const payload = {
+    const u = commande.patient.utilisateur;
+    const result = await fapshiService.directPay({
       amount: Number(commande.montant_total_fcfa),
-      currency: "XAF",
-      email: commande.patient.utilisateur.email || 'client@exemple.com',
-      phone: commande.patient.utilisateur.telephone || undefined,
-      description: `Paiement commande smarthealth #${commande.id_commande.substring(0,8)}`,
-      reference: commande.id_commande,
-      // URL temporaire, en attente du frontend
-      callback: "http://localhost:3000/api/commandes/callback/verify", 
-    };
+      phone,
+      medium,
+      name: `${u.prenom} ${u.nom}`,
+      email: u.email || undefined,
+      externalId: commande.id_commande,
+      message: `Commande SmartHealth #${commande.id_commande.substring(0, 8)}`,
+    });
 
-    const response = await notchpayClient.post('/payments/initialize', payload);
-    const { transaction, authorization_url } = response.data;
+    await prisma.commande.update({
+      where: { id_commande: commande.id_commande },
+      data: { reference_paiement: result.transId, mode_paiement: 'mobile_money' },
+    });
+
+    logAction({ id_utilisateur: req.user.id, action: 'INITIATION_PAIEMENT', ressource: 'commande', id_ressource: commande.id_commande, details: { transId: result.transId }, req });
 
     res.json({
       success: true,
-      message: 'Paiement initialisé avec succès',
-      data: {
-        authorization_url,
-        reference: transaction.reference
-      }
+      message: 'Paiement initié. Validez la demande reçue sur votre téléphone.',
+      data: { transId: result.transId, statut_paiement: 'en_attente' },
     });
-
   } catch (error) {
     if (error.response?.data) {
-      console.error('Erreur API NotchPay:', error.response.data);
+      console.error('Erreur API Fapshi (direct-pay):', error.response.data);
+      return next(new ValidationError(error.response.data.message || 'Échec de l\'initiation du paiement.'));
     }
     next(error);
   }
 };
 
-exports.verifyPaymentCallback = async (req, res, next) => {
+/**
+ * Vérifie l'état d'un paiement Fapshi pour une commande (polling depuis le client)
+ * et synchronise le statut de paiement en base.
+ */
+exports.getPaymentStatus = async (req, res, next) => {
   try {
-    const { reference } = req.query;
-    if (!reference) return res.status(400).json({ success: false, message: 'Référence manquante' });
-
-    const response = await notchpayClient.get(`/payments/${reference}`);
-    const { transaction } = response.data;
-
-    // Mise à jour de la base de données
-    const statut_paiement = transaction.status === 'complete' ? 'paye' : 
-                            (transaction.status === 'failed' || transaction.status === 'canceled' ? 'echoue' : 'en_attente');
-
-    await prisma.commande.update({
-      where: { id_commande: reference },
-      data: { statut_paiement }
+    const commande = await prisma.commande.findUnique({
+      where: { id_commande: req.params.id },
     });
+    if (!commande) throw new NotFoundError('Commande');
 
-    if (transaction.status === 'complete') {
-      // Redirection après succès (FRONTEND)
-      res.redirect(`http://localhost:3000/paiement-succes?ref=${reference}`);
-    } else {
-      res.redirect(`http://localhost:3000/paiement-echec?ref=${reference}&status=${transaction.status}`);
+    if (req.user.type === 'PATIENT') {
+      const patient = await prisma.patient.findUnique({ where: { id_utilisateur: req.user.id } });
+      if (!patient || commande.id_patient !== patient.id_patient) {
+        throw new ForbiddenError('Cette commande ne vous appartient pas.');
+      }
     }
+
+    if (!commande.reference_paiement) {
+      return res.json({ success: true, data: { statut_paiement: commande.statut_paiement, status: null } });
+    }
+
+    const status = await fapshiService.getStatus(commande.reference_paiement);
+    const statut_paiement = fapshiService.mapStatut(status.status);
+
+    if (statut_paiement !== commande.statut_paiement) {
+      await prisma.commande.update({
+        where: { id_commande: commande.id_commande },
+        data: { statut_paiement },
+      });
+    }
+
+    res.json({ success: true, data: { statut_paiement, status: status.status } });
   } catch (error) {
     if (error.response?.data) {
-      console.error('Erreur vérification NotchPay:', error.response.data);
+      return next(new ValidationError(error.response.data.message || 'Impossible de vérifier le paiement.'));
     }
     next(error);
   }
 };
 
-exports.webhookNotchPay = async (req, res) => {
+/**
+ * Webhook Fapshi : reçu quand un paiement passe à SUCCESSFUL/FAILED/EXPIRED.
+ * Le payload reprend la structure de /payment-status. Authentifié par l'en-tête x-wh-secret.
+ */
+exports.webhookFapshi = async (req, res) => {
   try {
-    const signature = req.headers['x-notch-signature'];
-    const payload = req.rawBody;
-
-    if (process.env.NOTCHPAY_HASH_KEY && payload && signature) {
-      const expectedSig = crypto
-        .createHmac('sha256', process.env.NOTCHPAY_HASH_KEY)
-        .update(payload).digest('hex');
-
-      if (signature !== expectedSig) {
-        return res.status(401).send('Signature invalide');
-      }
+    const secret = process.env.FAPSHI_WEBHOOK_SECRET;
+    if (secret && req.headers['x-wh-secret'] !== secret) {
+      return res.status(401).send('Signature invalide');
     }
 
     const event = req.body;
-    
-    if (event && event.type && event.data && event.data.reference) {
-      const { reference } = event.data;
-      if (event.type === 'payment.complete') {
-        await prisma.commande.update({
-          where: { id_commande: reference },
-          data: { statut_paiement: 'paye' }
-        });
-      } else if (event.type === 'payment.failed' || event.type === 'payment.canceled') {
-        await prisma.commande.update({
-          where: { id_commande: reference },
-          data: { statut_paiement: 'echoue' }
-        });
-      }
+    if (event && event.transId && event.status) {
+      const statut_paiement = fapshiService.mapStatut(event.status);
+      // externalId = id_commande (prioritaire), sinon ciblage par reference_paiement
+      const where = event.externalId
+        ? { id_commande: event.externalId }
+        : { reference_paiement: event.transId };
+      await prisma.commande.updateMany({ where, data: { statut_paiement } });
     }
-    
+
     res.status(200).send('OK');
   } catch (error) {
-    console.error('Erreur webhook NotchPay:', error);
-    res.status(500).send('Erreur interne webhooks');
+    console.error('Erreur webhook Fapshi:', error);
+    res.status(500).send('Erreur interne webhook');
   }
 };
 

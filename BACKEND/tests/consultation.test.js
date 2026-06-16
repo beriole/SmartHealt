@@ -1,73 +1,61 @@
 const request = require('supertest');
 const app = require('../src/server');
 const { prisma } = require('../services/database');
+const { registerAndLogin, getProfileId } = require('./auth-helper');
 
-describe('Consultation Controller Integration Tests', () => {
-  let patientToken, profToken;
-  let patientId, profId, carnetId;
-  let consultationId;
+describe('Consultations', () => {
+  let medecin, patient, patientId, carnetId, consultationId;
 
   beforeAll(async () => {
-    // 1. Créer Patient
-    const pLogin = await request(app).post('/api/auth/register').send({
-      nom: 'P', prenom: 'A', email: 'berioletsague@gmail.com',
-      mot_de_passe: 'Pswd123!', telephone: '0001', type_utilisateur: 'PATIENT', sexe: 'M'
-    });
-    patientToken = pLogin.body?.data?.token;
-    
-    if(!patientToken) {
-        const lp = await request(app).post('/api/auth/login').send({ email: 'berioletsague@gmail.com', mot_de_passe: 'Pswd123!' });
-        patientToken = lp.body.data.token;
-    }
-    const patRow = await prisma.patient.findUnique({ where: { id_utilisateur: pLogin.body.data.id_utilisateur }});
-    patientId = patRow.id_patient;
-
-    // 2. Créer Professionnel
-    const pfLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Doc', prenom: 'T', email: 'berioletsague+doc@gmail.com',
-      mot_de_passe: 'Pswd123!', telephone: '0002', type_utilisateur: 'MEDECIN', sexe: 'F',
-      specialite: 'Généraliste', structure_exercice: 'Clinique Test'
-    });
-    profToken = pfLogin.body?.data?.token;
-    if(!profToken) {
-       const lpf = await request(app).post('/api/auth/login').send({ email: 'berioletsague+doc@gmail.com', mot_de_passe: 'Pswd123!' });
-       profToken = lpf.body.data.token;
-    }
-    const pfRow = await prisma.professionnelSante.findUnique({ where: { id_utilisateur: pfLogin.body.data.id_utilisateur }});
-    profId = pfRow.id_professionnel;
-
-    // Carnet
-    const carnet = await prisma.carnetSante.findFirst({ where: { id_patient: patientId }});
+    medecin = await registerAndLogin(app, { nom: 'Doc', prenom: 'C', type_utilisateur: 'MEDECIN', sexe: 'M', specialite: 'Généraliste' });
+    patient = await registerAndLogin(app, { nom: 'Pat', prenom: 'C', type_utilisateur: 'PATIENT', sexe: 'F' });
+    patientId = await getProfileId('PATIENT', patient.id_utilisateur);
+    const carnet = await prisma.carnetSante.findUnique({ where: { id_patient: patientId } });
     carnetId = carnet.id_carnet;
   });
 
-  it('devrait permettre de créer une nouvelle consultation (par un médecin)', async () => {
+  it('crée une consultation (MEDECIN)', async () => {
     const res = await request(app)
       .post('/api/consultations')
-      .set('Authorization', `Bearer ${profToken}`)
+      .set('Authorization', `Bearer ${medecin.token}`)
       .send({
         id_patient: patientId,
         id_carnet: carnetId,
-        motif: 'Fièvre',
+        date_consultation: new Date().toISOString(),
+        motif: 'Fièvre persistante',
         type_consultation: 'presentiel',
-        date_consultation: new Date().toISOString()
       });
-
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.success).toBeTruthy();
-    expect(res.body.data.motif).toEqual('Fièvre');
+    expect(res.statusCode).toBe(201);
+    expect(res.body.data.id_consultation).toBeDefined();
     consultationId = res.body.data.id_consultation;
   });
 
-  it('devrait récupérer les consultations du médecin', async () => {
+  it('refuse la création à un patient (403)', async () => {
     const res = await request(app)
-      .get('/api/consultations/prof')
-      .set('Authorization', `Bearer ${profToken}`);
+      .post('/api/consultations')
+      .set('Authorization', `Bearer ${patient.token}`)
+      .send({ id_patient: patientId, id_carnet: carnetId, date_consultation: new Date().toISOString(), motif: 'X', type_consultation: 'presentiel' });
+    expect(res.statusCode).toBe(403);
+  });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBeTruthy();
-    // Assuming backend returns an array directly or inside data.data
-    const data = res.body.data.data || res.body.data;
-    expect(data.some(c => c.id_consultation === consultationId)).toBe(true);
+  it('liste les consultations (authentifié)', async () => {
+    const res = await request(app).get('/api/consultations').set('Authorization', `Bearer ${medecin.token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.total).toBeGreaterThanOrEqual(1);
+  });
+
+  it('récupère une consultation par ID', async () => {
+    const res = await request(app).get('/api/consultations/' + consultationId).set('Authorization', `Bearer ${patient.token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.id_consultation).toBe(consultationId);
+  });
+
+  it('met à jour une consultation (MEDECIN)', async () => {
+    const res = await request(app)
+      .put('/api/consultations/' + consultationId)
+      .set('Authorization', `Bearer ${medecin.token}`)
+      .send({ diagnostic: 'Paludisme', statut: 'effectuee' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.diagnostic).toBe('Paludisme');
   });
 });

@@ -19,7 +19,7 @@ exports.getAll = async (req, res, next) => {
       prisma.medicament.findMany({
         where,
         skip,
-        take: limit,
+        take: Number(limit),
         orderBy: { nom_commercial: 'asc' },
       }),
       prisma.medicament.count({ where }),

@@ -29,10 +29,10 @@ const utilisateurValidation = {
     body('email').isEmail().normalizeEmail().withMessage('Email invalide'),
     body('telephone').trim().notEmpty().withMessage('Le téléphone est requis'),
     body('mot_de_passe').isLength({ min: 8 }).withMessage('Mot de passe min 8 caractères'),
-    body('type_utilisateur').isIn(['PATIENT', 'MEDECIN', 'PHARMACIEN', 'INFIRMIER', 'TUTEUR', 'ADMIN']).withMessage('Type invalide'),
+    body('type_utilisateur').isIn(['PATIENT', 'MEDECIN', 'PHARMACIEN', 'INFIRMIER', 'LIVREUR', 'TUTEUR', 'ADMIN']).withMessage('Type invalide'),
     body('sexe').isIn(['M', 'F', 'AUTRE']).withMessage('Sexe invalide'),
-    // Validation conditionnelle pour les médecins
-    body('numero_ordre').if(body('type_utilisateur').equals('MEDECIN')).trim().notEmpty().withMessage('Le numéro d\'ordre est requis pour les médecins'),
+    // Validation conditionnelle pour les professionnels de santé (MEDECIN, INFIRMIER)
+    body('numero_ordre').if(body('type_utilisateur').isIn(['MEDECIN', 'INFIRMIER'])).trim().notEmpty().withMessage('Le numéro d\'ordre est requis pour les professionnels de santé'),
     body('specialite').if(body('type_utilisateur').equals('MEDECIN')).trim().notEmpty().withMessage('La spécialité est requise pour les médecins'),
   ],
   login: [
@@ -62,7 +62,7 @@ const medicamentValidation = {
 const consultationValidation = {
   create: [
     body('id_patient').isUUID().withMessage('ID patient invalide'),
-    body('id_professionnel').isUUID().withMessage('ID professionnel invalide'),
+    body('id_carnet').optional().isUUID().withMessage('ID carnet invalide'),
     body('date_consultation').isISO8601().withMessage('Date invalide'),
     body('motif').trim().notEmpty().withMessage('Motif requis'),
     body('type_consultation').isIn(['presentiel', 'teleconsultation', 'domicile']).withMessage('Type invalide'),
@@ -81,11 +81,14 @@ const pharmacieValidation = {
 };
 
 const commandeValidation = {
+  // Le patient est déduit du token et le montant est calculé côté serveur :
+  // ils ne doivent pas être acceptés depuis le client.
   create: [
-    body('id_patient').isUUID().withMessage('ID patient invalide'),
     body('id_pharmacie').isUUID().withMessage('ID pharmacie invalide'),
     body('type_livraison').isIn(['retrait_en_pharmacie', 'livraison_domicile']).withMessage('Type livraison invalide'),
-    body('montant_total_fcfa').isFloat({ min: 0 }).withMessage('Montant invalide'),
+    body('lignes').isArray({ min: 1 }).withMessage('Au moins une ligne de commande est requise'),
+    body('lignes.*.id_stock').isUUID().withMessage('ID stock invalide'),
+    body('lignes.*.quantite_commandee').isInt({ min: 1 }).withMessage('Quantité invalide'),
   ],
 };
 

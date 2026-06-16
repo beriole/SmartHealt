@@ -246,8 +246,75 @@ const sendPinLivraisonEmail = async (email, nomPatient, codePin, commandeId) => 
   }
 };
 
+const sendPasswordResetEmail = async (email, token, nom_utilisateur) => {
+  try {
+    const transporter = getTransporter();
+
+    const resetUrl = `${process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 3000}`}/api/auth/reset-password/${token}`;
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Réinitialisation de votre mot de passe - SmartHealth',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Réinitialisation de mot de passe</h2>
+          <p>Bonjour ${nom_utilisateur},</p>
+          <p>Vous avez demandé la réinitialisation de votre mot de passe. Utilisez le lien ci-dessous (valide 1 heure) :</p>
+          <p style="word-break: break-all;"><a href="${resetUrl}">${resetUrl}</a></p>
+          <p>Envoyez votre nouveau mot de passe en POST sur ce lien avec le champ <code>mot_de_passe</code>.</p>
+          <hr style="border-top: 1px solid #ddd;" />
+          <p style="font-size: 12px; color: #888;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email : votre mot de passe restera inchangé.</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Email de réinitialisation envoyé à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi de l'email de réinitialisation à ${email}: ${error.message}`);
+    throw new Error(`Erreur email: ${error.message}`);
+  }
+};
+
+const sendRappelEmail = async (email, nomPatient, nomMedicament, heurePrise) => {
+  try {
+    const transporter = getTransporter();
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_SENDER_NAME || 'SmartHealth'}" <${process.env.EMAIL}>`,
+      to: email,
+      subject: '⏰ Rappel de Médicament - SmartHealth',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #007bff;">Rappel de traitement</h2>
+          <p>Bonjour <strong>${nomPatient}</strong>,</p>
+          <p>Il est bientôt l'heure de prendre votre médicament :</p>
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
+            <h3 style="margin: 0;">${nomMedicament}</h3>
+            <p style="margin: 10px 0 0 0;"><strong>Heure prévue :</strong> ${heurePrise}</p>
+          </div>
+          <p>N'oubliez pas de valider la prise dans l'application SmartHealth.</p>
+          <hr style="border-top: 1px solid #ddd; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">SmartHealth - Votre santé, notre priorité.</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Rappel de prise envoyé à ${email} : ${info.messageId}`);
+    return true;
+  } catch (error) {
+    logger.error(`Erreur lors de l'envoi du rappel à ${email}: ${error.message}`);
+    return false;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
+  sendPasswordResetEmail,
+  sendRappelEmail,
   sendOrdonnanceNotification,
   sendCommandeNotification,
   sendB2bValidationEmail,

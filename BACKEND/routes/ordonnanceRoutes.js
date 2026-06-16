@@ -10,4 +10,7 @@ router.get('/:id', authenticate, ordonnanceController.getById);
 router.post('/', authenticate, authorize('MEDECIN', 'ADMIN'), ordonnanceController.create);
 router.put('/:id', authenticate, authorize('MEDECIN', 'ADMIN'), ordonnanceController.update);
 
+// Traitement par le pharmacien : servir (totalement/partiellement) ou refuser
+router.put('/:id/traiter', authenticate, authorize('PHARMACIEN', 'ADMIN'), ordonnanceController.traiter);
+
 module.exports = router;

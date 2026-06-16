@@ -48,8 +48,17 @@ async function checkPatientOwnership(req, res, next) {
   }
 }
 
+// Restreint une route /:id au propriétaire du compte ou à un ADMIN
+function checkSelfOrAdmin(req, res, next) {
+  if (req.user.type !== 'ADMIN' && req.params.id !== req.user.id) {
+    return next(new ForbiddenError('Vous ne pouvez modifier que votre propre compte'));
+  }
+  next();
+}
+
 module.exports = {
   authenticate,
   authorize,
   checkPatientOwnership,
+  checkSelfOrAdmin,
 };

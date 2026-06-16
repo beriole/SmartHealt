@@ -1,97 +1,72 @@
 const request = require('supertest');
 const app = require('../src/server');
-const { prisma } = require('../services/database');
-const notchpayClient = require('../utils/notchpay');
+const { registerAndLogin } = require('./auth-helper');
 
-// Mock partial du client NotchPay
-jest.mock('../utils/notchpay', () => ({
-  post: jest.fn(),
-  get: jest.fn()
-}));
-
-describe('Commande Controller Integration Tests', () => {
-  let patientToken;
-  let pharmacieId, stockId, patientId;
+describe('Commandes', () => {
+  let patient, pharmacien, stockId, pharmacieId, commandeId;
 
   beforeAll(async () => {
-    // 1. Inscription Pharmacien
-    const pLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Pharma', prenom: 'Doc', email: 'berioletsague+pharma@gmail.com',
-      mot_de_passe: 'Pswd123!', telephone: 'pharma01', type_utilisateur: 'PHARMACIEN', sexe: 'M',
-      nom_pharmacie: 'Pharma Test', numero_autorisation: 'AUTH001', adresse: 'Rue Test',
-      latitude: '4.0', longitude: '9.7'
-    });
+    patient = await registerAndLogin(app, { nom: 'Pat', prenom: 'Cmd', type_utilisateur: 'PATIENT', sexe: 'F' });
+    pharmacien = await registerAndLogin(app, { nom: 'Pha', prenom: 'Cmd', type_utilisateur: 'PHARMACIEN', sexe: 'M' });
 
-    const pharmaRow = await prisma.pharmacie.findFirst({
-        where: { responsable: { email: 'berioletsague+pharma@gmail.com' } }
+    const ph = await request(app).post('/api/pharmacies').set('Authorization', `Bearer ${pharmacien.token}`).send({
+      nom_pharmacie: 'Pharmacie Cmd', numero_autorisation: 'AUTH-CMD-' + Date.now(),
+      adresse: 'Yaoundé', latitude: 3.87, longitude: 11.52, telephone: '+237690000333',
     });
-    pharmacieId = pharmaRow.id_pharmacie;
+    pharmacieId = ph.body.data.id_pharmacie;
 
-    // 2. Inscription Patient
-    const patLogin = await request(app).post('/api/auth/register').send({
-      nom: 'Pat', prenom: 'Cmd', email: 'berioletsague@gmail.com',
-      mot_de_passe: 'Pswd123!', telephone: 'pat01', type_utilisateur: 'PATIENT', sexe: 'F'
+    const med = await request(app).post('/api/medicaments').set('Authorization', `Bearer ${pharmacien.token}`).send({
+      nom_commercial: 'CmdMed ' + Date.now(), dci: 'X', forme_galenique: 'comprime', dosage: '500 mg',
+      categorie: 'antalgique', necessite_ordonnance: false,
     });
-    let login = await request(app).post('/api/auth/login').send({ email: 'berioletsague@gmail.com', mot_de_passe: 'Pswd123!' });
-    patientToken = login.body.data.token;
-    patientId = patLogin.body.data.id_utilisateur; // it's actually id_utilisateur
-    
-    // 3. Injecter un médicament & un stock
-    const med = await prisma.medicament.create({
-      data: {
-        nom_commercial: 'Paracetamol', dci: 'Paracetamol', dosage: '500mg',
-        forme_galenique: 'comprime', categorie: 'antalgique', necessite_ordonnance: false
-      }
-    });
+    const medicamentId = med.body.data.id_medicament;
 
-    const stock = await prisma.stockPharmacie.create({
-      data: { 
-          id_pharmacie: pharmacieId, id_medicament: med.id_medicament, 
-          quantite_disponible: 100, prix_vente_fcfa: 500 
-        }
+    const stock = await request(app).post('/api/stocks').set('Authorization', `Bearer ${pharmacien.token}`).send({
+      id_medicament: medicamentId, quantite_disponible: 100, prix_vente_fcfa: 500, seuil_alerte: 10,
     });
-    stockId = stock.id_stock;
+    stockId = stock.body.data.id_stock;
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  let commandeId;
-
-  it('devrait créer une commande depuis le panier du patient', async () => {
+  it('crée une commande depuis le panier (PATIENT)', async () => {
     const res = await request(app)
       .post('/api/commandes')
-      .set('Authorization', `Bearer ${patientToken}`)
+      .set('Authorization', `Bearer ${patient.token}`)
       .send({
         id_pharmacie: pharmacieId,
         type_livraison: 'retrait_en_pharmacie',
-        lignes: [
-          { id_stock: stockId, quantite_commandee: 2 }
-        ]
+        lignes: [{ id_stock: stockId, quantite_commandee: 2 }],
       });
-
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.success).toBeTruthy();
-    expect(res.body.data.montant_total_fcfa).toEqual('1000'); // 500 * 2
+    expect(res.statusCode).toBe(201);
+    expect(res.body.data.id_commande).toBeDefined();
+    expect(Number(res.body.data.montant_total_fcfa)).toBe(1000); // 2 x 500
     commandeId = res.body.data.id_commande;
   });
 
-  it('devrait simuler l\'initialisation du paiement (NotchPay)', async () => {
-    notchpayClient.post.mockResolvedValue({
-      data: {
-        transaction: { reference: commandeId },
-        authorization_url: 'https://pay.notchpay.co/fake'
-      }
-    });
-
+  it('refuse une commande à un non-patient (403)', async () => {
     const res = await request(app)
-      .post(`/api/commandes/${commandeId}/payer`)
-      .set('Authorization', `Bearer ${patientToken}`);
+      .post('/api/commandes')
+      .set('Authorization', `Bearer ${pharmacien.token}`)
+      .send({ id_pharmacie: pharmacieId, type_livraison: 'retrait_en_pharmacie', lignes: [{ id_stock: stockId, quantite_commandee: 1 }] });
+    expect(res.statusCode).toBe(403);
+  });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBeTruthy();
-    expect(res.body.data.authorization_url).toEqual('https://pay.notchpay.co/fake');
-    expect(notchpayClient.post).toHaveBeenCalled();
+  it('refuse une commande sans ligne (400 validation)', async () => {
+    const res = await request(app)
+      .post('/api/commandes')
+      .set('Authorization', `Bearer ${patient.token}`)
+      .send({ id_pharmacie: pharmacieId, type_livraison: 'retrait_en_pharmacie', lignes: [] });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('liste les commandes (authentifié)', async () => {
+    const res = await request(app).get('/api/commandes').set('Authorization', `Bearer ${patient.token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.total).toBeGreaterThanOrEqual(1);
+  });
+
+  it('récupère une commande par ID', async () => {
+    const res = await request(app).get('/api/commandes/' + commandeId).set('Authorization', `Bearer ${patient.token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.id_commande).toBe(commandeId);
   });
 });

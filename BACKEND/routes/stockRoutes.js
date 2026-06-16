@@ -8,6 +8,8 @@ router.get('/search', authenticate, stockController.searchGlobalStock);
 
 // Gestion de l'inventaire par le pharmacien
 router.get('/my-stocks', authenticate, authorize('PHARMACIEN'), stockController.getMyStocks);
+router.get('/alertes', authenticate, authorize('PHARMACIEN', 'ADMIN'), stockController.getAlertes);
+router.get('/:id/mouvements', authenticate, authorize('PHARMACIEN', 'ADMIN'), stockController.getMouvements);
 router.post('/', authenticate, authorize('PHARMACIEN', 'ADMIN'), stockController.createStock);
 router.put('/:id', authenticate, authorize('PHARMACIEN', 'ADMIN'), stockController.updateStock);
 router.delete('/:id', authenticate, authorize('PHARMACIEN', 'ADMIN'), stockController.deleteStock);

@@ -1,0 +1,12 @@
+# Modèles entraînés (régénérables via training/)
+models/*.pkl
+models/*.joblib
+
+# Environnement virtuel Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Variables d'environnement
+.env

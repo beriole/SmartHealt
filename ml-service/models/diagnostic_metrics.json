@@ -1,0 +1,338 @@
+{
+  "version": "randomforest-diagnostic-v1",
+  "accuracy": 0.9363,
+  "f1_pondere": 0.9362,
+  "nb_echantillons": 8400,
+  "nb_maladies": 14,
+  "nb_symptomes": 61,
+  "rapport_par_classe": {
+    "Amibiase / Parasitose intestinale": {
+      "precision": 0.849624060150376,
+      "recall": 0.9416666666666667,
+      "f1-score": 0.8932806324110671,
+      "support": 120.0
+    },
+    "Angine": {
+      "precision": 0.9166666666666666,
+      "recall": 0.9166666666666666,
+      "f1-score": 0.9166666666666666,
+      "support": 120.0
+    },
+    "COVID-19": {
+      "precision": 0.8828125,
+      "recall": 0.9416666666666667,
+      "f1-score": 0.9112903225806451,
+      "support": 120.0
+    },
+    "Conjonctivite": {
+      "precision": 0.9916666666666667,
+      "recall": 0.9916666666666667,
+      "f1-score": 0.9916666666666667,
+      "support": 120.0
+    },
+    "Crise drépanocytaire": {
+      "precision": 0.9672131147540983,
+      "recall": 0.9833333333333333,
+      "f1-score": 0.9752066115702479,
+      "support": 120.0
+    },
+    "Diabète (décompensation)": {
+      "precision": 0.9833333333333333,
+      "recall": 0.9833333333333333,
+      "f1-score": 0.9833333333333333,
+      "support": 120.0
+    },
+    "Fièvre typhoïde": {
+      "precision": 0.8512396694214877,
+      "recall": 0.8583333333333333,
+      "f1-score": 0.8547717842323651,
+      "support": 120.0
+    },
+    "Gastro-entérite": {
+      "precision": 0.944954128440367,
+      "recall": 0.8583333333333333,
+      "f1-score": 0.8995633187772926,
+      "support": 120.0
+    },
+    "Hypertension artérielle": {
+      "precision": 0.957983193277311,
+      "recall": 0.95,
+      "f1-score": 0.9539748953974896,
+      "support": 120.0
+    },
+    "Infection urinaire": {
+      "precision": 0.9754098360655737,
+      "recall": 0.9916666666666667,
+      "f1-score": 0.9834710743801653,
+      "support": 120.0
+    },
+    "Infection virale (grippe)": {
+      "precision": 0.8918918918918919,
+      "recall": 0.825,
+      "f1-score": 0.8571428571428571,
+      "support": 120.0
+    },
+    "Méningite": {
+      "precision": 0.9830508474576272,
+      "recall": 0.9666666666666667,
+      "f1-score": 0.9747899159663865,
+      "support": 120.0
+    },
+    "Paludisme": {
+      "precision": 0.9745762711864406,
+      "recall": 0.9583333333333334,
+      "f1-score": 0.9663865546218487,
+      "support": 120.0
+    },
+    "Pneumonie": {
+      "precision": 0.9495798319327731,
+      "recall": 0.9416666666666667,
+      "f1-score": 0.9456066945606695,
+      "support": 120.0
+    }
+  },
+  "matrice_confusion": {
+    "labels": [
+      "Amibiase / Parasitose intestinale",
+      "Angine",
+      "COVID-19",
+      "Conjonctivite",
+      "Crise drépanocytaire",
+      "Diabète (décompensation)",
+      "Fièvre typhoïde",
+      "Gastro-entérite",
+      "Hypertension artérielle",
+      "Infection urinaire",
+      "Infection virale (grippe)",
+      "Méningite",
+      "Paludisme",
+      "Pneumonie"
+    ],
+    "matrice": [
+      [
+        113,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        110,
+        4,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        113,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        119,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        0,
+        118,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        118,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        2,
+        2,
+        0,
+        1,
+        0,
+        103,
+        2,
+        1,
+        0,
+        2,
+        1,
+        1,
+        1
+      ],
+      [
+        14,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        103,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        2,
+        0,
+        2,
+        0,
+        114,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        119,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        4,
+        6,
+        0,
+        0,
+        0,
+        6,
+        0,
+        2,
+        0,
+        99,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        1,
+        0,
+        0,
+        116,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        2,
+        0,
+        115,
+        1
+      ],
+      [
+        0,
+        2,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        113
+      ]
+    ]
+  }
+}

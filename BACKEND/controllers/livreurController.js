@@ -68,6 +68,85 @@ exports.verifyDocument = async (req, res, next) => {
   }
 };
 
+/**
+ * Mise à jour de la position GPS du livreur (suivi temps réel).
+ */
+exports.updatePosition = async (req, res, next) => {
+  try {
+    const { latitude, longitude } = req.body;
+    if (latitude == null || longitude == null) {
+      throw new ValidationError('latitude et longitude sont requis');
+    }
+
+    const livreur = await prisma.livreur.findUnique({ where: { id_utilisateur: req.user.id } });
+    if (!livreur) throw new NotFoundError('Profil livreur');
+
+    const updated = await prisma.livreur.update({
+      where: { id_livreur: livreur.id_livreur },
+      data: {
+        latitude_actuelle: Number(latitude),
+        longitude_actuelle: Number(longitude),
+      },
+    });
+
+    res.json({ success: true, message: 'Position mise à jour', data: { latitude: updated.latitude_actuelle, longitude: updated.longitude_actuelle } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Activation / désactivation de la disponibilité du livreur.
+ */
+exports.setDisponibilite = async (req, res, next) => {
+  try {
+    const { disponible } = req.body;
+    if (typeof disponible !== 'boolean') {
+      throw new ValidationError('Le champ disponible (booléen) est requis');
+    }
+
+    const livreur = await prisma.livreur.findUnique({ where: { id_utilisateur: req.user.id } });
+    if (!livreur) throw new NotFoundError('Profil livreur');
+
+    const updated = await prisma.livreur.update({
+      where: { id_livreur: livreur.id_livreur },
+      data: { disponible },
+    });
+
+    res.json({ success: true, message: `Vous êtes maintenant ${disponible ? 'disponible' : 'indisponible'}`, data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Liste des livreurs (administration) avec filtres.
+ */
+exports.getAll = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, statut_verification, disponible } = req.query;
+
+    const where = {};
+    if (statut_verification) where.statut_verification = statut_verification;
+    if (disponible !== undefined) where.disponible = disponible === 'true';
+
+    const [data, total] = await Promise.all([
+      prisma.livreur.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: Number(limit),
+        include: { utilisateur: { select: { nom: true, prenom: true, email: true, telephone: true, statut_compte: true } } },
+        orderBy: { total_livraisons: 'desc' },
+      }),
+      prisma.livreur.count({ where }),
+    ]);
+
+    res.json({ success: true, data: { data, total, page: Number(page), limit: Number(limit) } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getDashboard = async (req, res, next) => {
   try {
     const livreur = await prisma.livreur.findUnique({

@@ -29,14 +29,15 @@ class PatientService {
   }
 
   async findAll(filters = {}) {
-    const { page = 1, limit = 20 } = filters;
+    const page = Number(filters.page) || 1;
+    const limit = Number(filters.limit) || 20;
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
       prisma.patient.findMany({
         skip,
         take: limit,
-        include: { utilisateur: true },
+        include: { utilisateur: { select: { id_utilisateur: true, nom: true, prenom: true, email: true, telephone: true, type_utilisateur: true } } },
         orderBy: { date_enregistrement: 'desc' },
       }),
       prisma.patient.count(),

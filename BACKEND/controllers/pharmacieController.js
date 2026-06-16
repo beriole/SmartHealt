@@ -16,8 +16,8 @@ exports.getAll = async (req, res, next) => {
       prisma.pharmacie.findMany({
         where,
         skip,
-        take: limit,
-        include: { responsable: true },
+        take: Number(limit),
+        include: { responsable: { select: { id_utilisateur: true, nom: true, prenom: true, email: true } } },
         orderBy: { nom_pharmacie: 'asc' },
       }),
       prisma.pharmacie.count({ where }),

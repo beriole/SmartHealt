@@ -1,9 +1,22 @@
 require('dotenv').config({ path: '.env.test' });
-const { prisma, connectDatabase, disconnectDatabase } = require('../services/database');
+
+// Mock de l'envoi d'emails : aucun email réel n'est envoyé pendant les tests.
+// (jest.mock est hissé en haut du fichier et s'applique à toute la suite.)
+jest.mock('../utils/email', () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(true),
+  sendPasswordResetEmail: jest.fn().mockResolvedValue(true),
+  sendRappelEmail: jest.fn().mockResolvedValue(true),
+  sendOrdonnanceNotification: jest.fn().mockResolvedValue(true),
+  sendCommandeNotification: jest.fn().mockResolvedValue(true),
+  sendB2bValidationEmail: jest.fn().mockResolvedValue(true),
+  sendB2bRejectionEmail: jest.fn().mockResolvedValue(true),
+  sendPinLivraisonEmail: jest.fn().mockResolvedValue(true),
+}));
+
+const { connectDatabase, disconnectDatabase } = require('../services/database');
 
 beforeAll(async () => {
-  // Configurer la bonne base de test via url (sécurité supplémentaire)
-  if (!process.env.DATABASE_URL.includes('test')) {
+  if (!process.env.DATABASE_URL || !process.env.DATABASE_URL.includes('test')) {
     throw new Error('Les tests doivent être exécutés sur une base de données de test !');
   }
   await connectDatabase();
@@ -11,27 +24,4 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await disconnectDatabase();
-});
-
-// Vider la base avant chaque fichier de test (et non avant chaque IT)
-beforeAll(async () => {
-  // Purger toutes les tables principales dans l'ordre pour respecter les Foreign Keys
-  const tableNames = [
-    'LigneCommande', 'Commande', 'StockPharmacie', 'LigneOrdonnance',
-    'PriseMedicament', 'RappelTraitement', 'InterventionDomicile',
-    'Ordonnance', 'Consultation', 'AccesCarnet', 'CarnetSante',
-    'TriageIa', 'Patient', 'ProfessionnelSante', 'Pharmacie',
-    'Medicament', 'Utilisateur'
-  ];
-
-  for (const table of tableNames) {
-    try {
-      const modelName = table.charAt(0).toLowerCase() + table.slice(1);
-      if (prisma[modelName]) {
-        await prisma[modelName].deleteMany({});
-      }
-    } catch (error) {
-      console.error(`Erreur lors du nettoyage de la table ${table}:`, error);
-    }
-  }
 });

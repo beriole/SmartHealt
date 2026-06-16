@@ -13,7 +13,7 @@ class UtilisateurService {
       // 2. Créer le profil spécifique selon le type
       if (utilisateur.type_utilisateur === 'PATIENT') {
         const numeroCarnet = generateNumeroCarnet();
-        
+
         const patient = await tx.patient.create({
           data: {
             id_utilisateur: utilisateur.id_utilisateur,
@@ -30,18 +30,28 @@ class UtilisateurService {
             acces_actif: true,
           },
         });
-      } else if (utilisateur.type_utilisateur === 'MEDECIN') {
+      } else if (['MEDECIN', 'INFIRMIER'].includes(utilisateur.type_utilisateur)) {
+        // Les médecins ET les infirmiers ont un profil professionnel de santé
+        // (les interventions à domicile référencent ProfessionnelSante).
         await tx.professionnelSante.create({
           data: {
             id_utilisateur: utilisateur.id_utilisateur,
             numero_ordre: roleData.numero_ordre,
-            specialite: roleData.specialite,
+            specialite: roleData.specialite || (utilisateur.type_utilisateur === 'INFIRMIER' ? 'Soins infirmiers' : 'Médecine générale'),
             structure_exercice: roleData.structure_exercice || 'Non précisé',
             statut_verification: 'en_attente',
           },
         });
+      } else if (utilisateur.type_utilisateur === 'LIVREUR') {
+        await tx.livreur.create({
+          data: {
+            id_utilisateur: utilisateur.id_utilisateur,
+            vehicule_type: roleData.vehicule_type || null,
+            plaque_immatriculation: roleData.plaque_immatriculation || null,
+          },
+        });
       }
-      
+
       return utilisateur;
     });
   }
@@ -63,18 +73,26 @@ class UtilisateurService {
   }
 
   async findAll(filters = {}) {
-    const { page = 1, limit = 20, type_utilisateur } = filters;
+    const { page = 1, limit = 20, type_utilisateur, statut_compte, recherche } = filters;
     const skip = (page - 1) * limit;
 
     const where = {};
     if (type_utilisateur) where.type_utilisateur = type_utilisateur;
+    if (statut_compte) where.statut_compte = statut_compte;
+    if (recherche) {
+      where.OR = [
+        { nom: { contains: recherche, mode: 'insensitive' } },
+        { prenom: { contains: recherche, mode: 'insensitive' } },
+        { email: { contains: recherche, mode: 'insensitive' } },
+      ];
+    }
 
     const [data, total] = await Promise.all([
-      prisma.utilisateur.findMany({ where, skip, take: limit, orderBy: { date_creation: 'desc' } }),
+      prisma.utilisateur.findMany({ where, skip, take: Number(limit), orderBy: { date_creation: 'desc' } }),
       prisma.utilisateur.count({ where }),
     ]);
 
-    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    return { data, total, page: Number(page), limit: Number(limit), totalPages: Math.ceil(total / limit) };
   }
 }
 

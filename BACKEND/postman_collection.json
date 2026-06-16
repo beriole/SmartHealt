@@ -1,0 +1,1287 @@
+{
+  "info": {
+    "name": "SmartHealth API - Complete Test Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Complete API test collection for SmartHealth digital health platform. Uses real database with provided test emails."
+  },
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Patient\",\n  \"email\": \"berioletsague@gmail.com\",\n  \"mot_de_passe\": \"Password123!\",\n  \"telephone\": \"000000010\",\n  \"type_utilisateur\": \"PATIENT\",\n  \"sexe\": \"M\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Medecin",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Doc\",\n  \"prenom\": \"Test\",\n  \"email\": \"bernardmama95@gmail.com\",\n  \"mot_de_passe\": \"Password123!\",\n  \"telephone\": \"000000011\",\n  \"type_utilisateur\": \"MEDECIN\",\n  \"sexe\": \"M\",\n  \"specialite\": \"Generaliste\",\n  \"structure_exercice\": \"Hopital Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Pharmacien",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Pharma\",\n  \"prenom\": \"Cien\",\n  \"email\": \"angelleg888@gmail.com\",\n  \"mot_de_passe\": \"Password123!\",\n  \"telephone\": \"000000012\",\n  \"type_utilisateur\": \"PHARMACIEN\",\n  \"sexe\": \"F\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Infirmier",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Infirmier\",\n  \"prenom\": \"Test\",\n  \"email\": \"djeumenimadimi@gmail.com\",\n  \"mot_de_passe\": \"Password123!\",\n  \"telephone\": \"000000013\",\n  \"type_utilisateur\": \"INFIRMIER\",\n  \"sexe\": \"M\",\n  \"specialite\": \"Soins\",\n  \"structure_exercice\": \"Clinique Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Livreur",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Livreur\",\n  \"prenom\": \"Test\",\n  \"email\": \"vickymora871@gmail.com\",\n  \"mot_de_passe\": \"Password123!\",\n  \"telephone\": \"000000014\",\n  \"type_utilisateur\": \"LIVREUR\",\n  \"sexe\": \"M\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('auth_token', jsonData.data.token);",
+                  "    pm.environment.set('user_id', jsonData.data.utilisateur.id_utilisateur);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"berioletsague@gmail.com\",\n  \"mot_de_passe\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-email/:token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-email", ":token"],
+              "variable": [{"key": "token", "value": "your-verification-token"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Patients",
+      "item": [
+        {
+          "name": "List Patients",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/patients?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "patients"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Patient by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/patients/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "patients", ":id"],
+              "variable": [{"key": "id", "value": "{{patient_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"poids_kg\": 75.5,\n  \"taille_cm\": 180,\n  \"groupe_sanguin\": \"O_PLUS\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/patients/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "patients", ":id"],
+              "variable": [{"key": "id", "value": "{{patient_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Professionnels de Sante",
+      "item": [
+        {
+          "name": "List Professionals",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/professionnels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "professionnels"]
+            }
+          }
+        },
+        {
+          "name": "Get Professional by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/professionnels/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "professionnels", ":id"],
+              "variable": [{"key": "id", "value": "{{professional_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "document", "type": "file", "src": []}
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/professionnels/:id/upload-document",
+              "host": ["{{base_url}}"],
+              "path": ["api", "professionnels", ":id", "upload-document"],
+              "variable": [{"key": "id", "value": "{{professional_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Verify Professional",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut_verification\": \"VERIFIE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/professionnels/:id/verify",
+              "host": ["{{base_url}}"],
+              "path": ["api", "professionnels", ":id", "verify"],
+              "variable": [{"key": "id", "value": "{{professional_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Pharmacies",
+      "item": [
+        {
+          "name": "List Pharmacies",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Pharmacy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Pharmacie Centrale\",\n  \"adresse\": \"Douala, Bonanjo\",\n  \"telephone\": \"000000032\",\n  \"email\": \"pharma.centrale@test.com\",\n  \"ville\": \"Douala\",\n  \"horaire_ouverture\": \"08:00\",\n  \"horaire_fermeture\": \"20:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies"]
+            }
+          }
+        },
+        {
+          "name": "Get Pharmacy by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id"],
+              "variable": [{"key": "id", "value": "{{pharmacy_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Pharmacy",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adresse\": \"Douala, Akwa - Updated\",\n  \"horaire_fermeture\": \"22:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id"],
+              "variable": [{"key": "id", "value": "{{pharmacy_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Add Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Employe\",\n  \"prenom\": \"Test\",\n  \"email\": \"employee@test.com\",\n  \"telephone\": \"000000033\",\n  \"role\": \"PREPARATEUR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id_pharmacie/employes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id_pharmacie", "employes"],
+              "variable": [{"key": "id_pharmacie", "value": "{{pharmacy_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id_pharmacie/employes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id_pharmacie", "employes"],
+              "variable": [{"key": "id_pharmacie", "value": "{{pharmacy_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Remove Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id_pharmacie/employes/:id_employe",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id_pharmacie", "employes", ":id_employe"],
+              "variable": [
+                {"key": "id_pharmacie", "value": "{{pharmacy_id}}"},
+                {"key": "id_employe", "value": "{{employee_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Pharmacy",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/pharmacies/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pharmacies", ":id"],
+              "variable": [{"key": "id", "value": "{{pharmacy_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Medicaments",
+      "item": [
+        {
+          "name": "List Medicaments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/medicaments?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "medicaments"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Medicament",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom_commercial\": \"Paracetamol Plus\",\n  \"denomination_commune\": \"Paracetamol\",\n  \"forme_galenique\": \"COMPRIME\",\n  \"dosage\": \"500mg\",\n  \"laboratoire\": \"Laboratoire Test\",\n  \"categorie\": \"ANTALGIQUE\",\n  \"prix_unitaire\": 500,\n  \"id_pharmacie\": 1,\n  \"description\": \"Medicament contre la douleur\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/medicaments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "medicaments"]
+            }
+          }
+        },
+        {
+          "name": "Get Medicament by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/medicaments/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "medicaments", ":id"],
+              "variable": [{"key": "id", "value": "{{medicament_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Medicament",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prix_unitaire\": 600,\n  \"description\": \"Description mise a jour\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/medicaments/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "medicaments", ":id"],
+              "variable": [{"key": "id", "value": "{{medicament_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Consultations",
+      "item": [
+        {
+          "name": "List Consultations",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/consultations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultations"]
+            }
+          }
+        },
+        {
+          "name": "Create Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_patient\": 1,\n  \"id_carnet\": 1,\n  \"motif\": \"Fievre\",\n  \"type_consultation\": \"presentiel\",\n  \"date_consultation\": \"2026-04-29T10:00:00.000Z\",\n  \"diagnostic\": \"Grippe\",\n  \"observations\": \"Patient fievreux\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/consultations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultations"]
+            }
+          }
+        },
+        {
+          "name": "Get Consultation by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/consultations/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultations", ":id"],
+              "variable": [{"key": "id", "value": "{{consultation_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Consultation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnostic\": \"Diagnostic mis a jour\",\n  \"observations\": \"Nouvelles observations\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/consultations/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultations", ":id"],
+              "variable": [{"key": "id", "value": "{{consultation_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Ordonnances",
+      "item": [
+        {
+          "name": "List Ordonnances",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/ordonnances",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordonnances"]
+            }
+          }
+        },
+        {
+          "name": "Create Ordonnance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_patient\": 1,\n  \"id_consultation\": 1,\n  \"instructions\": \"Prendre apres les repas\",\n  \"date_validite\": \"2026-05-29T00:00:00.000Z\",\n  \"lignes\": [\n    {\n      \"id_medicament\": 1,\n      \"posologie\": \"1 comprime 3 fois par jour\",\n      \"duree_jours\": 7\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordonnances",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordonnances"]
+            }
+          }
+        },
+        {
+          "name": "Get Ordonnance by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/ordonnances/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordonnances", ":id"],
+              "variable": [{"key": "id", "value": "{{ordonnance_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Ordonnance",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instructions\": \"Instructions mises a jour\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordonnances/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordonnances", ":id"],
+              "variable": [{"key": "id", "value": "{{ordonnance_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Commandes",
+      "item": [
+        {
+          "name": "List Commandes",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/commandes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "commandes"]
+            }
+          }
+        },
+        {
+          "name": "Create Commande from Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_pharmacie\": 1,\n  \"items\": [\n    {\n      \"id_medicament\": 1,\n      \"quantite\": 2\n    }\n  ],\n  \"mode_paiement\": \"MOBILE_MONEY\",\n  \"type_livraison\": \"STANDARD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/commandes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "commandes"]
+            }
+          }
+        },
+        {
+          "name": "Get Commande by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/commandes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "commandes", ":id"],
+              "variable": [{"key": "id", "value": "{{commande_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Commande Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"EN_PREPARATION\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/commandes/:id/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "commandes", ":id", "status"],
+              "variable": [{"key": "id", "value": "{{commande_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Payer Commande",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mode_paiement\": \"MOBILE_MONEY\",\n  \"telephone\": \"670000000\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/commandes/:id/payer",
+              "host": ["{{base_url}}"],
+              "path": ["api", "commandes", ":id", "payer"],
+              "variable": [{"key": "id", "value": "{{commande_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Interventions Domicile",
+      "item": [
+        {
+          "name": "List Interventions",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/interventions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interventions"]
+            }
+          }
+        },
+        {
+          "name": "Planifier Intervention",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_patient\": 1,\n  \"id_carnet\": 1,\n  \"type_intervention\": \"SOINF\",\n  \"description\": \"Pansement a domicile\",\n  \"date_prevue\": \"2026-05-01T10:00:00.000Z\",\n  \"adresse\": \"Douala, Bonapriso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/interventions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interventions"]
+            }
+          }
+        },
+        {
+          "name": "Update Intervention Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"EN_COURS\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/interventions/:id/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interventions", ":id", "status"],
+              "variable": [{"key": "id", "value": "{{intervention_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Carnets de Sante",
+      "item": [
+        {
+          "name": "Get My Carnet",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/carnets/my-carnet",
+              "host": ["{{base_url}}"],
+              "path": ["api", "carnets", "my-carnet"]
+            }
+          }
+        },
+        {
+          "name": "Regenerate QR Code",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/carnets/my-carnet/regenerate-qr",
+              "host": ["{{base_url}}"],
+              "path": ["api", "carnets", "my-carnet", "regenerate-qr"]
+            }
+          }
+        },
+        {
+          "name": "Scan Carnet QR",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/carnets/scan/:qrToken",
+              "host": ["{{base_url}}"],
+              "path": ["api", "carnets", "scan", ":qrToken"],
+              "variable": [{"key": "qrToken", "value": "{{qr_token}}"}]
+            }
+          }
+        },
+        {
+          "name": "List All Carnets (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/carnets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "carnets"]
+            }
+          }
+        },
+        {
+          "name": "Update Carnet (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Carnet mis a jour\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/carnets/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "carnets", ":id"],
+              "variable": [{"key": "id", "value": "{{carnet_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Stocks",
+      "item": [
+        {
+          "name": "Search Global Stock",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/stocks/search?medicament=Paracetamol",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", "search"],
+              "query": [{"key": "medicament", "value": "Paracetamol"}]
+            }
+          }
+        },
+        {
+          "name": "Get My Stocks",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/stocks/my-stocks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", "my-stocks"]
+            }
+          }
+        },
+        {
+          "name": "Create Stock Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medicament\": 1,\n  \"id_pharmacie\": 1,\n  \"quantite\": 100,\n  \"seuil_alerte\": 20,\n  \"date_expiration\": \"2027-04-29T00:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/stocks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks"]
+            }
+          }
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantite\": 150,\n  \"seuil_alerte\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/stocks/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", ":id"],
+              "variable": [{"key": "id", "value": "{{stock_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Delete Stock",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/stocks/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", ":id"],
+              "variable": [{"key": "id", "value": "{{stock_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Rappels Traitement",
+      "item": [
+        {
+          "name": "Create Rappel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medicament\": 1,\n  \"medicament_nom\": \"Paracetamol\",\n  \"posologie\": \"1 comprime matin et soir\",\n  \"heure_premiere_prise\": \"08:00\",\n  \"intervalle_heures\": 12,\n  \"duree_jours\": 10,\n  \"date_debut\": \"2026-04-29T00:00:00.000Z\",\n  \"notes\": \"A prendre apres le repas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rappels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rappels"]
+            }
+          }
+        },
+        {
+          "name": "Get My Reminders",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/rappels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rappels"]
+            }
+          }
+        },
+        {
+          "name": "Get Today Intakes",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/rappels/prises-du-jour",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rappels", "prises-du-jour"]
+            }
+          }
+        },
+        {
+          "name": "Get Global Stats",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/rappels/stats/globales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rappels", "stats", "globales"]
+            }
+          }
+        },
+        {
+          "name": "Mark Intake",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"PRISE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rappels/prises/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rappels", "prises", ":id"],
+              "variable": [{"key": "id", "value": "{{prise_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Livreurs",
+      "item": [
+        {
+          "name": "Register Livreur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom_permis\": \"Permis B\",\n  \"numero_permis\": \"DL-123456\",\n  \"date_expiration_permis\": \"2027-04-29T00:00:00.000Z\",\n  \"vehicule_type\": \"MOTO\",\n  \"immatriculation\": \"AA-123-BB\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/livreurs/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livreurs", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Livreur Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/livreurs/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "livreurs", "dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 - Triage IA",
+      "item": [
+        {
+          "name": "Create Triage Session",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_patient\": 1,\n  \"symptomes\": \"Fievre, toux, maux de tete\",\n  \"age\": 25,\n  \"sexe\": \"M\",\n  \"antecedents\": \"Aucun\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/triage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "triage"]
+            }
+          }
+        },
+        {
+          "name": "List Triage Sessions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/triage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "triage"]
+            }
+          }
+        },
+        {
+          "name": "Get Triage by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/triage/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "triage", ":id"],
+              "variable": [{"key": "id", "value": "{{triage_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Triage Follow-up",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"suivi_notes\": \"Patient consulte un medecin\",\n  \"statut\": \"CONSULTE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/triage/:id/suivi",
+              "host": ["{{base_url}}"],
+              "path": ["api", "triage", ":id", "suivi"],
+              "variable": [{"key": "id", "value": "{{triage_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 - B2B Partners",
+      "item": [
+        {
+          "name": "B2B Onboarding",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom_entreprise\": \"Clinique B2B Test\",\n  \"type_structure\": \"CLINIQUE\",\n  \"email_contact\": \"contact@clinique-b2b.com\",\n  \"telephone\": \"000000111\",\n  \"adresse\": \"Yaounde, Centre\",\n  \"responsable_nom\": \"Responsable B2B\",\n  \"description\": \"Partenaire B2B pour tests\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/b2b/onboarding",
+              "host": ["{{base_url}}"],
+              "path": ["api", "b2b", "onboarding"]
+            }
+          }
+        },
+        {
+          "name": "List B2B Requests (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/b2b/admin/demandes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "b2b", "admin", "demandes"]
+            }
+          }
+        },
+        {
+          "name": "Validate B2B Partner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duree_agrement_mois\": 12\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/b2b/admin/:id/valider",
+              "host": ["{{base_url}}"],
+              "path": ["api", "b2b", "admin", ":id", "valider"],
+              "variable": [{"key": "id", "value": "{{partenaire_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Generate Patient Consent PIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_partenaire\": 1,\n  \"duree_validite_minutes\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/b2b/patient/generer-pin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "b2b", "patient", "generer-pin"]
+            }
+          }
+        },
+        {
+          "name": "B2B OAuth Token",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": \"test-client-id\",\n  \"client_secret\": \"test-client-secret\",\n  \"grant_type\": \"client_credentials\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/b2b/oauth/token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "b2b", "oauth", "token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 - Utilisateurs",
+      "item": [
+        {
+          "name": "List Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/utilisateurs?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "utilisateurs"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/utilisateurs/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "utilisateurs", ":id"],
+              "variable": [{"key": "id", "value": "{{user_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{auth_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Nom Mis a jour\",\n  \"telephone\": \"000000999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/utilisateurs/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "utilisateurs", ":id"],
+              "variable": [{"key": "id", "value": "{{user_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "avatar", "type": "file", "src": []}
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/utilisateurs/:id/avatar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "utilisateurs", ":id", "avatar"],
+              "variable": [{"key": "id", "value": "{{user_id}}"}]
+            }
+          }
+        },
+        {
+          "name": "Delete User (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/utilisateurs/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "utilisateurs", ":id"],
+              "variable": [{"key": "id", "value": "{{user_id}}"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 - Utility",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:3000"},
+    {"key": "auth_token", "value": ""},
+    {"key": "user_id", "value": ""},
+    {"key": "patient_id", "value": ""},
+    {"key": "professional_id", "value": ""},
+    {"key": "pharmacy_id", "value": ""},
+    {"key": "medicament_id", "value": ""},
+    {"key": "consultation_id", "value": ""},
+    {"key": "ordonnance_id", "value": ""},
+    {"key": "commande_id", "value": ""},
+    {"key": "intervention_id", "value": ""},
+    {"key": "carnet_id", "value": ""},
+    {"key": "qr_token", "value": ""},
+    {"key": "stock_id", "value": ""},
+    {"key": "prise_id", "value": ""},
+    {"key": "triage_id", "value": ""},
+    {"key": "partenaire_id", "value": ""},
+    {"key": "employee_id", "value": ""}
+  ]
+}

@@ -195,3 +195,577 @@ Unknown argument `email_verifie`. Available options are marked with ?.
 2026-04-23 20:23:56 [INFO]: 🚀 SmartHealth server running on port 3000
 2026-04-23 20:25:37 [INFO]: 🚀 SmartHealth server running on port 3000
 2026-04-23 20:25:45 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 20:40:13 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 21:21:05 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 21:30:40 [INFO]: Email de vérification envoyé à djeumenimadimi@gmail.com : <8334ad99-c9b9-0363-557a-f287776bb558@gmail.com>
+2026-04-23 21:30:40 [INFO]: ::1 - - [23/Apr/2026:20:30:40 +0000] "POST /api/auth/register HTTP/1.1" 201 231 "-" "PostmanRuntime/7.53.0"
+2026-04-23 21:31:22 [INFO]: ::1 - - [23/Apr/2026:20:31:22 +0000] "GET /api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRqZXVtZW5pbWFkaW1pQGdtYWlsLmNvbSIsInB1cnBvc2UiOiJlbWFpbF92ZXJpZmljYXRpb24iLCJpYXQiOjE3NzY5NzYyMzYsImV4cCI6MTc3NzU4MTAzNn0.UCrXfDdU6vSZ-sGztnFaPOoXZBs5ybtztDvoR1-c1zs HTTP/1.1" 200 111 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+2026-04-23 21:33:21 [INFO]: Email de vérification envoyé à berioletsague@gmail.com : <2b7df722-b3e7-4254-f69a-05b056433361@gmail.com>
+2026-04-23 21:33:21 [INFO]: ::1 - - [23/Apr/2026:20:33:21 +0000] "POST /api/auth/register HTTP/1.1" 201 233 "-" "PostmanRuntime/7.53.0"
+2026-04-23 21:34:14 [INFO]: ::1 - - [23/Apr/2026:20:34:14 +0000] "GET /api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJlcmlvbGV0c2FndWVAZ21haWwuY29tIiwicHVycG9zZSI6ImVtYWlsX3ZlcmlmaWNhdGlvbiIsImlhdCI6MTc3Njk3NjM5OSwiZXhwIjoxNzc3NTgxMTk5fQ.F9moa5ba0N3Ihv4tON2I6UGi7o1s4mvGsCMyQmG_H6M HTTP/1.1" 200 111 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+2026-04-23 21:36:20 [INFO]: Email de vérification envoyé à angelleg888@gmail.com : <daa901b2-6140-d29b-a310-9411ab508c02@gmail.com>
+2026-04-23 21:36:20 [INFO]: ::1 - - [23/Apr/2026:20:36:20 +0000] "POST /api/auth/register HTTP/1.1" 201 228 "-" "PostmanRuntime/7.53.0"
+2026-04-23 21:41:46 [INFO]: ::1 - - [23/Apr/2026:20:41:46 +0000] "POST /api/auth/login HTTP/1.1" 401 74 "-" "PostmanRuntime/7.53.0"
+2026-04-23 21:42:19 [INFO]: ::1 - - [23/Apr/2026:20:42:19 +0000] "POST /api/auth/login HTTP/1.1" 401 107 "-" "PostmanRuntime/7.53.0"
+2026-04-23 21:48:43 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 21:50:11 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 21:51:38 [INFO]: ::1 - - [23/Apr/2026:20:51:38 +0000] "GET /api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuZ2VsbGVnODg4QGdtYWlsLmNvbSIsInB1cnBvc2UiOiJlbWFpbF92ZXJpZmljYXRpb24iLCJpYXQiOjE3NzY5NzY1NzgsImV4cCI6MTc3NzU4MTM3OH0.lDCpkZelEmn_q42uz-Lg5weNeaV4GtVePGL9yJFmd0Q HTTP/1.1" 200 111 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+2026-04-23 21:51:49 [INFO]: ::1 - - [23/Apr/2026:20:51:49 +0000] "POST /api/auth/login HTTP/1.1" 200 838 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:14:34 [INFO]: ::1 - - [23/Apr/2026:21:14:34 +0000] "POST /api/auth/login HTTP/1.1" 200 860 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:16:10 [INFO]: ::1 - - [23/Apr/2026:21:16:10 +0000] "GET /api/utilisateurs HTTP/1.1" 200 1626 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:18:21 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 22:18:32 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 22:18:47 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 22:20:06 [INFO]: ::1 - - [23/Apr/2026:21:20:06 +0000] "GET /api/utilisateurs HTTP/1.1" 403 96 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:28:11 [INFO]: ::1 - - [23/Apr/2026:21:28:11 +0000] "POST //api/auth/register HTTP/1.1" 404 45 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:28:22 [ERROR]: PrismaClientValidationError: 
+Invalid `tx.utilisateur.create()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:48
+
+  6 async create(userData, roleData = {}) {
+  7   return prisma.$transaction(async (tx) => {
+  8     // 1. Créer l'utilisateur
+→ 9     const utilisateur = await tx.utilisateur.create({
+          data: {
+            nom: "Dupont",
+            prenom: "Jean",
+            type_utilisateur: "PATIENT",
+            sexe: "M",
+            date_naissance: "1990-01-01",
+                            ~~~~~~~~~~~~
+            email: "vickymora871@gmail.com",
+            telephone: "+237600000001",
+            mot_de_passe_hash: "$2a$12$OwFJseXuVQ/cng8F4Q2Zl./7g/C0wxKw3XE1E5R8JPBCBlpwGRxRa"
+          }
+        })
+
+Invalid value for argument `date_naissance`: premature end of input. Expected ISO-8601 DateTime.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:27
+    at async Proxy._transactionWithCallback (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:4668)
+    at async exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:26:25)
+2026-04-23 22:28:22 [INFO]: ::1 - - [23/Apr/2026:21:28:22 +0000] "POST /api/auth/register HTTP/1.1" 500 3267 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:30:58 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 22:32:31 [INFO]: Email de vérification envoyé à vickymora871@gmail.com : <d32d882e-d74c-02fb-c33c-9b3eeabd65e8@gmail.com>
+2026-04-23 22:32:31 [INFO]: ::1 - - [23/Apr/2026:21:32:31 +0000] "POST /api/auth/register HTTP/1.1" 201 229 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:33:00 [INFO]: ::1 - - [23/Apr/2026:21:33:00 +0000] "GET /api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpY2t5bW9yYTg3MUBnbWFpbC5jb20iLCJwdXJwb3NlIjoiZW1haWxfdmVyaWZpY2F0aW9uIiwiaWF0IjoxNzc2OTc5OTQ4LCJleHAiOjE3Nzc1ODQ3NDh9.v4zgw2xfi8o7YrTFlE_6sFtt3glz_DECAZgyDbbPCVA HTTP/1.1" 200 111 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
+2026-04-23 22:36:31 [INFO]: ::1 - - [23/Apr/2026:21:36:31 +0000] "POST /api/auth/login HTTP/1.1" 200 863 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:40:20 [INFO]: ::1 - - [23/Apr/2026:21:40:20 +0000] "GET /api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpY2t5bW9yYTg3MUBnbWFpbC5jb20iLCJwdXJwb3NlIjoiZW1haWxfdmVyaWZpY2F0aW9uIiwiaWF0IjoxNzc2OTc5OTQ4LCJleHAiOjE3Nzc1ODQ3NDh9.v4zgw2xfi8o7YrTFlE_6sFtt3glz_DECAZgyDbbPCVA HTTP/1.1" 200 52 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:41:48 [INFO]: ::1 - - [23/Apr/2026:21:41:48 +0000] "POST /api/auth/login HTTP/1.1" 200 885 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:44:54 [INFO]: ::1 - - [23/Apr/2026:21:44:54 +0000] "PUT /api/utilisateurs/049749e3-f84c-48e7-af20-4d65bc563de9 HTTP/1.1" 200 583 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:55:38 [ERROR]: Error: ENOENT: no such file or directory, open 'C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\uploads\9edc2180-edfb-4ab5-ad44-52396aa96fe1.jpg'
+2026-04-23 22:55:38 [INFO]: ::1 - - [23/Apr/2026:21:55:38 +0000] "PUT /api/utilisateurs/049749e3-f84c-48e7-af20-4d65bc563de9/avatar HTTP/1.1" 500 394 "-" "PostmanRuntime/7.53.0"
+2026-04-23 22:58:04 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 22:59:14 [INFO]: ::1 - - [23/Apr/2026:21:59:14 +0000] "PUT /api/utilisateurs/049749e3-f84c-48e7-af20-4d65bc563de9/avatar HTTP/1.1" 200 630 "-" "PostmanRuntime/7.53.0"
+2026-04-23 23:03:04 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.patient.findUnique()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\patientService.js:9:27
+
+  6 }
+  7 
+  8 async findById(id) {
+→ 9   return prisma.patient.findUnique({
+        where: {
+          id_patient: "104ad009-0df6-42a9-9384-818ad19fe8d0"
+        },
+        include: {
+          utilisateur: true,
+          carnet: true,
+          tuteur: {
+            include: {
+              utilisateur: true,
+              ~~~~~~~~~~~
+      ?       patient?: true,
+      ?       professionnel?: true,
+      ?       pharmacies?: true,
+      ?       tuteurPatients?: true,
+      ?       accesCarnets?: true
+            }
+          }
+        }
+      })
+
+Unknown field `utilisateur` for include statement on model `Utilisateur`. Available options are marked with ?.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async exports.getById (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\patientController.js:17:21)
+2026-04-23 23:03:04 [INFO]: ::1 - - [23/Apr/2026:22:03:04 +0000] "GET /api/patients/104ad009-0df6-42a9-9384-818ad19fe8d0 HTTP/1.1" 500 2863 "-" "PostmanRuntime/7.53.0"
+2026-04-23 23:04:47 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 23:08:16 [INFO]: ::1 - - [23/Apr/2026:22:08:16 +0000] "GET /api/patients/104ad009-0df6-42a9-9384-818ad19fe8d0 HTTP/1.1" 200 1334 "-" "PostmanRuntime/7.53.0"
+2026-04-23 23:12:18 [INFO]: ::1 - - [23/Apr/2026:22:12:18 +0000] "PUT /api/patients/104ad009-0df6-42a9-9384-818ad19fe8d0 HTTP/1.1" 200 434 "-" "PostmanRuntime/7.53.0"
+2026-04-23 23:21:17 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 23:21:19 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-23 23:24:07 [INFO]: ::1 - - [23/Apr/2026:22:24:07 +0000] "POST /api/auth/login HTTP/1.1" 200 853 "-" "PostmanRuntime/7.53.0"
+2026-04-23 23:26:31 [INFO]: ::1 - - [23/Apr/2026:22:26:31 +0000] "GET /api/medicaments HTTP/1.1" 200 65 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:18:18 [INFO]: ::1 - - [24/Apr/2026:09:18:18 +0000] "POST /api/auth/login HTTP/1.1" 200 875 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:27:23 [INFO]: ::1 - - [24/Apr/2026:09:27:23 +0000] "POST /api/pharmacies HTTP/1.1" 201 496 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:32:51 [ERROR]: Error: Type de fichier non autorisé
+    at fileFilter (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\middleware\upload.js:20:8)
+    at wrappedFileFilter (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\multer\index.js:44:7)
+    at Multipart.<anonymous> (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\multer\lib\make-middleware.js:109:7)
+    at Multipart.emit (node:events:524:28)
+    at HeaderParser.cb (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\busboy\lib\types\multipart.js:567:19)
+2026-04-24 10:32:51 [INFO]: ::1 - - [24/Apr/2026:09:32:51 +0000] "PUT /api/pharmacies/4f54f418-fa48-4ed5-a3ca-18e66f4f8670 HTTP/1.1" 500 1538 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:33:16 [INFO]: ::1 - - [24/Apr/2026:09:33:16 +0000] "PUT /api/pharmacies/4f54f418-fa48-4ed5-a3ca-18e66f4f8670 HTTP/1.1" 200 499 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:43:53 [INFO]: ::1 - - [24/Apr/2026:09:43:53 +0000] "POST /api/medicaments HTTP/1.1" 401 64 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:45:02 [INFO]: ::1 - - [24/Apr/2026:09:45:02 +0000] "POST /api/medicaments HTTP/1.1" 201 384 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:50:13 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.medicament.update()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:80:48
+
+  77   data.image_url = `/uploads/${req.file.filename}`;
+  78 }
+  79 
+→ 80 const medicament = await prisma.medicament.update({
+       where: {
+         id_medicament: "3f2c8e4f-3576-4e11-9917-4c67cf968cc0"
+       },
+       data: {
+         nom_commercial: "Doliprane",
+         dci: "Paracétamol",
+         forme_galenique: "cirop ",
+                          ~~~~~~~~
+         dosage: "100mg",
+         categorie: "antalgique",
+         est_generique: false,
+         necessite_ordonnance: false,
+         prix_indicatif_fcfa: 1500
+       }
+     })
+
+Invalid value for argument `forme_galenique`. Expected FormeGalenique.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async exports.update (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:80:24)
+2026-04-24 10:50:13 [INFO]: ::1 - - [24/Apr/2026:09:50:13 +0000] "PUT /api/medicaments/3f2c8e4f-3576-4e11-9917-4c67cf968cc0 HTTP/1.1" 500 2807 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:54:08 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.medicament.update()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:80:48
+
+  77   data.image_url = `/uploads/${req.file.filename}`;
+  78 }
+  79 
+→ 80 const medicament = await prisma.medicament.update({
+       where: {
+         id_medicament: "3f2c8e4f-3576-4e11-9917-4c67cf968cc0"
+       },
+       data: {
+         nom_commercial: "Doliprane",
+         dci: "Paracétamol",
+         forme_galenique: "SIROP",
+                          ~~~~~~~
+         dosage: "100mg",
+         categorie: "antalgique",
+         est_generique: false,
+         necessite_ordonnance: false,
+         prix_indicatif_fcfa: 1500
+       }
+     })
+
+Invalid value for argument `forme_galenique`. Expected FormeGalenique.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async exports.update (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:80:24)
+2026-04-24 10:54:08 [INFO]: ::1 - - [24/Apr/2026:09:54:08 +0000] "PUT /api/medicaments/3f2c8e4f-3576-4e11-9917-4c67cf968cc0 HTTP/1.1" 500 2803 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:55:05 [INFO]: ::1 - - [24/Apr/2026:09:55:05 +0000] "PUT /api/medicaments/3f2c8e4f-3576-4e11-9917-4c67cf968cc0 HTTP/1.1" 200 380 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:57:19 [INFO]: ::1 - - [24/Apr/2026:09:57:19 +0000] "GET /api/medicaments HTTP/1.1" 200 421 "-" "PostmanRuntime/7.53.0"
+2026-04-24 10:59:51 [INFO]: ::1 - - [24/Apr/2026:09:59:51 +0000] "GET /api/stocks/search HTTP/1.1" 400 80 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:00:35 [INFO]: ::1 - - [24/Apr/2026:10:00:35 +0000] "GET /api/stocks/search?medicament=Doliprane&sort=price HTTP/1.1" 200 36 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:01:41 [INFO]: ::1 - - [24/Apr/2026:10:01:41 +0000] "GET /api/stocks/search?medicament=Parac%C3%A9tamol&sort=price HTTP/1.1" 200 36 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:04:55 [INFO]: ::1 - - [24/Apr/2026:10:04:55 +0000] "GET /api/stocks/search?medicament=Doliprane&sort=price HTTP/1.1" 200 36 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:08:13 [INFO]: ::1 - - [24/Apr/2026:10:08:13 +0000] "GET /api/stocks/my-stocks HTTP/1.1" 401 64 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:08:32 [INFO]: ::1 - - [24/Apr/2026:10:08:32 +0000] "POST /api/auth/login HTTP/1.1" 200 875 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:09:08 [INFO]: ::1 - - [24/Apr/2026:10:09:08 +0000] "GET /api/stocks/my-stocks HTTP/1.1" 200 36 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:13:22 [INFO]: ::1 - - [24/Apr/2026:10:13:22 +0000] "POST /api/stocks HTTP/1.1" 201 710 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:13:41 [INFO]: ::1 - - [24/Apr/2026:10:13:41 +0000] "GET /api/stocks/my-stocks HTTP/1.1" 200 722 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:14:09 [INFO]: ::1 - - [24/Apr/2026:10:14:09 +0000] "GET /api/stocks HTTP/1.1" 404 45 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:14:21 [ERROR]: PrismaClientKnownRequestError: 
+Invalid `prisma.stockPharmacie.create()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\stockController.js:94:47
+
+  91 
+  92 if (!id_pharmacie) throw new ForbiddenError('ID Pharmacie requis');
+  93 
+→ 94 const stock = await prisma.stockPharmacie.create(
+Foreign key constraint violated on the constraint: `stock_pharmacie_id_medicament_fkey`
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:8286)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async exports.createStock (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\stockController.js:94:19)
+2026-04-24 11:14:21 [INFO]: ::1 - - [24/Apr/2026:10:14:21 +0000] "POST /api/stocks HTTP/1.1" 500 1811 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:17:24 [INFO]: ::1 - - [24/Apr/2026:10:17:24 +0000] "PUT /api/stocks/3024f62e-dead-4480-8f85-e6e39158a41d HTTP/1.1" 200 709 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:18:23 [INFO]: ::1 - - [24/Apr/2026:10:18:23 +0000] "GET /api/stocks/search?medicament=Doliprane&sort=price HTTP/1.1" 200 984 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:25:14 [INFO]: ::1 - - [24/Apr/2026:10:25:14 +0000] "GET /api/patients/104ad009-0df6-42a9-9384-818ad19fe8d0 HTTP/1.1" 200 1370 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:43:20 [INFO]: ::1 - - [24/Apr/2026:10:43:20 +0000] "POST /api/auth/login HTTP/1.1" 200 860 "-" "PostmanRuntime/7.53.0"
+2026-04-24 11:45:42 [INFO]: ::1 - - [24/Apr/2026:10:45:42 +0000] "POST /api/consultations HTTP/1.1" 201 462 "-" "PostmanRuntime/7.53.0"
+2026-04-24 15:49:56 [INFO]: ::1 - - [24/Apr/2026:14:49:56 +0000] "POST /api/consultations/e04f1b3a-df07-4c0f-b6ee-596ff3f019f1 HTTP/1.1" 404 45 "-" "PostmanRuntime/7.53.0"
+2026-04-24 15:50:07 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.consultation.update()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\consultationController.js:85:52
+
+  82 
+  83 exports.update = async (req, res, next) => {
+  84   try {
+→ 85     const consultation = await prisma.consultation.update({
+           where: {
+             id_consultation: "e04f1b3a-df07-4c0f-b6ee-596ff3f019f1"
+           },
+         + data: ConsultationUpdateInput | ConsultationUncheckedUpdateInput
+         })
+
+Argument `data` is missing.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async exports.update (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\consultationController.js:85:26)
+2026-04-24 15:50:07 [INFO]: ::1 - - [24/Apr/2026:14:50:07 +0000] "PUT /api/consultations/e04f1b3a-df07-4c0f-b6ee-596ff3f019f1 HTTP/1.1" 500 2156 "-" "PostmanRuntime/7.53.0"
+2026-04-24 15:59:24 [INFO]: ::1 - - [24/Apr/2026:14:59:24 +0000] "PUT /api/consultations/e04f1b3a-df07-4c0f-b6ee-596ff3f019f1 HTTP/1.1" 200 492 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:03:08 [INFO]: ::1 - - [24/Apr/2026:15:03:08 +0000] "POST /api/ordonnances HTTP/1.1" 201 466 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:03:15 [INFO]: Notification d'ordonnance envoyée à vickymora871@gmail.com : <94e58b2d-2d2b-230a-25c9-e13a1d2332d2@gmail.com>
+2026-04-24 16:06:56 [INFO]: ::1 - - [24/Apr/2026:15:06:56 +0000] "POST /api/auth/login HTTP/1.1" 200 941 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:07:34 [INFO]: ::1 - - [24/Apr/2026:15:07:34 +0000] "GET /api/carnets/my-carnet HTTP/1.1" 200 1862 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:17:20 [INFO]: ::1 - - [24/Apr/2026:15:17:20 +0000] "POST /api/carnets/my-carnet HTTP/1.1" 404 45 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:17:33 [INFO]: ::1 - - [24/Apr/2026:15:17:33 +0000] "GET /api/carnets/my-carnet HTTP/1.1" 200 1862 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:18:16 [INFO]: ::1 - - [24/Apr/2026:15:18:16 +0000] "POST /api/carnets/my-carnet/regenerate-qr HTTP/1.1" 200 128 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:20:38 [INFO]: ::1 - - [24/Apr/2026:15:20:38 +0000] "GET /api/carnets/scan/QR-20c4c2e6-f886-4252-9fec-86416fef979f HTTP/1.1" 401 64 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:22:22 [INFO]: ::1 - - [24/Apr/2026:15:22:22 +0000] "POST /api/auth/login HTTP/1.1" 200 860 "-" "PostmanRuntime/7.53.0"
+2026-04-24 16:22:46 [INFO]: ::1 - - [24/Apr/2026:15:22:46 +0000] "GET /api/carnets/scan/QR-20c4c2e6-f886-4252-9fec-86416fef979f HTTP/1.1" 200 966 "-" "PostmanRuntime/7.53.0"
+2026-04-25 06:09:05 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:26 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:28 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:37 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:39 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:53 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:09:55 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:10:20 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:10:22 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:10:32 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:10:34 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:18:23 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:56:32 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:56:45 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:57:35 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:57:37 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:58:02 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:58:05 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:58:16 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-25 06:58:18 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-29 15:57:01 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-04-29 16:21:06 [ERROR]: Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PrismaPgAdapter.performIO (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:654:22)
+    at async PrismaPgAdapter.queryRaw (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:604:30)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:44601)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:45045)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:46265)
+    at async e.run (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:43315)
+    at async e.execute (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:57:815)
+    at async jt.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:58:2399)
+2026-04-29 16:21:06 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:21:06 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-29 16:21:06 [ERROR]: Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PrismaPgAdapter.performIO (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:654:22)
+    at async PrismaPgAdapter.queryRaw (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:604:30)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:44601)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:45045)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:46265)
+    at async e.run (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:43315)
+    at async e.execute (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:57:815)
+    at async jt.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:58:2399)
+2026-04-29 16:21:06 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:21:06 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-29 16:21:06 [ERROR]: Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PrismaPgAdapter.performIO (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:654:22)
+    at async PrismaPgAdapter.queryRaw (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:604:30)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:44601)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:45045)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:46265)
+    at async e.run (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:43315)
+    at async e.execute (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:57:815)
+    at async jt.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:58:2399)
+2026-04-29 16:21:06 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:21:06 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-29 16:21:06 [ERROR]: Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PrismaPgAdapter.performIO (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:654:22)
+    at async PrismaPgAdapter.queryRaw (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:604:30)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:44601)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:45045)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:46265)
+    at async e.run (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:43315)
+    at async e.execute (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:57:815)
+    at async jt.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:58:2399)
+2026-04-29 16:21:06 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:21:06 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-29 16:21:06 [ERROR]: Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+    at C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PrismaPgAdapter.performIO (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:654:22)
+    at async PrismaPgAdapter.queryRaw (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\adapter-pg\dist\index.js:604:30)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:44601)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:45045)
+    at async e.interpretNode (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:46265)
+    at async e.run (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:11:43315)
+    at async e.execute (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:57:815)
+    at async jt.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:58:2399)
+2026-04-29 16:21:06 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:21:06 +0000] "POST /api/auth/register HTTP/1.1" 500 82 "-" "-"
+2026-04-29 16:59:23 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:59:23 +0000] "POST /api/auth/register HTTP/1.1" 400 77 "-" "-"
+2026-04-29 16:59:23 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:59:23 +0000] "POST /api/auth/register HTTP/1.1" 400 77 "-" "-"
+2026-04-29 16:59:23 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:59:23 +0000] "POST /api/auth/register HTTP/1.1" 400 77 "-" "-"
+2026-04-29 16:59:23 [ERROR]: PrismaClientValidationError: 
+Invalid `tx.utilisateur.create()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:48
+
+  6 async create(userData, roleData = {}) {
+  7   return prisma.$transaction(async (tx) => {
+  8     // 1. Créer l'utilisateur
+→ 9     const utilisateur = await tx.utilisateur.create({
+          data: {
+            role: "MEDECIN",
+            ~~~~
+            nom: "Docteur",
+            prenom: "Med",
+            type_utilisateur: "MEDECIN",
+            sexe: "M",
+            email: "bernardmama95@gmail.com",
+            telephone: "000000041",
+            mot_de_passe_hash: "$2a$12$N0VifwIQiaU8BIuCmOLWBeizEF0izkU6UM2bGpNIZ7dQbpVS1ANS.",
+        ?   id_utilisateur?: String,
+        ?   date_naissance?: DateTime | Null,
+        ?   photo_profil?: String | Null,
+        ?   latitude?: Float | Null,
+        ?   longitude?: Float | Null,
+        ?   langue_preferee?: Langue,
+        ?   statut_compte?: StatutCompte,
+        ?   date_creation?: DateTime,
+        ?   derniere_connexion?: DateTime | Null,
+        ?   email_verifie?: DateTime | Null,
+        ?   patient?: PatientCreateNestedOneWithoutUtilisateurInput,
+        ?   professionnel?: ProfessionnelSanteCreateNestedOneWithoutUtilisateurInput,
+        ?   livreur?: LivreurCreateNestedOneWithoutUtilisateurInput,
+        ?   pharmacies?: PharmacieCreateNestedManyWithoutResponsableInput,
+        ?   emploisPharmacie?: EmployePharmacieCreateNestedManyWithoutUtilisateurInput,
+        ?   tuteurPatients?: PatientCreateNestedManyWithoutTuteurInput,
+        ?   accesCarnets?: AccesCarnetCreateNestedManyWithoutAccedantInput
+          }
+        })
+
+Unknown argument `role`. Did you mean `nom`? Available options are marked with ?.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:27
+    at async Proxy._transactionWithCallback (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:4668)
+    at async exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:30:25)
+2026-04-29 16:59:23 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:59:23 +0000] "POST /api/auth/register HTTP/1.1" 500 5087 "-" "-"
+2026-04-29 16:59:23 [INFO]: ::ffff:127.0.0.1 - - [29/Apr/2026:15:59:23 +0000] "POST /api/auth/register HTTP/1.1" 400 77 "-" "-"
+2026-04-30 05:05:23 [ERROR]: PrismaClientValidationError: 
+Invalid `tx.utilisateur.create()` invocation in
+C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:48
+
+  6 async create(userData, roleData = {}) {
+  7   return prisma.$transaction(async (tx) => {
+  8     // 1. Créer l'utilisateur
+→ 9     const utilisateur = await tx.utilisateur.create({
+          data: {
+            label: "MEDECIN",
+            ~~~~~
+            type_utilisateur: "MEDECIN",
+            nom: "Docteur",
+            prenom: "Med",
+            sexe: "M",
+            email: "bernardmama95@gmail.com",
+            telephone: "000000041",
+            mot_de_passe_hash: "$2a$12$BV2ndbi47gK3vvsKP7z6b.JuZqjTFj1mvIeqbHSGTiIeRBeixRn3G",
+        ?   id_utilisateur?: String,
+        ?   date_naissance?: DateTime | Null,
+        ?   photo_profil?: String | Null,
+        ?   latitude?: Float | Null,
+        ?   longitude?: Float | Null,
+        ?   langue_preferee?: Langue,
+        ?   statut_compte?: StatutCompte,
+        ?   date_creation?: DateTime,
+        ?   derniere_connexion?: DateTime | Null,
+        ?   email_verifie?: DateTime | Null,
+        ?   patient?: PatientCreateNestedOneWithoutUtilisateurInput,
+        ?   professionnel?: ProfessionnelSanteCreateNestedOneWithoutUtilisateurInput,
+        ?   livreur?: LivreurCreateNestedOneWithoutUtilisateurInput,
+        ?   pharmacies?: PharmacieCreateNestedManyWithoutResponsableInput,
+        ?   emploisPharmacie?: EmployePharmacieCreateNestedManyWithoutUtilisateurInput,
+        ?   tuteurPatients?: PatientCreateNestedManyWithoutTuteurInput,
+        ?   accesCarnets?: AccesCarnetCreateNestedManyWithoutAccedantInput
+          }
+        })
+
+Unknown argument `label`. Available options are marked with ?.
+    at ar (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\services\utilisateurService.js:9:27
+    at async Proxy._transactionWithCallback (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:4668)
+    at async exports.register (C:\Users\BERIOLE\Desktop\Projet soutenenace\projet\smarthealth\BACKEND\controllers\authController.js:30:25)
+2026-04-30 05:05:23 [INFO]: ::ffff:127.0.0.1 - - [30/Apr/2026:04:05:23 +0000] "POST /api/auth/register HTTP/1.1" 500 5053 "-" "-"
+2026-05-08 21:22:46 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 05:59:09 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 05:59:09 [INFO]: 🚀 SmartHealth server running on port 3999
+2026-06-12 05:59:35 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 05:59:35 [INFO]: 🚀 SmartHealth server running on port 3998
+2026-06-12 05:59:40 [INFO]: ::1 - - [12/Jun/2026:04:59:40 +0000] "GET /health HTTP/1.1" 200 54 "-" "curl/8.16.0"
+2026-06-12 05:59:40 [INFO]: ::1 - - [12/Jun/2026:04:59:40 +0000] "GET /api/articles HTTP/1.1" 200 65 "-" "curl/8.16.0"
+2026-06-12 05:59:40 [INFO]: ::1 - - [12/Jun/2026:04:59:40 +0000] "GET /api/utilisateurs/123 HTTP/1.1" 401 64 "-" "curl/8.16.0"
+2026-06-12 05:59:40 [INFO]: ::1 - - [12/Jun/2026:04:59:40 +0000] "POST /api/ia/diagnostic HTTP/1.1" 401 64 "-" "curl/8.16.0"
+2026-06-12 05:59:41 [INFO]: ::1 - - [12/Jun/2026:04:59:41 +0000] "GET /api/admin/dashboard HTTP/1.1" 401 64 "-" "curl/8.16.0"
+2026-06-12 05:59:41 [INFO]: ::1 - - [12/Jun/2026:04:59:41 +0000] "GET /api/triage HTTP/1.1" 401 64 "-" "curl/8.16.0"
+2026-06-12 11:40:30 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 11:40:30 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 11:40:57 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 11:40:58 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 11:41:06 [INFO]: ::1 - - [12/Jun/2026:10:41:06 +0000] "POST /api/ia/diagnostic HTTP/1.1" 200 3124 "-" "curl/8.16.0"
+2026-06-12 12:01:18 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 12:01:18 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 12:01:26 [INFO]: ::1 - - [12/Jun/2026:11:01:26 +0000] "POST /api/ia/diagnostic HTTP/1.1" 200 2840 "-" "curl/8.16.0"
+2026-06-12 12:03:00 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 12:03:00 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 12:03:07 [INFO]: ::1 - - [12/Jun/2026:11:03:07 +0000] "POST /api/ia/diagnostic HTTP/1.1" 200 2756 "-" "curl/8.16.0"
+2026-06-12 12:04:05 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 12:04:05 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 12:04:13 [INFO]: ::1 - - [12/Jun/2026:11:04:13 +0000] "POST /api/ia/diagnostic HTTP/1.1" 200 4014 "-" "curl/8.16.0"
+2026-06-12 12:17:13 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 12:17:13 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 12:17:17 [INFO]: ::1 - - [12/Jun/2026:11:17:17 +0000] "GET /api-docs/ HTTP/1.1" 200 3129 "-" "curl/8.16.0"
+2026-06-12 12:17:18 [INFO]: ::1 - - [12/Jun/2026:11:17:18 +0000] "GET /api-docs.json HTTP/1.1" 200 8832 "-" "curl/8.16.0"
+2026-06-12 20:02:26 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:02:26 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:02:32 [INFO]: ::1 - - [12/Jun/2026:19:02:32 +0000] "POST /api/auth/login HTTP/1.1" 200 793 "-" "curl/8.16.0"
+2026-06-12 20:02:32 [INFO]: ::1 - - [12/Jun/2026:19:02:32 +0000] "GET /api/rappels/risque-observance HTTP/1.1" 200 158 "-" "curl/8.16.0"
+2026-06-12 20:06:24 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:06:24 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:06:30 [INFO]: ::1 - - [12/Jun/2026:19:06:30 +0000] "POST /api/auth/login HTTP/1.1" 200 815 "-" "curl/8.16.0"
+2026-06-12 20:06:30 [INFO]: ::1 - - [12/Jun/2026:19:06:30 +0000] "GET /api/rappels/stats/globales HTTP/1.1" 200 130 "-" "curl/8.16.0"
+2026-06-12 20:06:30 [INFO]: ::1 - - [12/Jun/2026:19:06:30 +0000] "GET /api/rappels/risque-observance HTTP/1.1" 200 1488 "-" "curl/8.16.0"
+2026-06-12 20:34:18 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:34:18 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:34:23 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.medicament.findMany()` invocation in
+C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:19:25
+
+  16 }
+  17 
+  18 const [data, total] = await Promise.all([
+→ 19   prisma.medicament.findMany({
+         where: {},
+         skip: 0,
+         take: "10",
+               ~~~~
+         orderBy: {
+           nom_commercial: "asc"
+         }
+       })
+
+Argument `take`: Invalid value provided. Expected Int, provided String.
+    at ar (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async Promise.all (index 0)
+    at async exports.getAll (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:18:27)
+2026-06-12 20:34:23 [INFO]: ::1 - - [12/Jun/2026:19:34:23 +0000] "GET /api/medicaments?page=1&limit=10 HTTP/1.1" 500 2319 "-" "curl/8.16.0"
+2026-06-12 20:41:40 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:41:40 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:41:44 [INFO]: ::1 - - [12/Jun/2026:19:41:44 +0000] "GET /api/medicaments HTTP/1.1" 200 4864 "-" "curl/8.16.0"
+2026-06-12 20:44:47 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:44:47 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:44:52 [INFO]: ::1 - - [12/Jun/2026:19:44:52 +0000] "GET /api/medicaments HTTP/1.1" 200 4864 "-" "curl/8.16.0"
+2026-06-12 20:45:18 [INFO]: [CRON] Tâches planifiées initialisées (rappels, prises manquées, ordonnances expirées).
+2026-06-12 20:45:18 [INFO]: 🚀 SmartHealth server running on port 3000
+2026-06-12 20:45:23 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.medicament.findMany()` invocation in
+C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:19:25
+
+  16 }
+  17 
+  18 const [data, total] = await Promise.all([
+→ 19   prisma.medicament.findMany({
+         where: {},
+         skip: 0,
+         take: "10",
+               ~~~~
+         orderBy: {
+           nom_commercial: "asc"
+         }
+       })
+
+Argument `take`: Invalid value provided. Expected Int, provided String.
+    at ar (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async Promise.all (index 0)
+    at async exports.getAll (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:18:27)
+2026-06-12 20:45:23 [INFO]: ::1 - - [12/Jun/2026:19:45:23 +0000] "GET /api/medicaments?limit=10 HTTP/1.1" 500 2319 "-" "curl/8.16.0"
+2026-06-12 20:45:23 [ERROR]: PrismaClientValidationError: 
+Invalid `prisma.medicament.findMany()` invocation in
+C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:19:25
+
+  16 }
+  17 
+  18 const [data, total] = await Promise.all([
+→ 19   prisma.medicament.findMany({
+         where: {},
+         skip: 0,
+         take: "10",
+               ~~~~
+         orderBy: {
+           nom_commercial: "asc"
+         }
+       })
+
+Argument `take`: Invalid value provided. Expected Int, provided String.
+    at ar (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at Gr.handleRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at Gr.handleAndLogRequestError (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at Gr.request (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\node_modules\@prisma\client\runtime\client.js:75:6730)
+    at async Promise.all (index 0)
+    at async exports.getAll (C:\Users\BERIOLE\Desktop\Mes_dossier\Projet soutenenace\projet\smarthealth\BACKEND\controllers\medicamentController.js:18:27)
+2026-06-12 20:45:23 [INFO]: ::1 - - [12/Jun/2026:19:45:23 +0000] "GET /api/medicaments?limit=10 HTTP/1.1" 500 2319 "-" "curl/8.16.0"
+2026-06-13 02:00:00 [INFO]: [CRON] 1 ordonnance(s) expirée(s) archivée(s).

@@ -1,77 +1,46 @@
 const request = require('supertest');
 const app = require('../src/server');
-const { prisma } = require('../services/database');
+const { registerAndLogin, getProfileId } = require('./auth-helper');
 
-describe('Patient Controller Integration Tests', () => {
-  let token;
-  let patientId;
-  let userId;
-
-  const testUser = {
-    nom: 'Doe',
-    prenom: 'John',
-    email: 'berioletsague@gmail.com',
-    mot_de_passe: 'Password123!',
-    telephone: '000000020',
-    type_utilisateur: 'PATIENT',
-    sexe: 'M'
-  };
+describe('Patients', () => {
+  let admin, patient, patientId;
 
   beforeAll(async () => {
-    // S'inscrire d'abord pour avoir un compte
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send(testUser);
-    
-    userId = res.body.data.id_utilisateur;
-    token = res.body.data.token; // si l'inscription renvoie un token, sinon on se connectera.
-    
-    if (!token) {
-       const login = await request(app).post('/api/auth/login').send({ email: testUser.email, mot_de_passe: testUser.mot_de_passe });
-       token = login.body.data.token;
-    }
-
-    // Récupérer le patient lié à cet utilisateur
-    const patientRow = await prisma.patient.findUnique({ where: { id_utilisateur: userId }});
-    patientId = patientRow.id_patient;
+    admin = await registerAndLogin(app, { nom: 'Admin', prenom: 'P', type_utilisateur: 'ADMIN', sexe: 'M' });
+    patient = await registerAndLogin(app, { nom: 'Patient', prenom: 'P', type_utilisateur: 'PATIENT', sexe: 'F' });
+    patientId = await getProfileId('PATIENT', patient.id_utilisateur);
   });
 
-  it('devrait récupérer la liste des patients', async () => {
-    const res = await request(app)
-      .get('/api/patients')
-      .set('Authorization', `Bearer ${token}`);
+  it('crée un profil patient + carnet à l’inscription', () => {
+    expect(patientId).toBeDefined();
+  });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBeTruthy();
+  it('liste les patients (ADMIN)', async () => {
+    const res = await request(app).get('/api/patients').set('Authorization', `Bearer ${admin.token}`);
+    expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body.data.data)).toBe(true);
-    // Au moins le patient qu'on vient de créer doit y être
-    expect(res.body.data.total).toBeGreaterThanOrEqual(1); 
+    expect(res.body.data.total).toBeGreaterThanOrEqual(1);
   });
 
-  it('devrait récupérer les détails du profil patient par ID', async () => {
-    const res = await request(app)
-      .get(`/api/patients/${patientId}`)
-      .set('Authorization', `Bearer ${token}`);
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBeTruthy();
-    expect(res.body.data.id_patient).toEqual(patientId);
+  it('récupère un patient par ID (authentifié)', async () => {
+    const res = await request(app).get('/api/patients/' + patientId).set('Authorization', `Bearer ${patient.token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.id_patient).toBe(patientId);
   });
 
-  it('devrait mettre à jour son propre profil', async () => {
+  it('met à jour les données médicales du patient', async () => {
     const res = await request(app)
-      .put(`/api/patients/${patientId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        poids_kg: 75.5,
-        taille_cm: 180,
-        groupe_sanguin: 'O_PLUS'
-      });
+      .put('/api/patients/' + patientId)
+      .set('Authorization', `Bearer ${patient.token}`)
+      .send({ poids_kg: 75.5, taille_cm: 180, groupe_sanguin: 'O_PLUS', allergies_connues: 'Pénicilline' });
+    expect(res.statusCode).toBe(200);
+    expect(Number(res.body.data.poids_kg)).toBe(75.5);
+    expect(res.body.data.taille_cm).toBe(180);
+    expect(res.body.data.groupe_sanguin).toBe('O_PLUS');
+  });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBeTruthy();
-    expect(res.body.data.poids_kg).toEqual(75.5);
-    expect(res.body.data.taille_cm).toEqual(180);
-    expect(res.body.data.groupe_sanguin).toEqual('O_PLUS');
+  it('exige un token (401)', async () => {
+    const res = await request(app).get('/api/patients/' + patientId);
+    expect(res.statusCode).toBe(401);
   });
 });

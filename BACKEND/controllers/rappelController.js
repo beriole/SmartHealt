@@ -1,5 +1,6 @@
 const { NotFoundError, ForbiddenError, ValidationError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
+const { predictObservance } = require('../services/mlService');
 
 exports.createRappel = async (req, res, next) => {
   try {
@@ -176,6 +177,90 @@ exports.getStatsGlobales = async (req, res, next) => {
         prises_manquees: prisesManquees,
         taux_observance_pourcentage: Math.round(tauxObservance * 100) / 100
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Prédit, via le modèle d'observance interne, le risque d'oubli des prochaines prises
+ * du patient — afin de cibler les rappels et alerter le tuteur si nécessaire.
+ */
+exports.getRisqueObservance = async (req, res, next) => {
+  try {
+    const patient = await prisma.patient.findUnique({
+      where: { id_utilisateur: req.user.id },
+      include: { utilisateur: { select: { date_naissance: true } } },
+    });
+    if (!patient) throw new ForbiddenError('Patient introuvable.');
+
+    const now = new Date();
+
+    // Observance historique + nombre de traitements actifs
+    const [total, effectuees, traitementsActifs] = await Promise.all([
+      prisma.priseMedicament.count({ where: { rappel: { id_patient: patient.id_patient }, date_heure_prevue: { lte: now } } }),
+      prisma.priseMedicament.count({ where: { rappel: { id_patient: patient.id_patient }, date_heure_prevue: { lte: now }, statut_prise: 'prise' } }),
+      prisma.rappelTraitement.count({ where: { id_patient: patient.id_patient, statut: 'actif' } }),
+    ]);
+    const tauxHist = total > 0 ? effectuees / total : 0.9;
+
+    const age = patient.utilisateur.date_naissance
+      ? Math.floor((Date.now() - new Date(patient.utilisateur.date_naissance).getTime()) / (365.25 * 24 * 3600 * 1000))
+      : 40;
+
+    // Prochaines prises en attente
+    const prochaines = await prisma.priseMedicament.findMany({
+      where: { rappel: { id_patient: patient.id_patient }, statut_prise: 'en_attente', date_heure_prevue: { gte: now } },
+      include: { rappel: { include: { medicament: true } } },
+      orderBy: { date_heure_prevue: 'asc' },
+      take: 8,
+    });
+
+    const evaluations = [];
+    for (const prise of prochaines) {
+      const d = new Date(prise.date_heure_prevue);
+      const joursDepuis = Math.max(0, Math.floor((d.getTime() - new Date(prise.rappel.date_debut).getTime()) / (24 * 3600 * 1000)));
+      const pred = await predictObservance({
+        age,
+        nb_traitements_actifs: traitementsActifs,
+        taux_observance_historique: Math.round(tauxHist * 100) / 100,
+        heure_prise: d.getHours(),
+        jour_semaine: (d.getDay() + 6) % 7, // JS dimanche=0 → lundi=0
+        jours_depuis_debut: joursDepuis,
+      });
+      if (pred) {
+        evaluations.push({
+          id_prise: prise.id_prise,
+          medicament: prise.rappel.medicament?.nom_commercial,
+          date_heure_prevue: prise.date_heure_prevue,
+          probabilite_oubli_pourcent: pred.probabilite_oubli_pourcent,
+          niveau_risque: pred.niveau_risque,
+          facteurs: pred.facteurs,
+        });
+      }
+    }
+
+    if (evaluations.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          disponible: false,
+          message: "Aucune prise à venir, ou modèle d'observance indisponible.",
+          taux_observance_historique_pourcent: Math.round(tauxHist * 100),
+        },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        version_modele: 'randomforest-observance-v1',
+        taux_observance_historique_pourcent: Math.round(tauxHist * 100),
+        traitements_actifs: traitementsActifs,
+        prises_a_risque: evaluations.filter(e => ['eleve', 'tres_eleve'].includes(e.niveau_risque)),
+        evaluations,
+      },
     });
   } catch (error) {
     next(error);

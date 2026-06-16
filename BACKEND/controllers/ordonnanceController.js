@@ -1,7 +1,8 @@
-const { NotFoundError, ForbiddenError } = require('../errors/AppError');
+const { NotFoundError, ForbiddenError, ValidationError } = require('../errors/AppError');
 const { prisma } = require('../services/database');
 const crypto = require('crypto');
 const { sendOrdonnanceNotification } = require('../utils/email');
+const { logAction } = require('../services/auditService');
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -109,6 +110,67 @@ exports.create = async (req, res, next) => {
     );
 
     res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Traitement d'une ordonnance par un pharmacien :
+ * - action "servir"  : marque les lignes fournies comme servies et met à jour
+ *   le statut (partiellement_servie / servie)
+ * - action "refuser" : consigne le motif dans notes_pharmacien sans servir
+ */
+exports.traiter = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { action, lignes_servies = [], notes_pharmacien } = req.body;
+
+    if (!['servir', 'refuser'].includes(action)) {
+      throw new ValidationError("L'action doit être 'servir' ou 'refuser'.");
+    }
+
+    const ordonnance = await prisma.ordonnance.findUnique({
+      where: { id_ordonnance: id },
+      include: { lignes: true },
+    });
+    if (!ordonnance) throw new NotFoundError('Ordonnance');
+    if (ordonnance.statut === 'expiree') throw new ValidationError('Cette ordonnance est expirée.');
+
+    let result;
+    if (action === 'refuser') {
+      if (!notes_pharmacien) throw new ValidationError('Un motif de refus (notes_pharmacien) est requis.');
+      result = await prisma.ordonnance.update({
+        where: { id_ordonnance: id },
+        data: { notes_pharmacien: `[REFUS] ${notes_pharmacien}` },
+      });
+    } else {
+      if (lignes_servies.length === 0) throw new ValidationError('Indiquez les lignes servies (lignes_servies).');
+
+      result = await prisma.$transaction(async (tx) => {
+        await tx.ligneOrdonnance.updateMany({
+          where: { id_ordonnance: id, id_ligne: { in: lignes_servies } },
+          data: { servi: true },
+        });
+
+        const restantes = await tx.ligneOrdonnance.count({
+          where: { id_ordonnance: id, servi: false },
+        });
+
+        return tx.ordonnance.update({
+          where: { id_ordonnance: id },
+          data: {
+            statut: restantes === 0 ? 'servie' : 'partiellement_servie',
+            notes_pharmacien: notes_pharmacien || ordonnance.notes_pharmacien,
+          },
+          include: { lignes: { include: { medicament: true } } },
+        });
+      });
+    }
+
+    logAction({ id_utilisateur: req.user.id, action: `ORDONNANCE_${action.toUpperCase()}`, ressource: 'ordonnance', id_ressource: id, req });
+
+    res.json({ success: true, message: `Ordonnance ${action === 'servir' ? 'traitée' : 'refusée'}.`, data: result });
   } catch (error) {
     next(error);
   }

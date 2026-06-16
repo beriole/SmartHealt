@@ -1,0 +1,92 @@
+{
+  "version": "randomforest-risque-v1",
+  "n_echantillons": 4000,
+  "diabete": {
+    "accuracy": 0.7388,
+    "f1": 0.6079,
+    "roc_auc": 0.788,
+    "importances": [
+      {
+        "feature": "glucose",
+        "poids": 0.3708
+      },
+      {
+        "feature": "imc",
+        "poids": 0.2158
+      },
+      {
+        "feature": "age",
+        "poids": 0.1982
+      },
+      {
+        "feature": "tension_systolique",
+        "poids": 0.1522
+      },
+      {
+        "feature": "antecedent_familial_diabete",
+        "poids": 0.0189
+      },
+      {
+        "feature": "sexe_homme",
+        "poids": 0.0164
+      },
+      {
+        "feature": "hypertension",
+        "poids": 0.0145
+      },
+      {
+        "feature": "fumeur",
+        "poids": 0.0131
+      }
+    ],
+    "taux_positif": 0.3195
+  },
+  "cardiovasculaire": {
+    "accuracy": 0.7188,
+    "f1": 0.558,
+    "roc_auc": 0.7588,
+    "importances": [
+      {
+        "feature": "age",
+        "poids": 0.2827
+      },
+      {
+        "feature": "tension_systolique",
+        "poids": 0.1914
+      },
+      {
+        "feature": "cholesterol",
+        "poids": 0.1694
+      },
+      {
+        "feature": "imc",
+        "poids": 0.1494
+      },
+      {
+        "feature": "glucose",
+        "poids": 0.1149
+      },
+      {
+        "feature": "hypertension",
+        "poids": 0.0297
+      },
+      {
+        "feature": "fumeur",
+        "poids": 0.0241
+      },
+      {
+        "feature": "sexe_homme",
+        "poids": 0.0178
+      },
+      {
+        "feature": "antecedent_familial_cardiaque",
+        "poids": 0.0133
+      },
+      {
+        "feature": "diabete_existant",
+        "poids": 0.0072
+      }
+    ],
+    "taux_positif": 0.3003
+  }
+}

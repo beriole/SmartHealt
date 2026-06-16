@@ -1,0 +1,39 @@
+{
+  "version": "randomforest-observance-v1",
+  "source_entrainement": "synthetique",
+  "n_echantillons": 5000,
+  "taux_oubli": 0.3132,
+  "accuracy": 0.654,
+  "f1": 0.5029,
+  "roc_auc": 0.6679,
+  "importances": [
+    {
+      "feature": "jours_depuis_debut",
+      "poids": 0.2661
+    },
+    {
+      "feature": "taux_observance_historique",
+      "poids": 0.2656
+    },
+    {
+      "feature": "age",
+      "poids": 0.2165
+    },
+    {
+      "feature": "nb_traitements_actifs",
+      "poids": 0.1116
+    },
+    {
+      "feature": "heure_prise",
+      "poids": 0.0854
+    },
+    {
+      "feature": "est_soir",
+      "poids": 0.0276
+    },
+    {
+      "feature": "est_weekend",
+      "poids": 0.0272
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "description": "Base de connaissances clinique pour l'entraînement du classifieur de diagnostic SmartHealth. Chaque maladie associe des symptômes à leur probabilité d'apparition (0-1). Adaptée au contexte de l'Afrique centrale (Cameroun). À remplacer / enrichir par un dataset labellisé réel (ex. Kaggle SymbiPredict) pour une mise en production.",
+  "version": "1.0.0",
+  "maladies": [
+    {
+      "nom": "Paludisme",
+      "specialite": "Médecine générale",
+      "niveau_urgence": "urgent",
+      "symptomes": {
+        "fievre": 0.95, "frissons": 0.85, "maux_de_tete": 0.8, "fatigue": 0.8,
+        "courbatures": 0.75, "sueurs": 0.7, "nausees": 0.5, "vomissements": 0.45,
+        "perte_appetit": 0.6, "vertiges": 0.4, "paleur": 0.35, "douleurs_abdominales": 0.3
+      }
+    },
+    {
+      "nom": "Fièvre typhoïde",
+      "specialite": "Médecine générale",
+      "niveau_urgence": "urgent",
+      "symptomes": {
+        "fievre": 0.9, "maux_de_tete": 0.75, "fatigue": 0.8, "douleurs_abdominales": 0.7,
+        "perte_appetit": 0.7, "constipation": 0.4, "diarrhee": 0.45, "nausees": 0.5,
+        "courbatures": 0.5, "eruption_cutanee": 0.25, "confusion": 0.2
+      }
+    },
+    {
+      "nom": "Infection virale (grippe)",
+      "specialite": "Médecine générale",
+      "niveau_urgence": "faible",
+      "symptomes": {
+        "fievre": 0.7, "maux_de_tete": 0.65, "fatigue": 0.8, "courbatures": 0.7,
+        "toux_seche": 0.6, "mal_de_gorge": 0.55, "ecoulement_nasal": 0.6,
+        "frissons": 0.4, "perte_appetit": 0.4, "eternuements": 0.5
+      }
+    },
+    {
+      "nom": "Gastro-entérite",
+      "specialite": "Médecine générale",
+      "niveau_urgence": "modere",
+      "symptomes": {
+        "diarrhee": 0.9, "vomissements": 0.7, "nausees": 0.75, "douleurs_abdominales": 0.8,
+        "fievre": 0.4, "fatigue": 0.55, "deshydratation": 0.45, "ballonnements": 0.4,
+        "perte_appetit": 0.5, "crampes": 0.5
+      }
+    },
+    {
+      "nom": "Pneumonie",
+      "specialite": "Pneumologie",
+      "niveau_urgence": "tres_urgent",
+      "symptomes": {
+        "fievre": 0.85, "toux_grasse": 0.8, "difficulte_respiratoire": 0.75,
+        "douleur_thoracique": 0.6, "fatigue": 0.7, "frissons": 0.6, "essoufflement": 0.65,
+        "sueurs": 0.45, "perte_appetit": 0.4, "confusion": 0.2
+      }
+    },
+    {
+      "nom": "Amibiase / Parasitose intestinale",
+      "specialite": "Médecine générale",
+      "niveau_urgence": "modere",
+      "symptomes": {
+        "diarrhee": 0.85, "douleurs_abdominales": 0.8, "sang_dans_selles": 0.5,
+        "ballonnements": 0.5, "fatigue": 0.5, "perte_appetit": 0.5, "perte_poids": 0.4,
+        "nausees": 0.4, "crampes": 0.55, "fievre": 0.3
+      }
+    },
+    {
+      "nom": "Infection urinaire",
+      "specialite": "Urologie",
+      "niveau_urgence": "modere",
+      "symptomes": {
+        "mictions_douloureuses": 0.9, "urines_frequentes": 0.8, "douleurs_abdominales": 0.5,
+        "sang_dans_urine": 0.35, "fievre": 0.35, "fatigue": 0.4, "urines_troubles": 0.6,
+        "douleur_lombaire": 0.4, "envie_urgente_uriner": 0.7
+      }
+    },
+    {
+      "nom": "Hypertension artérielle",
+      "specialite": "Cardiologie",
+      "niveau_urgence": "modere",
+      "symptomes": {
+        "maux_de_tete": 0.7, "vertiges": 0.6, "palpitations": 0.55, "vision_floue": 0.45,
+        "fatigue": 0.5, "essoufflement": 0.4, "saignement_nez": 0.3, "bourdonnement_oreilles": 0.35,
+        "douleur_thoracique": 0.3
+      }
+    },
+    {
+      "nom": "Diabète (décompensation)",
+      "specialite": "Endocrinologie",
+      "niveau_urgence": "urgent",
+      "symptomes": {
+        "soif_intense": 0.85, "urines_frequentes": 0.85, "fatigue": 0.75, "perte_poids": 0.6,
+        "vision_floue": 0.5, "faim_intense": 0.55, "cicatrisation_lente": 0.4,
+        "demangeaisons": 0.35, "vertiges": 0.4
+      }
+    },
+    {
+      "nom": "Crise drépanocytaire",
+      "specialite": "Hématologie",
+      "niveau_urgence": "tres_urgent",
+      "symptomes": {
+        "douleur_articulaire": 0.85, "douleurs_abdominales": 0.6, "fatigue": 0.75,
+        "paleur": 0.7, "fievre": 0.5, "essoufflement": 0.5, "jaunisse": 0.45,
+        "gonflement_extremites": 0.5, "douleur_osseuse": 0.7
+      }
+    },
+    {
+      "nom": "Méningite",
+      "specialite": "Neurologie",
+      "niveau_urgence": "tres_urgent",
+      "symptomes": {
+        "fievre": 0.9, "maux_de_tete": 0.9, "raideur_nuque": 0.85, "photophobie": 0.7,
+        "vomissements": 0.6, "confusion": 0.6, "fatigue": 0.6, "eruption_cutanee": 0.4,
+        "convulsions": 0.3, "somnolence": 0.5
+      }
+    },
+    {
+      "nom": "COVID-19",
+      "specialite": "Pneumologie",
+      "niveau_urgence": "urgent",
+      "symptomes": {
+        "fievre": 0.7, "toux_seche": 0.7, "fatigue": 0.75, "difficulte_respiratoire": 0.55,
+        "perte_gout_odorat": 0.6, "maux_de_tete": 0.5, "courbatures": 0.55, "mal_de_gorge": 0.45,
+        "essoufflement": 0.5, "ecoulement_nasal": 0.3
+      }
+    },
+    {
+      "nom": "Angine",
+      "specialite": "ORL",
+      "niveau_urgence": "faible",
+      "symptomes": {
+        "mal_de_gorge": 0.9, "fievre": 0.6, "difficulte_avaler": 0.7, "ganglions_gonfles": 0.6,
+        "fatigue": 0.5, "maux_de_tete": 0.4, "toux_seche": 0.3, "perte_appetit": 0.35
+      }
+    },
+    {
+      "nom": "Conjonctivite",
+      "specialite": "Ophtalmologie",
+      "niveau_urgence": "faible",
+      "symptomes": {
+        "yeux_rouges": 0.9, "demangeaisons_yeux": 0.7, "larmoiement": 0.7,
+        "secretions_oculaires": 0.6, "sensibilite_lumiere": 0.4, "gonflement_paupieres": 0.4,
+        "sensation_corps_etranger": 0.45
+      }
+    }
+  ]
+}

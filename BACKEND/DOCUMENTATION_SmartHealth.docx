@@ -1,0 +1,288 @@
+# SmartHealth Platform - Documentation Technique
+
+## Table des Matières
+1. Vue d'ensemble du Projet
+2. Architecture Technique
+3. Modèle de Données
+4. API et Endpoints
+5. Comptes et Rôles Utilisateurs
+6. Flux Métier Principaux
+7. Installation et Configuration
+8. Sécurité
+9. Déploiement
+
+---
+
+## 1. Vue d'ensemble du Projet
+
+### 1.1 Présentation
+SmartHealth est une plateforme de santé numérique complète conçue pour connecter les patients, les professionnels de santé et les pharmacies. Elle permet la gestion intégrée des consultations, ordonnances, commandes de médicaments, interventions à domicile et suivi de traitement.
+
+### 1.2 Fonctionnalités Principales
+- **Gestion des utilisateurs** : Patients, médecins, pharmaciens, infirmiers, livreurs, tuteurs
+- **Carnets de santé numériques** : QR code, accès sécurisé, vaccination
+- **Consultations** : Présentielles, téléconsultations, à domicile
+- **Ordonnances électroniques** : Création, suivi, notification
+- **Pharmacies** : Gestion des stocks, commandes, livraison
+- **Interventions à domicile** : Soins infirmiers à domicile
+- **Triage IA** : Analyse des symptômes et recommandations
+- **Rappels de traitement** : Notifications automatisées
+- **Partenaires B2B** : Intégration tierce avec OAuth
+
+---
+
+## 2. Architecture Technique
+
+### 2.1 Stack Technologique
+- **Runtime** : Node.js
+- **Framework** : Express.js (v5.2.1)
+- **Base de données** : PostgreSQL
+- **ORM** : Prisma (v7.6.0)
+- **Authentification** : JWT (jsonwebtoken v9.0.2)
+- **Validation** : express-validator v7.2.1
+- **Sécurité** : helmet, cors, express-rate-limit
+- **Logging** : Winston v3.17.0
+- **Tâches planifiées** : node-cron v4.2.1
+- **Upload fichiers** : multer v1.4.5-lts.1
+
+### 2.2 Structure des Dossiers
+```
+BACKEND/
+├── src/
+│   └── server.js          # Entrée principale
+├── routes/                # Routes API
+├── controllers/           # Logique métier
+├── services/              # Services métier
+├── validators/            # Validation des données
+├── utils/                 # Utilitaires
+├── tests/                 # Tests unitaires et E2E
+├── prisma/
+│   └── schema.prisma      # Schéma de base de données
+└── uploads/               # Fichiers uploadés
+```
+
+---
+
+## 3. Modèle de Données
+
+### 3.1 Entités Principales
+
+**Utilisateur** (Table: utilisateur)
+- id_utilisateur (UUID, PK)
+- nom, prenom
+- email (unique)
+- telephone (unique)
+- mot_de_passe_hash
+- type_utilisateur (PATIENT, MEDECIN, PHARMACIEN, INFIRMIER, LIVREUR, TUTEUR, ADMIN)
+- sexe, date_naissance
+- latitude, longitude
+- statut_compte
+
+**Patient** (Table: patient)
+- id_patient (UUID, PK)
+- id_utilisateur (FK)
+- numero_carnet (unique)
+- groupe_sanguin
+- poids_kg, taille_cm
+- allergies_connues, antecedents_medicaux
+
+**ProfessionnelSante** (Table: professionnel_sante)
+- id_professionnel (UUID, PK)
+- id_utilisateur (FK)
+- numero_ordre (unique)
+- specialite, sous_specialite
+- structure_exercice
+- statut_verification
+
+**Pharmacie** (Table: pharmacie)
+- id_pharmacie (UUID, PK)
+- id_responsable (FK utilisateur)
+- nom_pharmacie
+- numero_autorisation (unique)
+- adresse, latitude, longitude
+- statut_verification
+
+**Consultation** (Table: consultation)
+- id_consultation (UUID, PK)
+- id_patient, id_professionnel, id_carnet (FK)
+- date_consultation
+- motif, diagnostic, observations
+- type_consultation (presentiel, teleconsultation, domicile)
+- statut (planifiee, effectuee, annulee, no_show)
+
+**Ordonnance** (Table: ordonnance)
+- id_ordonnance (UUID, PK)
+- id_consultation, id_professionnel, id_patient (FK)
+- date_emission, date_expiration
+- statut (active, partiellement_servie, servie, expiree)
+
+**Commande** (Table: commande)
+- id_commande (UUID, PK)
+- id_patient, id_pharmacie, id_ordonnance (FK)
+- type_livraison (retrait_en_pharmacie, livraison_domicile)
+- statut_commande (en_attente, confirmee, preparee, en_livraison, livree, annulee)
+- statut_paiement (en_attente, paye, rembourse, echoue)
+
+---
+
+## 4. API et Endpoints
+
+### 4.1 Endpoints Principaux
+
+**Authentification** (`/api/auth`)
+- POST `/register` - Inscription utilisateur
+- POST `/login` - Connexion
+- GET `/verify-email/:token` - Vérification email
+
+**Patients** (`/api/patients`)
+- GET `/` - Liste des patients (paginated)
+- GET `/:id` - Détails patient
+- PUT `/:id` - Mise à jour patient
+
+**Professionnels** (`/api/professionnels`)
+- GET `/` - Liste des professionnels
+- POST `/:id/upload-document` - Upload document vérification
+
+**Pharmacies** (`/api/pharmacies`)
+- GET `/` - Liste des pharmacies
+- POST `/` - Création pharmacie
+- POST `/:id_pharmacie/employes` - Ajouter employé
+
+**Médicaments** (`/api/medicaments`)
+- GET `/` - Liste des médicaments
+- POST `/` - Création médicament
+
+**Consultations** (`/api/consultations`)
+- GET `/` - Liste des consultations
+- POST `/` - Création consultation
+
+**Ordonnances** (`/api/ordonnances`)
+- GET `/` - Liste des ordonnances
+- POST `/` - Création ordonnance
+
+**Commandes** (`/api/commandes`)
+- GET `/` - Liste des commandes
+- POST `/` - Création commande
+- POST `/:id/payer` - Paiement commande
+
+**Carnets de Santé** (`/api/carnets`)
+- GET `/my-carnet` - Mon carnet
+- POST `/my-carnet/regenerate-qr` - Régénérer QR code
+
+**Rappels** (`/api/rappels`)
+- POST `/` - Créer rappel
+- GET `/` - Mes rappels
+- GET `/prises-du-jour` - Prises du jour
+
+**Triage IA** (`/api/triage`)
+- POST `/` - Session de triage
+- GET `/` - Historique sessions
+
+**B2B** (`/api/b2b`)
+- POST `/onboarding` - Enregistrement partenaire
+- POST `/oauth/token` - Token OAuth
+
+---
+
+## 5. Comptes et Rôles
+
+### 5.1 Types d'Utilisateurs
+| Type | Description | Fonctionnalités |
+|------|-------------|-----------------|
+| PATIENT | Utilisateur recherchant des soins | Consulter son carnet, ordonnances, commander des médicaments, recevoir des rappels |
+| MEDECIN | Professionnel de santé | Créer consultations, prescrire ordonnances, interventions |
+| PHARMACIEN | Gestionnaire de pharmacie | Gérer stocks, préparer commandes, gérer employés |
+| INFIRMIER | Soins à domicile | Interventions, suivis patients |
+| LIVREUR | Livraison | Prise en charge livraisons, mise à jour statut |
+| TUTEUR | Représentant légal | Accès limité carnets patients liés |
+| ADMIN | Administrateur | Gestion complète, vérification comptes |
+
+---
+
+## 6. Flux Métier Principaux
+
+### 6.1 Parcours Patient Typique
+1. **Inscription** → Vérification email
+2. **Création carnet** → Génération QR code
+3. **Consultation** → Prescription ordonnance
+4. **Commande médicaments** → Paiement → Livraison
+5. **Suivi traitement** → Rappels automatisés
+
+### 6.2 Flux Pharmacie
+1. **Création pharmacie** → Vérification documents
+2. **Ajout employés** → Attribution rôles
+3. **Gestion stocks** → Alertes seuil
+4. **Préparation commandes** → Attribution livreur
+
+### 6.3 Flux B2B
+1. **Onboarding** → Demande d'agrément
+2. **Validation admin** → Génération client_id/secret
+3. **OAuth** → Accès API sécurisé
+
+---
+
+## 7. Installation et Configuration
+
+### 7.1 Prérequis
+- Node.js >= 18
+- PostgreSQL >= 14
+- npm ou yarn
+
+### 7.2 Installation
+```bash
+cd BACKEND
+npm install
+cp .env.example .env
+# Configurer DATABASE_URL dans .env
+npx prisma generate
+npx prisma migrate dev
+npm run dev
+```
+
+### 7.3 Variables d'Environnement
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/smarthealth
+JWT_SECRET=your-secret-key
+PORT=3000
+```
+
+---
+
+## 8. Sécurité
+
+### 8.1 Mesures Implémentées
+- **Authentification JWT** avec expiration
+- **Hachage mots de passe** bcryptjs
+- **Rate limiting** express-rate-limit
+- **Headers de sécurité** helmet
+- **Validation entrées** express-validator
+- **Gestion des erreurs** centralisée
+
+### 8.2 Bonnes Pratiques
+- Token dans header Authorization: Bearer
+- Refresh token pour sessions longues
+- Validation côté serveur systématique
+- Logs d'audit des actions sensibles
+
+---
+
+## 9. Déploiement
+
+### 9.1 Production
+- Utiliser PM2 ou cluster Node.js
+- Configurer reverse proxy (Nginx)
+- Activer HTTPS (SSL/TLS)
+- Monitoring logs avec Winston
+
+### 9.2 Commandes Utiles
+```bash
+npm start          # Production
+npm run dev        # Dev avec nodemon
+npm test           # Tests
+npm run lint       # Linting
+npx prisma studio  # Interface DB
+```
+
+---
+
+*Documentation générée pour SmartHealth v1.0.0 - Projet Soutenance 2026*

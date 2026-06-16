@@ -198,6 +198,36 @@ enum StatutIntervention {
   annulee
 }
 
+enum TypeMouvementStock {
+  entree
+  sortie
+  vente
+  retour
+  ajustement
+  peremption
+}
+
+enum CategorieArticle {
+  actualite
+  conseil_medical
+  sensibilisation
+  article_sante
+}
+
+enum StatutArticle {
+  brouillon
+  publie
+  archive
+}
+
+enum TypeAnalyseIa {
+  compatibilite_medicament
+  analyse_predictive
+  diagnostic
+  recommandation_traitement
+  medecine_traditionnelle
+}
+
 model Utilisateur {
   id_utilisateur      String           @id @default(uuid())
   nom                 String           @db.VarChar(100)
@@ -221,9 +251,13 @@ model Utilisateur {
   professionnel        ProfessionnelSante?
   livreur              Livreur?
   pharmacies           Pharmacie[]        @relation("PharmacienResponsable")
-  emploisPharmacie     EmployePharmacie[] 
+  emploisPharmacie     EmployePharmacie[]
   tuteurPatients       Patient[]          @relation("TuteurPatient")
   accesCarnets         AccesCarnet[]      @relation("Accedant")
+  articles             ArticleSante[]     @relation("AuteurArticle")
+  journauxAudit        JournalAudit[]
+  mouvementsStock      MouvementStock[]
+  refreshTokens        RefreshToken[]
 
   @@map("utilisateur")
 }
@@ -252,6 +286,7 @@ model Patient {
   triages                  TriageIa[]
   interventions            InterventionDomicile[]
   pinConsentements         PinConsentement[]
+  analysesIa               AnalyseIa[]
 
   @@map("patient")
 }
@@ -430,6 +465,7 @@ model Commande {
   montant_total_fcfa        Decimal            @db.Decimal(10, 2)
   statut_paiement            StatutPaiement     @default(en_attente)
   mode_paiement              ModePaiement?
+  reference_paiement         String?            @db.VarChar(100)
   statut_commande            StatutCommande     @default(en_attente)
   date_commande              DateTime           @default(now())
   date_livraison_prevue      DateTime?
@@ -538,6 +574,7 @@ model StockPharmacie {
   pharmacie                 Pharmacie   @relation(fields: [id_pharmacie], references: [id_pharmacie])
   medicament                Medicament @relation(fields: [id_medicament], references: [id_medicament])
   lignesCommande             LigneCommande[]
+  mouvements                MouvementStock[]
 
   @@map("stock_pharmacie")
 }
@@ -638,4 +675,100 @@ model PinConsentement {
   patient            Patient     @relation(fields: [id_patient], references: [id_patient])
 
   @@map("pin_consentement")
+}
+
+// ============================================================
+// Traçabilité des stocks (historique des mouvements)
+// ============================================================
+model MouvementStock {
+  id_mouvement       String             @id @default(uuid())
+  id_stock           String
+  type_mouvement     TypeMouvementStock
+  quantite           Int
+  quantite_avant     Int
+  quantite_apres     Int
+  motif              String?            @db.Text
+  id_utilisateur     String?
+  date_mouvement     DateTime           @default(now())
+
+  stock              StockPharmacie     @relation(fields: [id_stock], references: [id_stock])
+  utilisateur        Utilisateur?       @relation(fields: [id_utilisateur], references: [id_utilisateur])
+
+  @@map("mouvement_stock")
+}
+
+// ============================================================
+// Gestion de contenu (actualités, conseils, sensibilisation)
+// ============================================================
+model ArticleSante {
+  id_article         String           @id @default(uuid())
+  titre              String           @db.VarChar(300)
+  contenu            String           @db.Text
+  categorie          CategorieArticle @default(article_sante)
+  image_url          String?          @db.VarChar(500)
+  id_auteur          String
+  statut             StatutArticle    @default(brouillon)
+  date_publication   DateTime?
+  date_creation      DateTime         @default(now())
+  derniere_maj       DateTime         @updatedAt
+
+  auteur             Utilisateur      @relation("AuteurArticle", fields: [id_auteur], references: [id_utilisateur])
+
+  @@map("article_sante")
+}
+
+// ============================================================
+// Journalisation des actions sensibles (audit & sécurité)
+// ============================================================
+model JournalAudit {
+  id_journal         String       @id @default(uuid())
+  id_utilisateur     String?
+  action             String       @db.VarChar(100)
+  ressource          String       @db.VarChar(100)
+  id_ressource       String?
+  details            Json?
+  adresse_ip         String?      @db.VarChar(100)
+  date_action        DateTime     @default(now())
+
+  utilisateur        Utilisateur? @relation(fields: [id_utilisateur], references: [id_utilisateur])
+
+  @@index([action, date_action])
+  @@map("journal_audit")
+}
+
+// ============================================================
+// Analyses produites par les modules d'intelligence artificielle
+// ============================================================
+model AnalyseIa {
+  id_analyse         String         @id @default(uuid())
+  id_patient         String
+  type_analyse       TypeAnalyseIa
+  donnees_entree     Json
+  resultat           Json
+  modele_ia          String         @db.VarChar(100)
+  date_analyse       DateTime       @default(now())
+
+  patient            Patient        @relation(fields: [id_patient], references: [id_patient])
+
+  @@map("analyse_ia")
+}
+
+// ============================================================
+// Jetons de rafraîchissement (refresh tokens opaques, hashés)
+// Permettent de renouveler l'access token JWT sans re-login.
+// Rotation à chaque usage + détection de réutilisation.
+// ============================================================
+model RefreshToken {
+  id_token       String   @id @default(uuid())
+  id_utilisateur String
+  token_hash     String   @unique @db.VarChar(255)
+  expire_le      DateTime
+  revoque        Boolean  @default(false)
+  user_agent     String?  @db.VarChar(255)
+  date_creation  DateTime @default(now())
+
+  utilisateur    Utilisateur @relation(fields: [id_utilisateur], references: [id_utilisateur])
+
+  @@index([id_utilisateur])
+  @@map("refresh_token")
 }

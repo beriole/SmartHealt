@@ -1,5 +1,6 @@
 const { NotFoundError, ConflictError } = require('../errors/AppError');
 const patientService = require('../services/patientService');
+const utilisateurService = require('../services/utilisateurService');
 const { generateNumeroCarnet } = require('../utils/helpers');
 const { prisma } = require('../services/database');
 
