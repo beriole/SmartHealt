@@ -10,6 +10,7 @@ import { AuthStack } from './AuthStack';
 import { PatientTabs } from './PatientTabs';
 import { LivreurTabs } from './LivreurTabs';
 import { ProTabs } from './ProTabs';
+import { PharmacienTabs } from './PharmacienTabs';
 import { RoleUnavailableScreen } from '@/screens/common/RoleUnavailableScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -66,6 +67,8 @@ export function RootNavigator() {
         <Stack.Screen name="Patient" component={PatientTabs} />
       ) : isPro ? (
         <Stack.Screen name="Pro" component={ProTabs} />
+      ) : role === 'PHARMACIEN' ? (
+        <Stack.Screen name="Pharmacien" component={PharmacienTabs} />
       ) : role === 'LIVREUR' ? (
         <Stack.Screen name="Livreur" component={LivreurTabs} />
       ) : (

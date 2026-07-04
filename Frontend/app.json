@@ -1,4 +1,43 @@
 {
-  "name": "Frontend",
-  "displayName": "Frontend"
+  "expo": {
+    "name": "SmartHealth",
+    "slug": "smarthealth",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "smarthealth",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#002D72",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FAF8FF",
+          "dark": { "backgroundColor": "#0B1220" }
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "reactCompiler": true
+    }
+  }
 }

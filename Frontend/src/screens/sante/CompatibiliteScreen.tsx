@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { ShieldCheck, Pill, ChevronRight } from 'lucide-react-native';
 import { AppText, Button, Card, SearchBar, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import { useStockSearch } from '@/features/pharmacie/hooks';
@@ -52,9 +53,15 @@ export function CompatibiliteScreen() {
   return (
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <AppText color={theme.colors.textSecondary} style={styles.intro}>
-          Vérifiez si un médicament est compatible avec vos allergies, antécédents et traitements en cours.
-        </AppText>
+        <View style={styles.hero}>
+          <View style={[styles.iconCircle, { backgroundColor: theme.colors.primaryContainer }]}>
+            <ShieldCheck size={28} color={theme.colors.primary} />
+          </View>
+          <AppText variant="h2">Compatibilité</AppText>
+          <AppText color={theme.colors.textSecondary} style={styles.intro}>
+            Vérifiez si un médicament est compatible avec vos allergies, antécédents et traitements en cours.
+          </AppText>
+        </View>
         <SearchBar
           value={term}
           onChangeText={setTerm}
@@ -69,10 +76,16 @@ export function CompatibiliteScreen() {
           {medicaments.map(m => (
             <Pressable key={m.id} onPress={() => compat.mutate(m.id)} disabled={compat.isPending}>
               <Card style={styles.item}>
-                <AppText weight="semibold">{m.nom}</AppText>
-                <AppText variant="small" color={theme.colors.textSecondary}>
-                  {m.dosage}
-                </AppText>
+                <View style={[styles.itemIcon, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <Pill size={20} color={theme.colors.primary} />
+                </View>
+                <View style={styles.flex}>
+                  <AppText weight="semibold">{m.nom}</AppText>
+                  <AppText variant="small" color={theme.colors.textSecondary}>
+                    {m.dosage}
+                  </AppText>
+                </View>
+                <ChevronRight size={20} color={theme.colors.outline} />
               </Card>
             </Pressable>
           ))}
@@ -84,10 +97,27 @@ export function CompatibiliteScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingVertical: 16, paddingBottom: 40 },
-  intro: { marginBottom: 16 },
+  hero: { gap: 8, marginBottom: 16 },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  intro: {},
   title: { marginBottom: 8 },
   loader: { marginTop: 24 },
   list: { gap: 10, marginTop: 16 },
-  item: { gap: 2 },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  itemIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex: { flex: 1 },
   reset: { marginTop: 24 },
 });

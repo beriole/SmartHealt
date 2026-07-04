@@ -29,7 +29,7 @@ export function normalizeError(error: unknown): NormalizedError {
     const data = error.response?.data as
       | {
           message?: string;
-          details?: Array<{ field?: string; message?: string }>;
+          details?: { field?: string; message?: string }[];
         }
       | undefined;
 
@@ -67,7 +67,7 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 let isRefreshing = false;
-let waiters: Array<(token: string | null) => void> = [];
+let waiters: ((token: string | null) => void)[] = [];
 
 function flushWaiters(token: string | null) {
   waiters.forEach(resolve => resolve(token));

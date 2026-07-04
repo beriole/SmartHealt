@@ -5,7 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { AppText, Button, Input, OptionGroup, Screen } from '@/components';
+import { ShieldPlus, User, Mail, Phone, Lock } from 'lucide-react-native';
+import { AppText, Button, Card, Input, OptionGroup, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import { registerSchema, RegisterForm } from '@/features/auth/schema';
 import { useRegister } from '@/features/auth/hooks';
@@ -65,16 +66,22 @@ export function RegisterScreen() {
 
   return (
     <Screen scroll>
-      <View style={styles.header}>
-        <AppText variant="h1" color={theme.colors.primary}>
+      <View style={styles.hero}>
+        <View style={styles.brand}>
+          <ShieldPlus size={22} color={theme.colors.primary} />
+          <AppText variant="h3" weight="bold" color={theme.colors.primary}>
+            {t('common.appName')}
+          </AppText>
+        </View>
+        <AppText variant="h1" center style={styles.title}>
           {t('auth.registerTitle')}
         </AppText>
-        <AppText color={theme.colors.textSecondary}>
+        <AppText center color={theme.colors.textSecondary}>
           {t('auth.registerSubtitle')}
         </AppText>
       </View>
 
-      <View style={styles.form}>
+      <Card padding="lg" style={styles.form}>
         <Controller
           control={control}
           name="prenom"
@@ -82,6 +89,7 @@ export function RegisterScreen() {
             <Input
               label={t('auth.firstName')}
               required
+              leftIcon={<User size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -96,6 +104,7 @@ export function RegisterScreen() {
             <Input
               label={t('auth.lastName')}
               required
+              leftIcon={<User size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -113,6 +122,8 @@ export function RegisterScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
+              placeholder="nom@exemple.com"
+              leftIcon={<Mail size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -130,6 +141,7 @@ export function RegisterScreen() {
               keyboardType="phone-pad"
               autoComplete="tel"
               placeholder="+237…"
+              leftIcon={<Phone size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -158,8 +170,9 @@ export function RegisterScreen() {
             <Input
               label={t('auth.password')}
               required
-              secureTextEntry
+              isPassword
               helper={t('auth.passwordHelper')}
+              leftIcon={<Lock size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -174,7 +187,8 @@ export function RegisterScreen() {
             <Input
               label={t('auth.confirmPassword')}
               required
-              secureTextEntry
+              isPassword
+              leftIcon={<Lock size={20} color={theme.colors.outline} />}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -188,17 +202,27 @@ export function RegisterScreen() {
           loading={register.isPending}
           onPress={handleSubmit(onSubmit)}
         />
-        <Button
-          label={t('auth.haveAccount')}
-          variant="ghost"
-          onPress={() => navigation.navigate('Login')}
-        />
+      </Card>
+
+      <View style={styles.footer}>
+        <AppText center color={theme.colors.textSecondary}>
+          <AppText
+            weight="bold"
+            color={theme.colors.primary}
+            onPress={() => navigation.navigate('Login')}
+          >
+            {t('auth.haveAccount')}
+          </AppText>
+        </AppText>
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: 4, marginBottom: 24 },
-  form: { gap: 16 },
+  hero: { alignItems: 'center', gap: 6, marginTop: 8, marginBottom: 24 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  title: { marginTop: 4 },
+  form: { gap: 18 },
+  footer: { marginTop: 24, marginBottom: 12, alignItems: 'center' },
 });

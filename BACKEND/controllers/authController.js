@@ -18,6 +18,8 @@ exports.register = async (req, res, next) => {
       email, telephone, mot_de_passe,
       numero_ordre, specialite, structure_exercice, groupe_sanguin,
       vehicule_type, plaque_immatriculation,
+      nom_pharmacie, numero_autorisation, adresse_pharmacie,
+      telephone_pharmacie, latitude_pharmacie, longitude_pharmacie,
       ...userData
     } = req.body;
 
@@ -33,6 +35,8 @@ exports.register = async (req, res, next) => {
     const roleData = {
       numero_ordre, specialite, structure_exercice, groupe_sanguin,
       vehicule_type, plaque_immatriculation,
+      nom_pharmacie, numero_autorisation, adresse_pharmacie,
+      telephone_pharmacie, latitude_pharmacie, longitude_pharmacie,
     };
 
     if (userData.date_naissance) {

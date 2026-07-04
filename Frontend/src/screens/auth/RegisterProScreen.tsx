@@ -1,0 +1,379 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
+import {
+  User,
+  Mail,
+  Phone,
+  Lock,
+  Stethoscope,
+  BadgeCheck,
+  Building2,
+  ShieldCheck,
+} from 'lucide-react-native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import {
+  AppText,
+  AuthBackdrop,
+  Badge,
+  BrandLogo,
+  Button,
+  Card,
+  DocumentUpload,
+  Input,
+  OptionGroup,
+  Screen,
+  StepProgress,
+} from '@/components';
+import { useTheme } from '@/theme';
+import { useRegister } from '@/features/auth/hooks';
+import { AuthStackParamList } from '@/navigation/types';
+
+type Nav = NativeStackNavigationProp<AuthStackParamList, 'RegisterPro'>;
+type Route = RouteProp<AuthStackParamList, 'RegisterPro'>;
+
+type RolePro = 'MEDECIN' | 'INFIRMIER';
+
+const SEXE_OPTIONS = [
+  { value: 'F' as const, label: 'Femme' },
+  { value: 'M' as const, label: 'Homme' },
+  { value: 'AUTRE' as const, label: 'Autre' },
+];
+
+const SPECIALITES = [
+  'Médecine générale',
+  'Pédiatrie',
+  'Cardiologie',
+  'Gynécologie',
+  'Dermatologie',
+  'Autre',
+];
+
+const STEPS = ['Identité', 'Compte', 'Vérification'];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function RegisterProScreen() {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  const navigation = useNavigation<Nav>();
+  const route = useRoute<Route>();
+  const register = useRegister();
+
+  const [step, setStep] = useState(0);
+
+  // Étape 1 — Identité professionnelle
+  const [role, setRole] = useState<RolePro>(route.params?.role ?? 'MEDECIN');
+  const [prenom, setPrenom] = useState('');
+  const [nom, setNom] = useState('');
+  const [specialite, setSpecialite] = useState('Médecine générale');
+  const [numeroOrdre, setNumeroOrdre] = useState('');
+  const [structure, setStructure] = useState('');
+
+  // Étape 2 — Compte
+  const [email, setEmail] = useState('');
+  const [telephone, setTelephone] = useState('');
+  const [sexe, setSexe] = useState<'M' | 'F' | 'AUTRE'>();
+  const [motDePasse, setMotDePasse] = useState('');
+  const [confirmation, setConfirmation] = useState('');
+
+  // Étape 3 — Documents (visuel)
+  const [diplome, setDiplome] = useState(false);
+  const [cni, setCni] = useState(false);
+
+  const validerEtape1 = () => {
+    if (!prenom.trim() || !nom.trim()) {
+      Alert.alert('Inscription', 'Indiquez votre nom et prénom.');
+      return false;
+    }
+    if (!numeroOrdre.trim()) {
+      Alert.alert('Inscription', "Le numéro d'ordre est requis.");
+      return false;
+    }
+    if (role === 'MEDECIN' && !specialite.trim()) {
+      Alert.alert('Inscription', 'Sélectionnez votre spécialité.');
+      return false;
+    }
+    return true;
+  };
+
+  const validerEtape2 = () => {
+    if (!EMAIL_RE.test(email.trim())) {
+      Alert.alert('Inscription', 'Adresse e-mail invalide.');
+      return false;
+    }
+    if (telephone.trim().length < 8) {
+      Alert.alert('Inscription', 'Numéro de téléphone invalide.');
+      return false;
+    }
+    if (!sexe) {
+      Alert.alert('Inscription', 'Sélectionnez votre sexe.');
+      return false;
+    }
+    if (motDePasse.length < 8) {
+      Alert.alert('Inscription', 'Le mot de passe doit contenir au moins 8 caractères.');
+      return false;
+    }
+    if (motDePasse !== confirmation) {
+      Alert.alert('Inscription', 'Les mots de passe ne correspondent pas.');
+      return false;
+    }
+    return true;
+  };
+
+  const suivant = () => {
+    if (step === 0 && !validerEtape1()) return;
+    if (step === 1 && !validerEtape2()) return;
+    setStep(s => Math.min(s + 1, STEPS.length - 1));
+  };
+
+  const precedent = () => setStep(s => Math.max(s - 1, 0));
+
+  const soumettre = () => {
+    register.mutate(
+      {
+        nom: nom.trim(),
+        prenom: prenom.trim(),
+        email: email.trim(),
+        telephone: telephone.trim(),
+        sexe: sexe as string,
+        mot_de_passe: motDePasse,
+        type_utilisateur: role,
+        numero_ordre: numeroOrdre.trim(),
+        specialite: role === 'INFIRMIER' ? 'Soins infirmiers' : specialite,
+        structure_exercice: structure.trim() || undefined,
+      },
+      {
+        onSuccess: () =>
+          navigation.navigate('VerifyEmailNotice', { email: email.trim() }),
+        onError: err => Alert.alert('Inscription', err.message),
+      },
+    );
+  };
+
+  return (
+    <Screen scroll>
+      <AuthBackdrop />
+      <View style={styles.hero}>
+        <View style={styles.brand}>
+          <BrandLogo size={26} withWordmark wordmarkSize={19} />
+        </View>
+        <AppText variant="h1" center style={styles.title}>
+          Inscription professionnelle
+        </AppText>
+        <AppText center color={theme.colors.textSecondary}>
+          Rejoignez le réseau de soignants vérifiés SmartHealth.
+        </AppText>
+      </View>
+
+      <View style={styles.stepper}>
+        <StepProgress steps={STEPS} current={step} />
+      </View>
+
+      {step === 0 ? (
+        <Card padding="lg" style={styles.form}>
+          <OptionGroup<RolePro>
+            label="Vous êtes"
+            value={role}
+            onChange={setRole}
+            options={[
+              { value: 'MEDECIN', label: 'Médecin' },
+              { value: 'INFIRMIER', label: 'Infirmier(ère)' },
+            ]}
+          />
+          <Input
+            label={t('auth.firstName')}
+            required
+            leftIcon={<User size={20} color={theme.colors.outline} />}
+            value={prenom}
+            onChangeText={setPrenom}
+          />
+          <Input
+            label={t('auth.lastName')}
+            required
+            leftIcon={<User size={20} color={theme.colors.outline} />}
+            value={nom}
+            onChangeText={setNom}
+          />
+          {role === 'MEDECIN' ? (
+            <OptionGroup<string>
+              label="Spécialité"
+              required
+              value={specialite}
+              onChange={setSpecialite}
+              options={SPECIALITES.map(s => ({ value: s, label: s }))}
+            />
+          ) : (
+            <View style={styles.infoRow}>
+              <Stethoscope size={18} color={theme.colors.primary} />
+              <AppText variant="small" color={theme.colors.textSecondary}>
+                Spécialité : Soins infirmiers
+              </AppText>
+            </View>
+          )}
+          <Input
+            label="Numéro d'ordre"
+            required
+            placeholder="ex. CM-MED-12345"
+            autoCapitalize="characters"
+            leftIcon={<BadgeCheck size={20} color={theme.colors.outline} />}
+            value={numeroOrdre}
+            onChangeText={setNumeroOrdre}
+          />
+          <Input
+            label="Structure d'exercice"
+            placeholder="Hôpital, clinique, cabinet…"
+            leftIcon={<Building2 size={20} color={theme.colors.outline} />}
+            value={structure}
+            onChangeText={setStructure}
+          />
+        </Card>
+      ) : null}
+
+      {step === 1 ? (
+        <Card padding="lg" style={styles.form}>
+          <Input
+            label={t('auth.email')}
+            required
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="nom@exemple.com"
+            leftIcon={<Mail size={20} color={theme.colors.outline} />}
+            value={email}
+            onChangeText={setEmail}
+          />
+          <Input
+            label={t('auth.phone')}
+            required
+            keyboardType="phone-pad"
+            placeholder="+237…"
+            leftIcon={<Phone size={20} color={theme.colors.outline} />}
+            value={telephone}
+            onChangeText={setTelephone}
+          />
+          <OptionGroup
+            label={t('auth.sex')}
+            required
+            options={SEXE_OPTIONS}
+            value={sexe}
+            onChange={setSexe}
+          />
+          <Input
+            label={t('auth.password')}
+            required
+            isPassword
+            helper={t('auth.passwordHelper')}
+            leftIcon={<Lock size={20} color={theme.colors.outline} />}
+            value={motDePasse}
+            onChangeText={setMotDePasse}
+          />
+          <Input
+            label={t('auth.confirmPassword')}
+            required
+            isPassword
+            leftIcon={<Lock size={20} color={theme.colors.outline} />}
+            value={confirmation}
+            onChangeText={setConfirmation}
+          />
+        </Card>
+      ) : null}
+
+      {step === 2 ? (
+        <View style={styles.form}>
+          <View
+            style={[
+              styles.trustCard,
+              { backgroundColor: theme.colors.primary, borderRadius: theme.radius.lg },
+            ]}
+          >
+            <View style={styles.trustHeader}>
+              <ShieldCheck size={18} color={theme.colors.primaryOn} />
+              <AppText variant="label" color={theme.colors.primaryOn}>
+                CENTRE DE CONFIANCE · CHIFFRÉ AES-256
+              </AppText>
+            </View>
+            <AppText variant="small" color={theme.colors.primaryOn} style={styles.trustText}>
+              Vos documents sont transmis de façon sécurisée et examinés uniquement par
+              des agents autorisés.
+            </AppText>
+          </View>
+
+          <DocumentUpload
+            title="Diplôme / Titre professionnel"
+            description="PDF, JPG ou PNG · 10 Mo max."
+            uploaded={diplome}
+            fileName="diplome_2024.pdf"
+            onPick={() => setDiplome(true)}
+            onRemove={() => setDiplome(false)}
+          />
+          <DocumentUpload
+            title="Carte d'identité (recto-verso)"
+            description="Assurez-vous que les 4 coins sont visibles."
+            uploaded={cni}
+            fileName="cni_recto_verso.jpg"
+            onPick={() => setCni(true)}
+            onRemove={() => setCni(false)}
+          />
+
+          <View style={styles.compliance}>
+            <Badge label="HIPAA" tone="info" />
+            <Badge label="RGPD" tone="info" />
+            <Badge label="SSL" tone="success" />
+          </View>
+        </View>
+      ) : null}
+
+      <View style={styles.nav}>
+        {step > 0 ? (
+          <Button
+            label="Retour"
+            variant="secondary"
+            onPress={precedent}
+            fullWidth={false}
+            style={styles.navBtn}
+          />
+        ) : null}
+        {step < STEPS.length - 1 ? (
+          <Button label="Continuer" onPress={suivant} style={styles.flex} />
+        ) : (
+          <Button
+            label="Soumettre la candidature"
+            loading={register.isPending}
+            onPress={soumettre}
+            style={styles.flex}
+          />
+        )}
+      </View>
+
+      <View style={styles.footer}>
+        <AppText center color={theme.colors.textSecondary}>
+          Déjà inscrit ?{' '}
+          <AppText
+            weight="bold"
+            color={theme.colors.primary}
+            onPress={() => navigation.navigate('Login')}
+          >
+            Se connecter
+          </AppText>
+        </AppText>
+      </View>
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  hero: { alignItems: 'center', gap: 6, marginTop: 8, marginBottom: 16 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  title: { marginTop: 4 },
+  stepper: { marginBottom: 20, paddingHorizontal: 8 },
+  form: { gap: 18 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  trustCard: { padding: 16, gap: 8 },
+  trustHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  trustText: { opacity: 0.9 },
+  compliance: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  nav: { flexDirection: 'row', gap: 12, marginTop: 24 },
+  navBtn: { minWidth: 110 },
+  flex: { flex: 1 },
+  footer: { marginTop: 20, marginBottom: 12, alignItems: 'center' },
+});

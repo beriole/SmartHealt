@@ -1,10 +1,10 @@
-import * as Keychain from 'react-native-keychain';
+import * as SecureStore from 'expo-secure-store';
 
 /**
- * Stockage chiffré des jetons d'authentification (Keystore Android / Keychain iOS).
- * Les deux tokens sont stockés ensemble sous un service dédié.
+ * Stockage chiffré des jetons (Keystore Android / Keychain iOS via expo-secure-store).
+ * Fonctionne dans Expo Go. Interface stable consommée par api/tokenManager.
  */
-const TOKEN_SERVICE = 'smarthealth.auth';
+const TOKENS_KEY = 'smarthealth_auth_tokens';
 
 export interface StoredTokens {
   accessToken: string;
@@ -12,25 +12,21 @@ export interface StoredTokens {
 }
 
 export async function saveTokens(tokens: StoredTokens): Promise<void> {
-  await Keychain.setGenericPassword(
-    'auth',
-    JSON.stringify(tokens),
-    { service: TOKEN_SERVICE },
-  );
+  await SecureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens));
 }
 
 export async function loadTokens(): Promise<StoredTokens | null> {
-  const creds = await Keychain.getGenericPassword({ service: TOKEN_SERVICE });
-  if (!creds) {
+  const raw = await SecureStore.getItemAsync(TOKENS_KEY);
+  if (!raw) {
     return null;
   }
   try {
-    return JSON.parse(creds.password) as StoredTokens;
+    return JSON.parse(raw) as StoredTokens;
   } catch {
     return null;
   }
 }
 
 export async function clearTokens(): Promise<void> {
-  await Keychain.resetGenericPassword({ service: TOKEN_SERVICE });
+  await SecureStore.deleteItemAsync(TOKENS_KEY);
 }

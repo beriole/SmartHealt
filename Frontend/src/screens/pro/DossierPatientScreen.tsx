@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScrollView, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Stethoscope, FilePlus2, Droplet, AlertTriangle } from 'lucide-react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppText, Button, Card, Section, Screen, ErrorState } from '@/components';
@@ -43,13 +44,26 @@ export function DossierPatientScreen() {
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Card style={styles.identity}>
-          <AppText variant="h3">{u ? `${u.prenom} ${u.nom}` : 'Patient'}</AppText>
-          <AppText variant="small" color={theme.colors.textSecondary}>
-            Groupe sanguin : {formatGroupe(carnet.patient?.groupe_sanguin)}
+          <View style={[styles.avatar, { backgroundColor: theme.colors.primaryContainer }]}>
+            <AppText variant="h3" weight="bold" color={theme.colors.primary}>
+              {`${u?.prenom?.[0] ?? ''}${u?.nom?.[0] ?? ''}`.toUpperCase() || 'P'}
+            </AppText>
+          </View>
+          <AppText variant="h3" numberOfLines={1}>
+            {u ? `${u.prenom} ${u.nom}` : 'Patient'}
           </AppText>
-          <AppText variant="small" color={theme.colors.textSecondary}>
-            Allergies : {carnet.patient?.allergies_connues || 'Aucune connue'}
-          </AppText>
+          <View style={styles.infoRow}>
+            <Droplet size={15} color={theme.colors.destructive} />
+            <AppText variant="small" color={theme.colors.textSecondary}>
+              Groupe sanguin : {formatGroupe(carnet.patient?.groupe_sanguin)}
+            </AppText>
+          </View>
+          <View style={styles.infoRow}>
+            <AlertTriangle size={15} color={theme.colors.warning} />
+            <AppText variant="small" color={theme.colors.textSecondary} style={styles.flex}>
+              Allergies : {carnet.patient?.allergies_connues || 'Aucune connue'}
+            </AppText>
+          </View>
         </Card>
 
         <Button
@@ -60,6 +74,7 @@ export function DossierPatientScreen() {
               id_carnet: carnet.id_carnet,
             })
           }
+          icon={<FilePlus2 size={20} color={theme.colors.primaryOn} />}
           style={styles.cta}
         />
 
@@ -67,18 +82,23 @@ export function DossierPatientScreen() {
           <Section title="Historique des consultations">
             {carnet.consultations.map(c => (
               <Card key={c.id_consultation} style={styles.consult}>
-                <AppText weight="semibold">{c.motif}</AppText>
-                <AppText variant="small" color={theme.colors.textSecondary}>
-                  {formatDate(c.date_consultation)}
-                  {c.professionnel?.utilisateur
-                    ? ` · Dr ${c.professionnel.utilisateur.nom}`
-                    : ''}
-                </AppText>
-                {c.diagnostic ? (
+                <View style={[styles.consultIcon, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <Stethoscope size={20} color={theme.colors.primary} />
+                </View>
+                <View style={styles.flex}>
+                  <AppText weight="semibold">{c.motif}</AppText>
                   <AppText variant="small" color={theme.colors.textSecondary}>
-                    {c.diagnostic}
+                    {formatDate(c.date_consultation)}
+                    {c.professionnel?.utilisateur
+                      ? ` · Dr ${c.professionnel.utilisateur.nom}`
+                      : ''}
                   </AppText>
-                ) : null}
+                  {c.diagnostic ? (
+                    <AppText variant="small" color={theme.colors.textSecondary}>
+                      {c.diagnostic}
+                    </AppText>
+                  ) : null}
+                </View>
               </Card>
             ))}
           </Section>
@@ -91,7 +111,24 @@ export function DossierPatientScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   scroll: { paddingVertical: 16, paddingBottom: 40 },
-  identity: { gap: 4 },
+  identity: { gap: 6 },
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  flex: { flex: 1 },
   cta: { marginTop: 16 },
-  consult: { gap: 2 },
+  consult: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  consultIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

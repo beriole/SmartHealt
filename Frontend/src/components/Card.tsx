@@ -5,19 +5,35 @@ import { useTheme } from '@/theme';
 interface CardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  /** Padding interne (16 par défaut, 24 = lg). */
+  padding?: 'sm' | 'md' | 'lg';
+  /** Liseré latéral coloré (pattern « hero » de la maquette). */
+  accent?: boolean;
+  /** Niveau d'élévation tonale. */
+  elevated?: boolean;
 }
 
-export function Card({ children, style }: CardProps) {
+export function Card({
+  children,
+  style,
+  padding = 'md',
+  accent = false,
+  elevated = true,
+}: CardProps) {
   const theme = useTheme();
+  const pad = padding === 'lg' ? 24 : padding === 'sm' ? 12 : 16;
+
   return (
     <View
       style={[
-        styles.card,
         {
           backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
           borderRadius: theme.radius.lg,
+          padding: pad,
+          borderLeftWidth: accent ? 4 : 0,
+          borderLeftColor: accent ? theme.colors.primary : undefined,
         },
+        elevated && theme.elevation.level1,
         style,
       ]}
     >
@@ -26,14 +42,5 @@ export function Card({ children, style }: CardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-});
+// Conservé pour compat éventuelle.
+export const cardStyles = StyleSheet.create({});

@@ -1,8 +1,13 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type AuthStackParamList = {
+  Welcome: undefined;
+  RoleSelect: undefined;
   Login: undefined;
   Register: undefined;
+  RegisterPro: { role?: 'MEDECIN' | 'INFIRMIER' } | undefined;
+  RegisterPharmacie: undefined;
+  RegisterLivreur: undefined;
   ForgotPassword: undefined;
   VerifyEmailNotice: { email: string };
   ResetPassword: { token: string };
@@ -73,7 +78,7 @@ export type LivreurTabParamList = {
   Dashboard: undefined;
   Courses: undefined;
   Livraisons: NavigatorScreenParams<LivraisonsStackParamList>;
-  ProfilLivreur: undefined;
+  ProfilLivreur: NavigatorScreenParams<StaffProfilStackParamList>;
 };
 
 export type DossierStackParamList = {
@@ -88,10 +93,38 @@ export type InterventionsProStackParamList = {
   TerminerIntervention: { id: string };
 };
 
+/** Sous-pile de profil partagée par les rôles pro / livreur / pharmacien. */
+export type StaffProfilStackParamList = {
+  ProfilHome: undefined;
+  EditProfil: undefined;
+};
+
 export type ProTabParamList = {
+  Accueil: undefined;
   Dossier: NavigatorScreenParams<DossierStackParamList>;
+  Activite: undefined;
   InterventionsPro: NavigatorScreenParams<InterventionsProStackParamList>;
-  ProfilPro: undefined;
+  ProfilPro: NavigatorScreenParams<StaffProfilStackParamList>;
+};
+
+export type CommandesPharmacienStackParamList = {
+  CommandesPharmacienList: undefined;
+  CommandePharmacienDetail: { id: string };
+  ServirOrdonnance: { id_ordonnance: string };
+};
+
+export type InventaireStackParamList = {
+  InventaireList: undefined;
+  EditStock: { id_stock: string };
+  AjouterStock: undefined;
+};
+
+export type PharmacienTabParamList = {
+  AccueilPharmacien: undefined;
+  CommandesPharmacien: NavigatorScreenParams<CommandesPharmacienStackParamList>;
+  Inventaire: NavigatorScreenParams<InventaireStackParamList>;
+  Pharmacie: undefined;
+  ProfilPharmacien: NavigatorScreenParams<StaffProfilStackParamList>;
 };
 
 export type RootStackParamList = {
@@ -99,4 +132,5 @@ export type RootStackParamList = {
   Patient: NavigatorScreenParams<PatientTabParamList>;
   Livreur: NavigatorScreenParams<LivreurTabParamList>;
   Pro: NavigatorScreenParams<ProTabParamList>;
+  Pharmacien: NavigatorScreenParams<PharmacienTabParamList>;
 };

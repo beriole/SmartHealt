@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Switch, StyleSheet, ActivityIndicator } from 'react-native';
 import { Package, Wallet, Star } from 'lucide-react-native';
-import { AppText, Badge, Card, Screen, ErrorState } from '@/components';
+import { AppText, Badge, Card, Screen, ScreenHeader, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatFCFA } from '@/lib/format';
 import { useAuthStore } from '@/store/authStore';
@@ -39,11 +39,12 @@ export function DashboardScreen() {
 
   return (
     <Screen edges={['top']} padded={false}>
+      <ScreenHeader
+        title={user ? `Bonjour, ${user.prenom}` : 'Livreur'}
+        subtitle="Votre activité de livraison."
+      />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <AppText variant="h2">
-            {user ? `Bonjour, ${user.prenom}` : 'Livreur'}
-          </AppText>
+        <View style={styles.statutRow}>
           <Badge label={verif.label} tone={verif.tone} />
         </View>
 
@@ -83,7 +84,9 @@ function Stat({
   const theme = useTheme();
   return (
     <Card style={styles.statCard}>
-      <Icon size={22} color={theme.colors.primary} />
+      <View style={[styles.statIcon, { backgroundColor: theme.colors.primaryContainer }]}>
+        <Icon size={20} color={theme.colors.primary} />
+      </View>
       <AppText variant="h3">{value}</AppText>
       <AppText variant="caption" color={theme.colors.textSecondary}>
         {label}
@@ -95,9 +98,17 @@ function Stat({
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   scroll: { padding: 16, gap: 16 },
-  header: { gap: 8, marginTop: 8 },
+  statutRow: { flexDirection: 'row', marginTop: 4 },
   dispoCard: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   flex: { flex: 1 },
   stats: { flexDirection: 'row', gap: 10 },
-  statCard: { flex: 1, alignItems: 'center', gap: 4 },
+  statCard: { flex: 1, alignItems: 'center', gap: 6 },
+  statIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
+  },
 });

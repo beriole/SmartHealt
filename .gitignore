@@ -1,0 +1,5 @@
+# Sauvegarde temporaire de la refonte frontend (non versionnée)
+_frontend_backup_s0/
+
+# Variables d'environnement locales (garder .env.example)
+Frontend/.env

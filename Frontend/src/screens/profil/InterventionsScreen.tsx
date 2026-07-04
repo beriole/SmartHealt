@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight, Syringe } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppText, Badge, Button, Card, Screen, EmptyState, ErrorState } from '@/components';
@@ -78,6 +78,9 @@ export function InterventionsScreen() {
               }
             >
               <Card style={styles.row}>
+                <View style={[styles.icon, { backgroundColor: theme.colors.primaryContainer }]}>
+                  <Syringe size={20} color={theme.colors.primary} />
+                </View>
                 <View style={styles.flex}>
                   <AppText weight="semibold">{ACTE_LABEL[item.type_acte]}</AppText>
                   <View style={styles.meta}>
@@ -87,7 +90,7 @@ export function InterventionsScreen() {
                     </AppText>
                   </View>
                 </View>
-                <ChevronRight size={20} color={theme.colors.textSecondary} />
+                <ChevronRight size={20} color={theme.colors.outline} />
               </Card>
             </Pressable>
           );
@@ -102,6 +105,13 @@ const styles = StyleSheet.create({
   list: { padding: 16, gap: 10, flexGrow: 1 },
   addBtn: { marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   flex: { flex: 1, gap: 6 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

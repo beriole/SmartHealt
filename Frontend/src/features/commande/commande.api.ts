@@ -1,7 +1,6 @@
 import { client } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
-import { ApiResponse, Commande, Paginated } from '@/types';
-import { TypeLivraison } from '@/types';
+import { ApiResponse, Commande, Paginated , TypeLivraison } from '@/types';
 
 export interface CreateCommandePayload {
   id_pharmacie: string;
@@ -10,6 +9,10 @@ export interface CreateCommandePayload {
   adresse_livraison?: string;
   latitude_livraison?: number;
   longitude_livraison?: number;
+  /** Ordonnance numérique rattachée (médicaments sur ordonnance). */
+  id_ordonnance?: string;
+  /** Photo d'ordonnance (ordonnance papier). */
+  photo_ordonnance_url?: string;
 }
 
 export async function createCommande(

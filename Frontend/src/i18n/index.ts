@@ -1,14 +1,13 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { getLocales } from 'react-native-localize';
 import fr from './fr.json';
 import en from './en.json';
 
 const fallbackLng = 'fr';
-const supported = ['fr', 'en'];
 
-const deviceLang = getLocales()[0]?.languageCode;
-const lng = supported.includes(deviceLang ?? '') ? deviceLang : fallbackLng;
+// Français par défaut (app pensée FR-first pour le Cameroun) ; l'utilisateur
+// peut basculer en anglais depuis l'écran Profil.
+const lng = 'fr';
 
 i18n.use(initReactI18next).init({
   resources: {

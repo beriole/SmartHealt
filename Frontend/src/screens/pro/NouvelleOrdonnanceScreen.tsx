@@ -107,7 +107,7 @@ export function NouvelleOrdonnanceScreen() {
         ) : null}
 
         {lignes.length > 0 ? (
-          <AppText variant="small" weight="bold" style={styles.sectionTitle}>
+          <AppText variant="label" color={theme.colors.textSecondary} style={styles.sectionTitle}>
             MÉDICAMENTS PRESCRITS
           </AppText>
         ) : null}

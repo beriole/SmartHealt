@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
-import { Plus, Check } from 'lucide-react-native';
+import { Plus, Check, FileText } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { StockItem } from '@/types';
 import { formatFCFA } from '@/lib/format';
@@ -32,9 +32,9 @@ export function StockCard({
       accessibilityRole="button"
       style={({ pressed }) => [
         styles.card,
+        theme.elevation.level1,
         {
           backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
           borderRadius: theme.radius.lg,
           opacity: pressed ? 0.9 : 1,
         },
@@ -52,9 +52,19 @@ export function StockCard({
             {stock.pharmacie.nom_pharmacie}
           </AppText>
         ) : null}
-        <AppText weight="bold" color={theme.colors.primary}>
-          {formatFCFA(stock.prix_vente_fcfa)}
-        </AppText>
+        <View style={styles.priceRow}>
+          <AppText weight="bold" color={theme.colors.primary}>
+            {formatFCFA(stock.prix_vente_fcfa)}
+          </AppText>
+          {stock.medicament.necessite_ordonnance ? (
+            <View style={styles.rxBadge}>
+              <FileText size={11} color={theme.colors.warning} />
+              <AppText variant="label" color={theme.colors.warning}>
+                Ordonnance
+              </AppText>
+            </View>
+          ) : null}
+        </View>
       </View>
 
       {onAdd ? (
@@ -90,9 +100,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     padding: 14,
-    borderWidth: 1,
   },
   info: { flex: 1, gap: 2 },
+  priceRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  rxBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   addBtn: {
     width: 44,
     height: 44,

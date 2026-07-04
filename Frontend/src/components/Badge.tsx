@@ -18,7 +18,7 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
     success: theme.colors.success,
     warning: theme.colors.warning,
     danger: theme.colors.destructive,
-    info: theme.colors.accent,
+    info: theme.colors.primary,
   };
   const color = toneColor[tone];
 
@@ -26,10 +26,13 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
     <View
       style={[
         styles.badge,
-        { borderColor: color, borderRadius: theme.radius.pill },
+        {
+          backgroundColor: color + '1A', // 10% d'opacité, fond teinté
+          borderRadius: theme.radius.pill,
+        },
       ]}
     >
-      <AppText variant="caption" weight="semibold" color={color}>
+      <AppText variant="label" color={color}>
         {label}
       </AppText>
     </View>
@@ -39,8 +42,7 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
 const styles = StyleSheet.create({
   badge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
   },
 });

@@ -3,13 +3,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LayoutDashboard, PackageSearch, Truck, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
+import { getTabBarScreenOptions } from './tabBarOptions';
 import { LivreurTabParamList } from './types';
 import { DashboardScreen } from '@/screens/livreur/DashboardScreen';
 import { CoursesScreen } from '@/screens/livreur/CoursesScreen';
 import { LivraisonsStack } from './LivraisonsStack';
 import { ProfilLivreurScreen } from '@/screens/livreur/ProfilLivreurScreen';
+import { createProfilStack } from './createProfilStack';
 
 const Tab = createBottomTabNavigator<LivreurTabParamList>();
+const ProfilLivreurStack = createProfilStack(ProfilLivreurScreen);
 
 type TabIconProps = { color: string; size: number };
 const renderDashboardIcon = ({ color, size }: TabIconProps) => (
@@ -30,17 +33,7 @@ export function LivreurTabs() {
   const { t } = useTranslation();
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabBarScreenOptions(theme)}>
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
@@ -58,7 +51,7 @@ export function LivreurTabs() {
       />
       <Tab.Screen
         name="ProfilLivreur"
-        component={ProfilLivreurScreen}
+        component={ProfilLivreurStack}
         options={{ title: t('tabs.profil'), tabBarIcon: renderProfilIcon }}
       />
     </Tab.Navigator>

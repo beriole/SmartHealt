@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { AppText, Button, Card, Screen, EmptyState, ErrorState } from '@/components';
+import { Store, MapPin, PackageCheck } from 'lucide-react-native';
+import { AppText, Button, Card, Screen, ScreenHeader, EmptyState, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatFCFA } from '@/lib/format';
 import { useDisponibles, useAccepterCourse } from '@/features/livreur/hooks';
@@ -34,6 +35,10 @@ export function CoursesScreen() {
 
   return (
     <Screen edges={['top']} padded={false}>
+      <ScreenHeader
+        title="Courses disponibles"
+        subtitle="Acceptez une livraison à proximité."
+      />
       <FlatList
         data={data ?? []}
         keyExtractor={(c: Commande) => c.id_commande}
@@ -49,27 +54,34 @@ export function CoursesScreen() {
         renderItem={({ item }) => (
           <Card style={styles.card}>
             <View style={styles.between}>
-              <AppText weight="semibold" style={styles.flex}>
+              <AppText weight="bold" style={styles.flex}>
                 {item.pharmacie?.nom_pharmacie ?? 'Pharmacie'}
               </AppText>
-              <AppText weight="semibold" color={theme.colors.primary}>
+              <AppText weight="bold" variant="bodyLg" color={theme.colors.primary}>
                 {formatFCFA(item.montant_total_fcfa)}
               </AppText>
             </View>
             {item.pharmacie?.adresse ? (
-              <AppText variant="small" color={theme.colors.textSecondary}>
-                Retrait : {item.pharmacie.adresse}
-              </AppText>
+              <View style={styles.metaRow}>
+                <Store size={15} color={theme.colors.outline} />
+                <AppText variant="small" color={theme.colors.textSecondary} style={styles.flex}>
+                  Retrait : {item.pharmacie.adresse}
+                </AppText>
+              </View>
             ) : null}
             {item.adresse_livraison ? (
-              <AppText variant="small" color={theme.colors.textSecondary}>
-                Livraison : {item.adresse_livraison}
-              </AppText>
+              <View style={styles.metaRow}>
+                <MapPin size={15} color={theme.colors.outline} />
+                <AppText variant="small" color={theme.colors.textSecondary} style={styles.flex}>
+                  Livraison : {item.adresse_livraison}
+                </AppText>
+              </View>
             ) : null}
             <Button
               label="Accepter la course"
               loading={accepter.isPending && accepter.variables === item.id_commande}
               onPress={() => onAccepter(item.id_commande)}
+              icon={<PackageCheck size={20} color={theme.colors.primaryOn} />}
               style={styles.btn}
             />
           </Card>
@@ -82,8 +94,9 @@ export function CoursesScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 12, flexGrow: 1 },
-  card: { gap: 6 },
+  card: { gap: 8 },
   between: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   flex: { flex: 1 },
   btn: { marginTop: 8 },
 });

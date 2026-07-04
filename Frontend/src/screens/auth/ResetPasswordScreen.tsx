@@ -9,7 +9,8 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { AppText, Button, Input, Screen } from '@/components';
+import { Lock, CheckCircle2, ShieldCheck } from 'lucide-react-native';
+import { AppText, Button, Card, Input, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import {
   resetPasswordSchema,
@@ -48,23 +49,36 @@ export function ResetPasswordScreen() {
   };
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <AppText variant="h2">{t('auth.resetPasswordTitle')}</AppText>
+    <Screen scroll>
+      <View style={styles.hero}>
+        <View
+          style={[
+            styles.iconCircle,
+            { backgroundColor: theme.colors.primaryContainer },
+          ]}
+        >
+          <ShieldCheck size={30} color={theme.colors.primary} />
+        </View>
+        <AppText variant="h2" center>
+          {t('auth.resetPasswordTitle')}
+        </AppText>
       </View>
 
       {done ? (
-        <View style={styles.form}>
-          <AppText color={theme.colors.success}>
-            {t('auth.resetPasswordSuccess')}
-          </AppText>
+        <Card padding="lg" style={styles.form}>
+          <View style={styles.sentRow}>
+            <CheckCircle2 size={22} color={theme.colors.success} />
+            <AppText color={theme.colors.success} style={styles.flex}>
+              {t('auth.resetPasswordSuccess')}
+            </AppText>
+          </View>
           <Button
             label={t('auth.backToLogin')}
             onPress={() => navigation.navigate('Login')}
           />
-        </View>
+        </Card>
       ) : (
-        <View style={styles.form}>
+        <Card padding="lg" style={styles.form}>
           <Controller
             control={control}
             name="mot_de_passe"
@@ -72,8 +86,9 @@ export function ResetPasswordScreen() {
               <Input
                 label={t('auth.newPassword')}
                 required
-                secureTextEntry
+                isPassword
                 helper={t('auth.passwordHelper')}
+                leftIcon={<Lock size={20} color={theme.colors.outline} />}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -88,7 +103,8 @@ export function ResetPasswordScreen() {
               <Input
                 label={t('auth.confirmPassword')}
                 required
-                secureTextEntry
+                isPassword
+                leftIcon={<Lock size={20} color={theme.colors.outline} />}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -101,13 +117,23 @@ export function ResetPasswordScreen() {
             loading={reset.isPending}
             onPress={handleSubmit(onSubmit)}
           />
-        </View>
+        </Card>
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { marginTop: 16, marginBottom: 24 },
-  form: { gap: 16 },
+  hero: { alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 24 },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  form: { gap: 18 },
+  sentRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  flex: { flex: 1 },
 });

@@ -16,7 +16,8 @@ export function AccueilStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.foreground,
+        headerTintColor: theme.colors.primary,
+        headerTitleStyle: { fontWeight: '700', fontSize: 18, color: theme.colors.foreground },
         headerShadowVisible: false,
         contentStyle: { backgroundColor: theme.colors.background },
       }}

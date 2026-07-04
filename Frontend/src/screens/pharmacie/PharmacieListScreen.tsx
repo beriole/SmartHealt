@@ -1,12 +1,20 @@
 import React from 'react';
-import { FlatList, Pressable, View, StyleSheet, ActivityIndicator } from 'react-native';
-import { Star, Truck } from 'lucide-react-native';
+import {
+  FlatList,
+  Pressable,
+  View,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import { Star, Truck, MapPin, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { AppText, Card, EmptyState, ErrorState, Screen } from '@/components';
+import { AppText, Badge, Card, EmptyState, ErrorState, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import { usePharmacies } from '@/features/pharmacie/hooks';
+import { resolveImageUrl } from '@/lib/media';
 import { PharmacieStackParamList } from '@/navigation/types';
 
 type Nav = NativeStackNavigationProp<PharmacieStackParamList, 'PharmacieList'>;
@@ -32,45 +40,85 @@ export function PharmacieListScreen() {
     );
   }
 
+  const list = data?.data ?? [];
+
   return (
     <Screen padded={false}>
+      <View style={styles.header}>
+        <AppText variant="h2">Pharmacies</AppText>
+        <AppText color={theme.colors.textSecondary}>
+          {list.length} résultat{list.length > 1 ? 's' : ''}
+        </AppText>
+      </View>
+
       <FlatList
-        data={data?.data ?? []}
+        data={list}
         keyExtractor={item => item.id_pharmacie}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              navigation.navigate('PharmacieDetail', {
-                id: item.id_pharmacie,
-                nom: item.nom_pharmacie,
-              })
-            }
-          >
-            <Card style={styles.card}>
-              <AppText weight="semibold">{item.nom_pharmacie}</AppText>
-              <AppText variant="small" color={theme.colors.textSecondary} numberOfLines={1}>
-                {item.adresse}
-              </AppText>
-              <View style={styles.meta}>
-                <View style={styles.metaItem}>
-                  <Star size={14} color={theme.colors.warning} />
-                  <AppText variant="caption" color={theme.colors.textSecondary}>
-                    {Number(item.note_moyenne).toFixed(1)}
-                  </AppText>
-                </View>
-                {item.livraison_disponible ? (
-                  <View style={styles.metaItem}>
-                    <Truck size={14} color={theme.colors.success} />
-                    <AppText variant="caption" color={theme.colors.success}>
-                      {t('pharmacie.delivery')}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => {
+          const uri = resolveImageUrl(item.image_url);
+          const dispo = item.statut === 'active' || item.statut === 'ACTIVE';
+          return (
+            <Pressable
+              onPress={() =>
+                navigation.navigate('PharmacieDetail', {
+                  id: item.id_pharmacie,
+                  nom: item.nom_pharmacie,
+                })
+              }
+            >
+              <Card style={styles.card} padding="sm">
+                {uri ? (
+                  <Image source={{ uri }} style={styles.thumb} />
+                ) : (
+                  <View
+                    style={[styles.thumb, { backgroundColor: theme.colors.surfaceVariant }]}
+                  >
+                    <MapPin size={24} color={theme.colors.primary} />
+                  </View>
+                )}
+                <View style={styles.flex}>
+                  <View style={styles.titleRow}>
+                    <AppText weight="bold" numberOfLines={1} style={styles.flex}>
+                      {item.nom_pharmacie}
+                    </AppText>
+                    <Badge
+                      label={dispo ? 'Disponible' : 'Fermée'}
+                      tone={dispo ? 'success' : 'danger'}
+                    />
+                  </View>
+                  <View style={styles.metaRow}>
+                    <MapPin size={13} color={theme.colors.outline} />
+                    <AppText
+                      variant="small"
+                      color={theme.colors.outline}
+                      numberOfLines={1}
+                      style={styles.flex}
+                    >
+                      {item.adresse}
                     </AppText>
                   </View>
-                ) : null}
-              </View>
-            </Card>
-          </Pressable>
-        )}
+                  <View style={styles.metaRow}>
+                    <Star size={13} color={theme.colors.warning} fill={theme.colors.warning} />
+                    <AppText variant="label">
+                      {Number(item.note_moyenne).toFixed(1)}
+                    </AppText>
+                    {item.livraison_disponible ? (
+                      <>
+                        <Truck size={13} color={theme.colors.primary} />
+                        <AppText variant="label" color={theme.colors.primary}>
+                          {t('pharmacie.delivery')}
+                        </AppText>
+                      </>
+                    ) : null}
+                  </View>
+                </View>
+                <ChevronRight size={20} color={theme.colors.outline} />
+              </Card>
+            </Pressable>
+          );
+        }}
         ListEmptyComponent={<EmptyState title={t('pharmacie.noPharmacy')} />}
       />
     </Screen>
@@ -79,8 +127,17 @@ export function PharmacieListScreen() {
 
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
-  list: { padding: 16, gap: 12 },
-  card: { gap: 4 },
-  meta: { flexDirection: 'row', gap: 16, marginTop: 4 },
-  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8, gap: 2 },
+  list: { paddingHorizontal: 16, paddingBottom: 24, gap: 12 },
+  card: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  thumb: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex: { flex: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
 });

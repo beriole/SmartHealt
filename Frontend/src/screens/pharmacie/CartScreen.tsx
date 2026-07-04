@@ -1,16 +1,12 @@
 import React from 'react';
 import { View, FlatList, Pressable, StyleSheet, Alert } from 'react-native';
-import { Minus, Plus, Trash2 } from 'lucide-react-native';
+import { Minus, Plus, Trash2, Pill, ShoppingCart } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { AppText, Button, Card, EmptyState, Screen } from '@/components';
 import { useTheme } from '@/theme';
-import {
-  useCartStore,
-  selectCartTotal,
-  CartLine,
-} from '@/store/cartStore';
+import { useCartStore, selectCartTotal, CartLine } from '@/store/cartStore';
 import { formatFCFA } from '@/lib/format';
 import { PharmacieStackParamList } from '@/navigation/types';
 
@@ -39,12 +35,16 @@ export function CartScreen() {
   }
 
   const renderLine = ({ item }: { item: CartLine }) => (
-    <Card style={styles.line}>
+    <Card style={styles.line} padding="sm">
+      <View style={[styles.thumb, { backgroundColor: theme.colors.surfaceVariant }]}>
+        <Pill size={24} color={theme.colors.primary} />
+      </View>
+
       <View style={styles.lineInfo}>
-        <AppText weight="semibold" numberOfLines={1}>
+        <AppText weight="bold" numberOfLines={1}>
           {item.nom}
         </AppText>
-        <AppText color={theme.colors.primary} weight="bold">
+        <AppText color={theme.colors.primary} weight="bold" variant="bodyLg">
           {formatFCFA(item.prix * item.quantite)}
         </AppText>
       </View>
@@ -52,13 +52,15 @@ export function CartScreen() {
       <View style={styles.stepper}>
         <Stepper
           onPress={() => setQty(item.id_stock, item.quantite - 1)}
-          icon={<Minus size={18} color={theme.colors.foreground} />}
+          icon={<Minus size={16} color={theme.colors.primary} />}
           disabled={item.quantite <= 1}
         />
-        <AppText weight="semibold">{item.quantite}</AppText>
+        <AppText weight="bold" style={styles.qty}>
+          {item.quantite}
+        </AppText>
         <Stepper
           onPress={() => setQty(item.id_stock, item.quantite + 1)}
-          icon={<Plus size={18} color={theme.colors.foreground} />}
+          icon={<Plus size={16} color={theme.colors.primary} />}
           disabled={item.quantite >= item.quantite_max}
         />
         <Pressable
@@ -67,7 +69,7 @@ export function CartScreen() {
           accessibilityLabel={t('pharmacie.removeItem')}
           style={styles.trash}
         >
-          <Trash2 size={20} color={theme.colors.destructive} />
+          <Trash2 size={18} color={theme.colors.destructive} />
         </Pressable>
       </View>
     </Card>
@@ -75,17 +77,49 @@ export function CartScreen() {
 
   return (
     <Screen padded={false}>
-      {nomPharmacie ? (
-        <AppText variant="small" color={theme.colors.textSecondary} style={styles.pharma}>
-          {t('pharmacie.orderFrom', { name: nomPharmacie })}
+      <View style={styles.listHeader}>
+        <AppText variant="h3" weight="semibold">
+          Articles ({items.length})
         </AppText>
-      ) : null}
+        <Pressable
+          onPress={() =>
+            Alert.alert(t('pharmacie.clearCart'), t('pharmacie.clearCartConfirm'), [
+              { text: t('common.cancel'), style: 'cancel' },
+              { text: t('pharmacie.clearCart'), style: 'destructive', onPress: clear },
+            ])
+          }
+        >
+          <AppText variant="small" weight="semibold" color={theme.colors.primary}>
+            Tout vider
+          </AppText>
+        </Pressable>
+      </View>
 
       <FlatList
         data={items}
         keyExtractor={item => item.id_stock}
         contentContainerStyle={styles.list}
         renderItem={renderLine}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <Card style={styles.summary} elevated={false}>
+            {nomPharmacie ? (
+              <View style={styles.sumRow}>
+                <AppText color={theme.colors.textSecondary}>Pharmacie</AppText>
+                <AppText weight="semibold" numberOfLines={1} style={styles.sumValue}>
+                  {nomPharmacie}
+                </AppText>
+              </View>
+            ) : null}
+            <View style={styles.sumRow}>
+              <AppText color={theme.colors.textSecondary}>Sous-total</AppText>
+              <AppText weight="semibold">{formatFCFA(total)}</AppText>
+            </View>
+            <AppText variant="caption" color={theme.colors.outline}>
+              Livraison et taxes calculées à l'étape suivante.
+            </AppText>
+          </Card>
+        }
       />
 
       <View style={[styles.footer, { borderTopColor: theme.colors.border }]}>
@@ -100,16 +134,7 @@ export function CartScreen() {
         <Button
           label={t('pharmacie.checkout')}
           onPress={() => navigation.navigate('Checkout')}
-        />
-        <Button
-          label={t('pharmacie.clearCart')}
-          variant="ghost"
-          onPress={() =>
-            Alert.alert(t('pharmacie.clearCart'), t('pharmacie.clearCartConfirm'), [
-              { text: t('common.cancel'), style: 'cancel' },
-              { text: t('pharmacie.clearCart'), style: 'destructive', onPress: clear },
-            ])
-          }
+          icon={<ShoppingCart size={20} color={theme.colors.primaryOn} />}
         />
       </View>
     </Screen>
@@ -126,7 +151,6 @@ function Stepper({
   disabled?: boolean;
 }) {
   const theme = useTheme();
-  const opacity = disabled ? 0.4 : 1;
   return (
     <Pressable
       onPress={onPress}
@@ -135,9 +159,9 @@ function Stepper({
       style={[
         styles.stepBtn,
         {
-          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surfaceContainerHigh,
           borderRadius: theme.radius.sm,
-          opacity,
+          opacity: disabled ? 0.4 : 1,
         },
       ]}
     >
@@ -147,23 +171,40 @@ function Stepper({
 }
 
 const styles = StyleSheet.create({
-  pharma: { paddingHorizontal: 16, paddingTop: 12 },
+  listHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 4,
+  },
   list: { padding: 16, gap: 12 },
-  line: { gap: 12 },
-  lineInfo: { gap: 2 },
-  stepper: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  stepBtn: {
-    width: 36,
-    height: 36,
-    borderWidth: 1,
+  line: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  thumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  trash: { marginLeft: 'auto', padding: 4 },
-  footer: {
-    padding: 16,
-    gap: 12,
-    borderTopWidth: 1,
+  lineInfo: { flex: 1, gap: 2 },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  qty: { minWidth: 18, textAlign: 'center' },
+  stepBtn: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  trash: { marginLeft: 4, padding: 4 },
+  summary: { gap: 8, marginTop: 4 },
+  sumRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sumValue: { flex: 1, textAlign: 'right', marginLeft: 12 },
+  footer: { padding: 16, gap: 12, borderTopWidth: 1 },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 });

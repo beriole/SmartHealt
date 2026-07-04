@@ -13,8 +13,10 @@ export function PartageDossierScreen() {
   return (
     <Screen edges={['bottom']}>
       <View style={styles.container}>
-        <ShieldCheck size={48} color={theme.colors.primary} />
-        <AppText variant="h3" center>
+        <View style={[styles.iconCircle, { backgroundColor: theme.colors.primaryContainer }]}>
+          <ShieldCheck size={34} color={theme.colors.primary} />
+        </View>
+        <AppText variant="h2" center>
           Partager mon dossier médical
         </AppText>
         <AppText color={theme.colors.textSecondary} center>
@@ -23,9 +25,9 @@ export function PartageDossierScreen() {
         </AppText>
 
         {pin ? (
-          <Card style={styles.pinCard}>
-            <AppText variant="small" color={theme.colors.textSecondary}>
-              Votre code de consentement
+          <Card accent style={styles.pinCard}>
+            <AppText variant="label" color={theme.colors.primary}>
+              VOTRE CODE DE CONSENTEMENT
             </AppText>
             <AppText variant="h1" color={theme.colors.primary} style={styles.pin}>
               {pin.code_pin}
@@ -53,7 +55,14 @@ export function PartageDossierScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 8 },
-  pinCard: { alignItems: 'center', gap: 4, alignSelf: 'stretch' },
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinCard: { alignItems: 'center', gap: 6, alignSelf: 'stretch' },
   pin: { letterSpacing: 8 },
   btn: { alignSelf: 'stretch' },
 });

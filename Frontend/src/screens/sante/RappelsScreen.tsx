@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Activity, Pill } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -71,13 +72,36 @@ export function RappelsScreen() {
   return (
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Card style={styles.statCard}>
-          <AppText variant="small" color={theme.colors.textSecondary}>
-            Taux d'observance
-          </AppText>
-          <AppText variant="h1" color={theme.colors.primary}>
-            {Math.round(taux)}%
-          </AppText>
+        <Card accent style={styles.statCard}>
+          <View style={styles.statTop}>
+            <View style={styles.flex}>
+              <AppText variant="label" color={theme.colors.primary}>
+                TAUX D'OBSERVANCE
+              </AppText>
+              <AppText variant="h1" color={theme.colors.primary}>
+                {Math.round(taux)}%
+              </AppText>
+            </View>
+            <View
+              style={[
+                styles.statIcon,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
+              <Activity size={24} color={theme.colors.primary} />
+            </View>
+          </View>
+          <View style={[styles.track, { backgroundColor: theme.colors.surfaceContainerHigh }]}>
+            <View
+              style={[
+                styles.fill,
+                {
+                  width: `${Math.min(Math.max(taux, 0), 100)}%`,
+                  backgroundColor: theme.colors.primary,
+                },
+              ]}
+            />
+          </View>
           {stats.data ? (
             <AppText variant="small" color={theme.colors.textSecondary}>
               {stats.data.prises_effectuees}/{stats.data.total_prises_passees} prises suivies
@@ -131,13 +155,23 @@ export function RappelsScreen() {
           {rappels.data && rappels.data.length > 0 ? (
             rappels.data.map(r => (
               <Card key={r.id_rappel} style={styles.rappelCard}>
-                <AppText weight="semibold">
-                  {r.medicament?.nom_commercial ?? 'Médicament'}
-                </AppText>
-                <AppText variant="small" color={theme.colors.textSecondary}>
-                  {(r.heure_prise ?? []).join(', ')} · du {formatDate(r.date_debut)} au{' '}
-                  {formatDate(r.date_fin)}
-                </AppText>
+                <View
+                  style={[
+                    styles.pillIcon,
+                    { backgroundColor: theme.colors.primaryContainer },
+                  ]}
+                >
+                  <Pill size={20} color={theme.colors.primary} />
+                </View>
+                <View style={styles.flex}>
+                  <AppText weight="semibold">
+                    {r.medicament?.nom_commercial ?? 'Médicament'}
+                  </AppText>
+                  <AppText variant="small" color={theme.colors.textSecondary}>
+                    {(r.heure_prise ?? []).join(', ')} · du {formatDate(r.date_debut)} au{' '}
+                    {formatDate(r.date_fin)}
+                  </AppText>
+                </View>
               </Card>
             ))
           ) : (
@@ -161,9 +195,26 @@ export function RappelsScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   scroll: { paddingVertical: 16, paddingBottom: 40 },
-  statCard: { alignItems: 'center', gap: 2 },
+  statCard: { gap: 12 },
+  statTop: { flexDirection: 'row', alignItems: 'flex-start' },
+  statIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  track: { height: 8, borderRadius: 4, overflow: 'hidden' },
+  fill: { height: 8, borderRadius: 4 },
   priseCard: { gap: 12 },
-  rappelCard: { gap: 2 },
+  rappelCard: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  pillIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   between: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   flex: { flex: 1 },
   actions: { flexDirection: 'row', gap: 8 },

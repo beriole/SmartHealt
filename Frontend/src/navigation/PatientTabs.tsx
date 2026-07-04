@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, Store, HeartPulse, Package, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
+import { getTabBarScreenOptions } from './tabBarOptions';
 import { PatientTabParamList } from './types';
 import { AccueilStack } from './AccueilStack';
 import { PharmacieStack } from './PharmacieStack';
@@ -12,40 +13,27 @@ import { ProfilStack } from './ProfilStack';
 
 const Tab = createBottomTabNavigator<PatientTabParamList>();
 
-type TabIconProps = { color: string; size: number };
+type TabIconProps = { color: string; size: number; focused: boolean };
 
-const renderAccueilIcon = ({ color, size }: TabIconProps) => (
-  <Home color={color} size={size} />
-);
-const renderPharmacieIcon = ({ color, size }: TabIconProps) => (
-  <Store color={color} size={size} />
-);
-const renderSanteIcon = ({ color, size }: TabIconProps) => (
-  <HeartPulse color={color} size={size} />
-);
-const renderCommandesIcon = ({ color, size }: TabIconProps) => (
-  <Package color={color} size={size} />
-);
-const renderProfilIcon = ({ color, size }: TabIconProps) => (
-  <User color={color} size={size} />
-);
+const makeIcon = (Icon: typeof Home) => {
+  const TabIcon = ({ color, focused }: TabIconProps) => (
+    <Icon color={color} size={24} strokeWidth={focused ? 2.6 : 2} />
+  );
+  return TabIcon;
+};
+
+const renderAccueilIcon = makeIcon(Home);
+const renderPharmacieIcon = makeIcon(Store);
+const renderSanteIcon = makeIcon(HeartPulse);
+const renderCommandesIcon = makeIcon(Package);
+const renderProfilIcon = makeIcon(User);
 
 export function PatientTabs() {
   const theme = useTheme();
   const { t } = useTranslation();
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabBarScreenOptions(theme)}>
       <Tab.Screen
         name="Accueil"
         component={AccueilStack}

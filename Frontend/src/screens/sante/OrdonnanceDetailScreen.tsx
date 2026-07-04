@@ -1,9 +1,8 @@
 import React from 'react';
-import { ScrollView, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScrollView, View, StyleSheet, ActivityIndicator , Pressable } from 'react-native';
 import { BellPlus } from 'lucide-react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Pressable } from 'react-native';
 import { AppText, Badge, Card, Section, Screen, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatDate } from '@/lib/format';

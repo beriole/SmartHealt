@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, ColorTokens } from './colors';
-import { spacing, radius, typography, touch } from './tokens';
+import { spacing, radius, typography, touch, elevation } from './tokens';
 
 export interface Theme {
   dark: boolean;
@@ -10,6 +10,7 @@ export interface Theme {
   radius: typeof radius;
   typography: typeof typography;
   touch: typeof touch;
+  elevation: typeof elevation;
 }
 
 function buildTheme(dark: boolean): Theme {
@@ -20,6 +21,7 @@ function buildTheme(dark: boolean): Theme {
     radius,
     typography,
     touch,
+    elevation,
   };
 }
 

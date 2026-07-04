@@ -17,11 +17,11 @@ export function SearchBar({ value, onChangeText, ...rest }: SearchBarProps) {
         {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.pill,
         },
       ]}
     >
-      <Search size={20} color={theme.colors.textSecondary} />
+      <Search size={20} color={theme.colors.outline} />
       <TextInput
         value={value}
         onChangeText={onChangeText}

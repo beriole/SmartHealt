@@ -14,6 +14,7 @@ import {
   Card,
   ErrorState,
   Input,
+  OrderStatusTimeline,
   Screen,
   StarRating,
 } from '@/components';
@@ -118,6 +119,16 @@ export function CommandeDetailScreen() {
           />
         </View>
       </View>
+
+      <Card style={styles.section}>
+        <AppText weight="semibold">{t('commande.tracking')}</AppText>
+        <OrderStatusTimeline
+          statut={data.statut_commande}
+          typeLivraison={data.type_livraison}
+          dateCommande={data.date_commande}
+          dateLivraisonEffective={data.date_livraison_effective}
+        />
+      </Card>
 
       <Card style={styles.section}>
         {(data.lignes ?? []).map(ligne => (

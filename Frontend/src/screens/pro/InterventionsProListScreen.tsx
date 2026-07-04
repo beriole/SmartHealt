@@ -1,8 +1,9 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Syringe, User, MapPin } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppText, Badge, Button, Card, Screen, EmptyState, ErrorState } from '@/components';
+import { AppText, Badge, Button, Card, Screen, ScreenHeader, EmptyState, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatDate } from '@/lib/format';
 import { useInterventions, useUpdateStatutIntervention } from '@/features/intervention/hooks';
@@ -36,6 +37,10 @@ export function InterventionsProListScreen() {
 
   return (
     <Screen edges={['top']} padded={false}>
+      <ScreenHeader
+        title="Mes interventions"
+        subtitle="Soins à domicile qui vous sont assignés."
+      />
       <FlatList
         data={items}
         keyExtractor={(i: Intervention) => i.id_intervention}
@@ -54,19 +59,30 @@ export function InterventionsProListScreen() {
           return (
             <Card style={styles.card}>
               <View style={styles.between}>
-                <AppText weight="semibold" style={styles.flex}>
-                  {ACTE_LABEL[item.type_acte]}
-                </AppText>
+                <View style={styles.titleRow}>
+                  <View style={[styles.acteIcon, { backgroundColor: theme.colors.primaryContainer }]}>
+                    <Syringe size={18} color={theme.colors.primary} />
+                  </View>
+                  <AppText weight="bold" style={styles.flex}>
+                    {ACTE_LABEL[item.type_acte]}
+                  </AppText>
+                </View>
                 <Badge label={s.label} tone={s.tone} />
               </View>
               {patient ? (
-                <AppText variant="small" color={theme.colors.textSecondary}>
-                  {patient.prenom} {patient.nom}
-                </AppText>
+                <View style={styles.metaRow}>
+                  <User size={14} color={theme.colors.outline} />
+                  <AppText variant="small" color={theme.colors.textSecondary}>
+                    {patient.prenom} {patient.nom}
+                  </AppText>
+                </View>
               ) : null}
-              <AppText variant="small" color={theme.colors.textSecondary}>
-                {formatDate(item.date_planifiee)} · {item.adresse_intervention}
-              </AppText>
+              <View style={styles.metaRow}>
+                <MapPin size={14} color={theme.colors.outline} />
+                <AppText variant="small" color={theme.colors.textSecondary} style={styles.flex}>
+                  {formatDate(item.date_planifiee)} · {item.adresse_intervention}
+                </AppText>
+              </View>
               {item.statut === 'planifiee' ? (
                 <Button
                   label="Démarrer"
@@ -93,8 +109,17 @@ export function InterventionsProListScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 12, flexGrow: 1 },
-  card: { gap: 6 },
+  card: { gap: 8 },
   between: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  acteIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   flex: { flex: 1 },
   btn: { marginTop: 8 },
 });

@@ -32,7 +32,14 @@ export function VerifyEmailNoticeScreen() {
   return (
     <Screen>
       <View style={styles.container}>
-        <MailCheck size={56} color={theme.colors.primary} />
+        <View
+          style={[
+            styles.iconCircle,
+            { backgroundColor: theme.colors.primaryContainer },
+          ]}
+        >
+          <MailCheck size={36} color={theme.colors.primary} />
+        </View>
         <AppText variant="h2" center>
           {t('auth.verifyEmailTitle')}
         </AppText>
@@ -42,14 +49,14 @@ export function VerifyEmailNoticeScreen() {
 
         <View style={styles.actions}>
           <Button
+            label={t('auth.backToLogin')}
+            onPress={() => navigation.navigate('Login')}
+          />
+          <Button
             label={t('auth.resendVerification')}
             variant="secondary"
             loading={resend.isPending}
             onPress={onResend}
-          />
-          <Button
-            label={t('auth.backToLogin')}
-            onPress={() => navigation.navigate('Login')}
           />
         </View>
       </View>
@@ -63,6 +70,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
+  },
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   actions: { alignSelf: 'stretch', gap: 12, marginTop: 16 },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight, FileText } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppText, Badge, Card, Screen, EmptyState, ErrorState } from '@/components';
@@ -52,6 +52,15 @@ export function OrdonnancesScreen() {
         data={items}
         keyExtractor={(o: Ordonnance) => o.id_ordonnance}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <AppText variant="h2">Mes ordonnances</AppText>
+            <AppText color={theme.colors.textSecondary}>
+              Vos prescriptions médicales numériques.
+            </AppText>
+          </View>
+        }
         ListEmptyComponent={
           <EmptyState
             title="Aucune ordonnance"
@@ -67,6 +76,14 @@ export function OrdonnancesScreen() {
               }
             >
               <Card style={styles.row}>
+                <View
+                  style={[
+                    styles.icon,
+                    { backgroundColor: theme.colors.surfaceVariant },
+                  ]}
+                >
+                  <FileText size={22} color={theme.colors.primary} />
+                </View>
                 <View style={styles.flex}>
                   <AppText weight="semibold">
                     Ordonnance du {formatDate(item.date_emission)}
@@ -78,7 +95,7 @@ export function OrdonnancesScreen() {
                     </AppText>
                   </View>
                 </View>
-                <ChevronRight size={20} color={theme.colors.textSecondary} />
+                <ChevronRight size={20} color={theme.colors.outline} />
               </Card>
             </Pressable>
           );
@@ -91,7 +108,15 @@ export function OrdonnancesScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 10, flexGrow: 1 },
+  header: { gap: 4, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   flex: { flex: 1, gap: 6 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

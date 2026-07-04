@@ -89,6 +89,7 @@ export interface StockItem {
   id_medicament: string;
   quantite_disponible: number;
   prix_vente_fcfa: string;
+  seuil_alerte?: number;
   date_peremption?: string | null;
   medicament: Medicament;
   pharmacie?: PharmacieResume;
@@ -102,10 +103,17 @@ export interface LigneCommande {
   stock?: { medicament?: Medicament };
 }
 
+/** Patient résumé renvoyé dans une commande (côté pharmacien / livreur). */
+export interface PatientResume {
+  id_patient: string;
+  utilisateur?: { nom: string; prenom: string; telephone?: string };
+}
+
 export interface Commande {
   id_commande: string;
   id_patient: string;
   id_pharmacie: string;
+  id_ordonnance?: string | null;
   type_livraison: TypeLivraison;
   adresse_livraison?: string | null;
   montant_total_fcfa: string;
@@ -118,6 +126,7 @@ export interface Commande {
   code_validation_livraison?: string | null;
   note_livraison?: number | null;
   note_pharmacie?: number | null;
+  patient?: PatientResume;
   pharmacie?: Pharmacie;
   lignes?: LigneCommande[];
 }

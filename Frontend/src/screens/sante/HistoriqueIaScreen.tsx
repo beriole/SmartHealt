@@ -1,9 +1,8 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import { FlatList, Pressable, StyleSheet, ActivityIndicator , View } from 'react-native';
+import { ChevronRight, Sparkles } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { View } from 'react-native';
 import { AppText, Card, Screen, EmptyState, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatDate } from '@/lib/format';
@@ -60,6 +59,11 @@ export function HistoriqueIaScreen() {
             onPress={() => navigation.navigate('AnalyseDetail', { id: item.id_analyse })}
           >
             <Card style={styles.row}>
+              <View
+                style={[styles.icon, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Sparkles size={20} color={theme.colors.primary} />
+              </View>
               <View style={styles.flex}>
                 <AppText weight="semibold">
                   {LABELS_ANALYSE[item.type_analyse] ?? item.type_analyse}
@@ -68,7 +72,7 @@ export function HistoriqueIaScreen() {
                   {formatDate(item.date_analyse)}
                 </AppText>
               </View>
-              <ChevronRight size={20} color={theme.colors.textSecondary} />
+              <ChevronRight size={20} color={theme.colors.outline} />
             </Card>
           </Pressable>
         )}
@@ -81,5 +85,12 @@ const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 10, flexGrow: 1 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   flex: { flex: 1 },
 });

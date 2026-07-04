@@ -8,6 +8,7 @@ export interface CartLine {
   prix: number;
   quantite: number;
   quantite_max: number;
+  necessite_ordonnance: boolean;
 }
 
 interface AddResult {
@@ -71,6 +72,7 @@ export const useCartStore = create<CartState>((set, get) => ({
           prix,
           quantite: 1,
           quantite_max: stock.quantite_disponible,
+          necessite_ordonnance: !!stock.medicament.necessite_ordonnance,
         },
       ];
     }
@@ -111,3 +113,7 @@ export const selectCartCount = (s: CartState) =>
 
 export const selectCartTotal = (s: CartState) =>
   s.items.reduce((sum, l) => sum + l.prix * l.quantite, 0);
+
+/** true si au moins un article du panier nécessite une ordonnance. */
+export const selectCartNeedsPrescription = (s: CartState) =>
+  s.items.some(l => l.necessite_ordonnance);

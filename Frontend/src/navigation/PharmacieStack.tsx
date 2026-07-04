@@ -1,9 +1,8 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator , NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { CartButton } from '@/components';
+import { BrandLogo, CartButton } from '@/components';
 import { useTheme } from '@/theme';
 import { PharmacieStackParamList } from './types';
 import { PharmacieHomeScreen } from '@/screens/pharmacie/PharmacieHomeScreen';
@@ -23,6 +22,7 @@ function HeaderCartButton() {
 }
 
 const renderHeaderCart = () => <HeaderCartButton />;
+const renderBrandTitle = () => <BrandLogo size={24} withWordmark wordmarkSize={18} />;
 
 export function PharmacieStack() {
   const theme = useTheme();
@@ -33,7 +33,8 @@ export function PharmacieStack() {
       screenOptions={{
         headerRight: renderHeaderCart,
         headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.foreground,
+        headerTintColor: theme.colors.primary,
+        headerTitleStyle: { fontWeight: '700', fontSize: 18, color: theme.colors.foreground },
         headerShadowVisible: false,
         contentStyle: { backgroundColor: theme.colors.background },
       }}
@@ -41,7 +42,7 @@ export function PharmacieStack() {
       <Stack.Screen
         name="PharmacieHome"
         component={PharmacieHomeScreen}
-        options={{ title: t('tabs.pharmacie') }}
+        options={{ headerTitle: renderBrandTitle, headerTitleAlign: 'left' }}
       />
       <Stack.Screen
         name="MedicamentDetail"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
+import { PackageCheck, CheckCircle2 } from 'lucide-react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { AppText, Button, Input, Screen } from '@/components';
 import { useTheme } from '@/theme';
@@ -33,9 +34,17 @@ export function ValiderLivraisonScreen() {
   return (
     <Screen edges={['bottom']}>
       <View style={styles.container}>
-        <AppText color={theme.colors.textSecondary}>
-          Demandez au client le code de validation reçu par email, puis saisissez-le ci-dessous.
-        </AppText>
+        <View style={styles.hero}>
+          <View style={[styles.iconCircle, { backgroundColor: theme.colors.primaryContainer }]}>
+            <PackageCheck size={32} color={theme.colors.primary} />
+          </View>
+          <AppText variant="h2" center>
+            Valider la livraison
+          </AppText>
+          <AppText center color={theme.colors.textSecondary}>
+            Demandez au client le code de validation reçu par email, puis saisissez-le ci-dessous.
+          </AppText>
+        </View>
         <Input
           label="Code de validation"
           placeholder="• • • •"
@@ -48,6 +57,7 @@ export function ValiderLivraisonScreen() {
           label="Valider la livraison"
           loading={valider.isPending}
           onPress={onValider}
+          icon={<CheckCircle2 size={20} color={theme.colors.primaryOn} />}
         />
       </View>
     </Screen>
@@ -56,4 +66,13 @@ export function ValiderLivraisonScreen() {
 
 const styles = StyleSheet.create({
   container: { gap: 16, paddingTop: 24 },
+  hero: { alignItems: 'center', gap: 8, marginBottom: 8 },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
 });

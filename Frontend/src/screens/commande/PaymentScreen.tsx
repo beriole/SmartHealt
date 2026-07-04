@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { CheckCircle2, XCircle, Smartphone } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 import {
   useNavigation,
   useRoute,
@@ -9,7 +10,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AppText, Button, Input, OptionGroup, Screen } from '@/components';
+import { AppText, Button, Card, Input, OptionGroup, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import { usePayer, usePaymentStatus } from '@/features/commande/hooks';
 import { PaymentMedium } from '@/features/commande/commande.api';
@@ -40,8 +41,11 @@ export function PaymentScreen() {
 
   useEffect(() => {
     if (statut === 'paye') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       qc.invalidateQueries({ queryKey: ['commandes'] });
       qc.invalidateQueries({ queryKey: ['commande', id_commande] });
+    } else if (statut === 'echoue') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   }, [statut, qc, id_commande]);
 
@@ -62,13 +66,50 @@ export function PaymentScreen() {
   // --- Paiement réussi ---
   if (statut === 'paye') {
     return (
-      <Screen>
-        <View style={styles.center}>
-          <CheckCircle2 size={64} color={theme.colors.success} />
-          <AppText variant="h2" center>
+      <Screen scroll>
+        <View style={styles.success}>
+          <View
+            style={[
+              styles.successCircle,
+              { backgroundColor: theme.colors.secondaryContainer },
+            ]}
+          >
+            <CheckCircle2 size={48} color={theme.colors.secondary} />
+          </View>
+          <AppText variant="h2" center color={theme.colors.primary}>
             {t('commande.paymentSuccess')}
           </AppText>
-          <Button label={t('common.done')} onPress={() => navigation.popToTop()} />
+          <AppText center color={theme.colors.textSecondary}>
+            Merci pour votre confiance, votre commande est en cours de traitement.
+          </AppText>
+        </View>
+
+        <Card style={styles.successCard}>
+          <View style={styles.successRow}>
+            <AppText variant="label" color={theme.colors.outline}>
+              NUMÉRO DE COMMANDE
+            </AppText>
+            <AppText weight="bold">#{id_commande.slice(0, 8).toUpperCase()}</AppText>
+          </View>
+          <View style={[styles.successDivider, { backgroundColor: theme.colors.border }]} />
+          <View style={styles.successRow}>
+            <AppText color={theme.colors.textSecondary}>Montant réglé</AppText>
+            <AppText weight="bold" color={theme.colors.primary} variant="bodyLg">
+              {formatFCFA(montant)}
+            </AppText>
+          </View>
+        </Card>
+
+        <View style={styles.successActions}>
+          <Button
+            label={t('commande.trackOrder')}
+            onPress={() => navigation.popToTop()}
+          />
+          <Button
+            label={t('commande.backHome')}
+            variant="secondary"
+            onPress={() => navigation.popToTop()}
+          />
         </View>
       </Screen>
     );
@@ -125,11 +166,22 @@ export function PaymentScreen() {
       <View style={styles.form}>
         <OptionGroup<PaymentMedium>
           label={t('commande.paymentMethod')}
+          variant="card"
           value={medium}
           onChange={setMedium}
           options={[
-            { value: 'mobile money', label: t('commande.mtnMomo') },
-            { value: 'orange money', label: t('commande.orangeMoney') },
+            {
+              value: 'mobile money',
+              label: t('commande.mtnMomo'),
+              description: t('commande.instantPayment'),
+              icon: <OperatorBadge code="MTN" color="#FFCC00" textColor="#1A1A1A" />,
+            },
+            {
+              value: 'orange money',
+              label: t('commande.orangeMoney'),
+              description: t('commande.instantPayment'),
+              icon: <OperatorBadge code="OM" color="#FF6600" textColor="#FFFFFF" />,
+            },
           ]}
         />
         <Input
@@ -150,8 +202,50 @@ export function PaymentScreen() {
   );
 }
 
+function OperatorBadge({
+  code,
+  color,
+  textColor,
+}: {
+  code: string;
+  color: string;
+  textColor: string;
+}) {
+  return (
+    <View style={[styles.operator, { backgroundColor: color }]}>
+      <AppText variant="label" weight="bold" color={textColor}>
+        {code}
+      </AppText>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 },
   amount: { alignItems: 'center', gap: 4, marginVertical: 24 },
   form: { gap: 16 },
+  success: { alignItems: 'center', gap: 10, marginTop: 24, marginBottom: 24 },
+  successCircle: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successCard: { gap: 12 },
+  successRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  successDivider: { height: 1 },
+  successActions: { gap: 12, marginTop: 24 },
+  operator: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

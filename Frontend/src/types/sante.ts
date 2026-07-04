@@ -51,6 +51,7 @@ export interface Ordonnance {
   statut: StatutOrdonnance;
   notes_pharmacien?: string | null;
   signature_numerique?: string;
+  patient?: { utilisateur?: { nom: string; prenom: string } };
   lignes?: LigneOrdonnance[];
 }
 

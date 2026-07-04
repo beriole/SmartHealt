@@ -16,6 +16,7 @@ export const endpoints = {
   },
   professionnels: {
     list: '/professionnels',
+    me: '/professionnels/me',
     byId: (id: string) => `/professionnels/${id}`,
   },
   interventions: {
@@ -29,10 +30,17 @@ export const endpoints = {
   },
   pharmacies: {
     list: '/pharmacies',
+    mine: '/pharmacies/mine',
     byId: (id: string) => `/pharmacies/${id}`,
+    update: (id: string) => `/pharmacies/${id}`,
   },
   stocks: {
     search: '/stocks/search',
+    myStocks: '/stocks/my-stocks',
+    alertes: '/stocks/alertes',
+    create: '/stocks',
+    byId: (id: string) => `/stocks/${id}`,
+    mouvements: (id: string) => `/stocks/${id}/mouvements`,
   },
   medicaments: {
     list: '/medicaments',
@@ -49,6 +57,9 @@ export const endpoints = {
     evaluer: (id: string) => `/commandes/${id}/evaluer`,
     disponiblesLivraison: '/commandes/disponibles-livraison',
     assignerLivreur: (id: string) => `/commandes/${id}/assigner-livreur`,
+    updateStatus: (id: string) => `/commandes/${id}/status`,
+    attribuerAuto: (id: string) => `/commandes/${id}/attribuer-auto`,
+    annuler: (id: string) => `/commandes/${id}/annuler`,
   },
   livreurs: {
     dashboard: '/livreurs/dashboard',
@@ -59,6 +70,7 @@ export const endpoints = {
     list: '/ordonnances',
     byId: (id: string) => `/ordonnances/${id}`,
     create: '/ordonnances',
+    traiter: (id: string) => `/ordonnances/${id}/traiter`,
   },
   consultations: {
     list: '/consultations',

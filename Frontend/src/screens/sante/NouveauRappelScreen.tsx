@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet, Pressable, Alert } from 'react-native';
-import { X } from 'lucide-react-native';
+import { X, Plus, Pill } from 'lucide-react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppText, Button, Input, Card, Screen } from '@/components';
@@ -79,11 +79,16 @@ export function NouveauRappelScreen() {
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         {nom_medicament ? (
-          <Card style={styles.med}>
-            <AppText variant="small" color={theme.colors.textSecondary}>
-              Médicament
-            </AppText>
-            <AppText weight="semibold">{nom_medicament}</AppText>
+          <Card accent style={styles.med}>
+            <View style={[styles.medIcon, { backgroundColor: theme.colors.primaryContainer }]}>
+              <Pill size={20} color={theme.colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <AppText variant="label" color={theme.colors.primary}>
+                MÉDICAMENT
+              </AppText>
+              <AppText weight="bold">{nom_medicament}</AppText>
+            </View>
           </Card>
         ) : null}
 
@@ -98,7 +103,15 @@ export function NouveauRappelScreen() {
               keyboardType="numbers-and-punctuation"
             />
           </View>
-          <Button label="+" onPress={ajouterHeure} fullWidth={false} style={styles.addBtn} />
+          <Pressable
+            onPress={ajouterHeure}
+            style={[
+              styles.addBtn,
+              { backgroundColor: theme.colors.primary, borderRadius: theme.radius.md },
+            ]}
+          >
+            <Plus size={22} color={theme.colors.primaryOn} />
+          </Pressable>
         </View>
 
         <View style={styles.chips}>
@@ -135,10 +148,22 @@ export function NouveauRappelScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingVertical: 16, paddingBottom: 40 },
-  med: { gap: 2, marginBottom: 16 },
+  med: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
+  medIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   addRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
   flex: { flex: 1 },
-  addBtn: { minWidth: 56, paddingHorizontal: 0 },
+  addBtn: {
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8 },
   field: { marginTop: 16 },

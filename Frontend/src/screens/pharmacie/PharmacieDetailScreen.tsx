@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
-import { MapPin, Phone, Star } from 'lucide-react-native';
+import { MapPin, Phone, Star, Truck } from 'lucide-react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import {
   AppText,
+  Badge,
+  Card,
   EmptyState,
   ErrorState,
   Screen,
@@ -70,14 +72,28 @@ export function PharmacieDetailScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.header}>
-            <AppText variant="h2">{data.nom_pharmacie}</AppText>
-            <InfoRow icon={<MapPin size={16} color={theme.colors.textSecondary} />} text={data.adresse} />
-            <InfoRow icon={<Phone size={16} color={theme.colors.textSecondary} />} text={data.telephone} />
-            <InfoRow
-              icon={<Star size={16} color={theme.colors.warning} />}
-              text={`${Number(data.note_moyenne).toFixed(1)} / 5`}
-            />
-            <AppText variant="small" weight="semibold" style={styles.sectionTitle}>
+            <Card style={styles.heroCard}>
+              <View style={styles.heroTop}>
+                <AppText variant="h3" weight="bold" style={styles.flex}>
+                  {data.nom_pharmacie}
+                </AppText>
+                <View style={styles.ratingBadge}>
+                  <Star size={14} color={theme.colors.warning} fill={theme.colors.warning} />
+                  <AppText variant="label">
+                    {Number(data.note_moyenne).toFixed(1)}
+                  </AppText>
+                </View>
+              </View>
+              <InfoRow icon={<MapPin size={16} color={theme.colors.outline} />} text={data.adresse} />
+              <InfoRow icon={<Phone size={16} color={theme.colors.outline} />} text={data.telephone} />
+              {data.livraison_disponible ? (
+                <View style={styles.deliveryRow}>
+                  <Truck size={16} color={theme.colors.primary} />
+                  <Badge label={t('pharmacie.delivery')} tone="info" />
+                </View>
+              ) : null}
+            </Card>
+            <AppText variant="h3" weight="semibold" style={styles.sectionTitle}>
               {t('pharmacie.availableProducts')}
             </AppText>
           </View>
@@ -111,8 +127,17 @@ function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 12 },
-  header: { gap: 6, marginBottom: 4 },
+  header: { marginBottom: 4 },
+  heroCard: { gap: 8 },
+  heroTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  flex: { flex: 1 },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  deliveryRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   infoText: { flex: 1 },
-  sectionTitle: { marginTop: 12 },
+  sectionTitle: { marginTop: 16, marginBottom: 4 },
 });

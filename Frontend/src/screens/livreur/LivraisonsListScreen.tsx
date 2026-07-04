@@ -1,8 +1,9 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { MapPin, CheckCircle2 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppText, Badge, Button, Card, Screen, EmptyState, ErrorState } from '@/components';
+import { AppText, Badge, Button, Card, Screen, ScreenHeader, EmptyState, ErrorState } from '@/components';
 import { useTheme } from '@/theme';
 import { formatFCFA } from '@/lib/format';
 import { useMesLivraisons } from '@/features/livreur/hooks';
@@ -42,6 +43,10 @@ export function LivraisonsListScreen() {
 
   return (
     <Screen edges={['top']} padded={false}>
+      <ScreenHeader
+        title="Mes livraisons"
+        subtitle="Suivez et validez vos courses."
+      />
       <FlatList
         data={items}
         keyExtractor={(c: Commande) => c.id_commande}
@@ -65,11 +70,14 @@ export function LivraisonsListScreen() {
                 {s ? <Badge label={s.label} tone={s.tone} /> : null}
               </View>
               {item.adresse_livraison ? (
-                <AppText variant="small" color={theme.colors.textSecondary}>
-                  {item.adresse_livraison}
-                </AppText>
+                <View style={styles.metaRow}>
+                  <MapPin size={15} color={theme.colors.outline} />
+                  <AppText variant="small" color={theme.colors.textSecondary} style={styles.flex}>
+                    {item.adresse_livraison}
+                  </AppText>
+                </View>
               ) : null}
-              <AppText variant="small" weight="semibold" color={theme.colors.primary}>
+              <AppText weight="bold" variant="bodyLg" color={theme.colors.primary}>
                 {formatFCFA(item.montant_total_fcfa)}
               </AppText>
               {item.statut_commande === 'en_livraison' ? (
@@ -78,6 +86,7 @@ export function LivraisonsListScreen() {
                   onPress={() =>
                     navigation.navigate('ValiderLivraison', { id: item.id_commande })
                   }
+                  icon={<CheckCircle2 size={20} color={theme.colors.primaryOn} />}
                   style={styles.btn}
                 />
               ) : null}
@@ -92,8 +101,9 @@ export function LivraisonsListScreen() {
 const styles = StyleSheet.create({
   loader: { marginTop: 32 },
   list: { padding: 16, gap: 12, flexGrow: 1 },
-  card: { gap: 6 },
+  card: { gap: 8 },
   between: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   flex: { flex: 1 },
   btn: { marginTop: 8 },
 });

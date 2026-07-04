@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, StyleSheet, Alert } from 'react-native';
+import { Leaf } from 'lucide-react-native';
 import { AppText, Button, Input, Screen } from '@/components';
 import { useTheme } from '@/theme';
 import { useMedecineTraditionnelle } from '@/features/ia/hooks';
@@ -41,9 +42,15 @@ export function MedecineTraditionnelleScreen() {
   return (
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <AppText color={theme.colors.textSecondary} style={styles.intro}>
-          Obtenez des remèdes naturels à base de plantes médicinales locales, adaptés à votre dossier.
-        </AppText>
+        <View style={styles.hero}>
+          <View style={[styles.iconCircle, { backgroundColor: theme.colors.secondaryContainer }]}>
+            <Leaf size={28} color={theme.colors.secondary} />
+          </View>
+          <AppText variant="h2">Médecine traditionnelle</AppText>
+          <AppText color={theme.colors.textSecondary} style={styles.intro}>
+            Obtenez des remèdes naturels à base de plantes médicinales locales, adaptés à votre dossier.
+          </AppText>
+        </View>
         <Input
           label="Maladie ou symptôme"
           placeholder="ex. rhume, fatigue, maux de ventre…"
@@ -64,7 +71,16 @@ export function MedecineTraditionnelleScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingVertical: 16, paddingBottom: 40 },
-  intro: { marginBottom: 16 },
+  hero: { gap: 8, marginBottom: 20 },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  intro: {},
   submit: { marginTop: 24 },
   reset: { marginTop: 24 },
 });

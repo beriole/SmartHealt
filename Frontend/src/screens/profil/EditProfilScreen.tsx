@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { User, Phone } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Screen } from '@/components';
+import { useTheme } from '@/theme';
 import { useAuthStore } from '@/store/authStore';
 import { useUpdateProfil } from '@/features/profil/hooks';
 
 export function EditProfilScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const navigation = useNavigation();
   const user = useAuthStore(s => s.user);
   const update = useUpdateProfil();
@@ -42,10 +45,21 @@ export function EditProfilScreen() {
   return (
     <Screen edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <Input label={t('auth.firstName')} value={prenom} onChangeText={setPrenom} />
-        <Input label={t('auth.lastName')} value={nom} onChangeText={setNom} />
+        <Input
+          label={t('auth.firstName')}
+          leftIcon={<User size={20} color={theme.colors.outline} />}
+          value={prenom}
+          onChangeText={setPrenom}
+        />
+        <Input
+          label={t('auth.lastName')}
+          leftIcon={<User size={20} color={theme.colors.outline} />}
+          value={nom}
+          onChangeText={setNom}
+        />
         <Input
           label={t('auth.phone')}
+          leftIcon={<Phone size={20} color={theme.colors.outline} />}
           value={telephone}
           onChangeText={setTelephone}
           keyboardType="phone-pad"

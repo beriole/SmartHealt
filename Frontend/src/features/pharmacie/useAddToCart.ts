@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { useCartStore } from '@/store/cartStore';
 import { StockItem } from '@/types';
@@ -14,6 +15,7 @@ export function useAddToCart() {
   return (stock: StockItem) => {
     const result = add(stock);
     if (result.conflict) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       Alert.alert(
         t('pharmacie.cartConflictTitle'),
         t('pharmacie.cartConflictBody'),
@@ -26,6 +28,8 @@ export function useAddToCart() {
           },
         ],
       );
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
 }

@@ -5,3 +5,4 @@ export * from './ia';
 export * from './sante';
 export * from './services';
 export * from './livreur';
+export * from './staff';

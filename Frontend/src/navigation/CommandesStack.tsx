@@ -17,7 +17,8 @@ export function CommandesStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.foreground,
+        headerTintColor: theme.colors.primary,
+        headerTitleStyle: { fontWeight: '700', fontSize: 18, color: theme.colors.foreground },
         headerShadowVisible: false,
         contentStyle: { backgroundColor: theme.colors.background },
       }}
@@ -25,7 +26,7 @@ export function CommandesStack() {
       <Stack.Screen
         name="CommandesList"
         component={CommandesListScreen}
-        options={{ title: t('tabs.commandes') }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CommandeDetail"
